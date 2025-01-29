@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Grade;
 
 class GradeSeeder extends Seeder
 {
@@ -12,6 +14,12 @@ class GradeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        for ($i=0; $i < 8; $i++) {
+            $val = $i + 1;
+            DB::table('grades')->insert([
+                'name' => "Grade {$val}",
+                'description' => "This is a class for Grade {$val} learners."
+            ]);
+        }
     }
 }

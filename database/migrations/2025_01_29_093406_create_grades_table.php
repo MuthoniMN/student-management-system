@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('description');
             $table->timestamps();
+        });
+        Schema::table('students', function(Blueprint $table){
+            $table->foreignId('grade_id')->constrained()->cascadeOnDelete();
         });
     }
 
@@ -23,5 +28,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('grades');
+        Schema::table('students', function(Blueprint $table){
+            $table->dropColumn('grade_id');
+        });
     }
 };
