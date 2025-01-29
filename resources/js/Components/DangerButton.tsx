@@ -1,9 +1,11 @@
+import { ButtonProps } from '@/Components/PrimaryButton';
+
 export default function DangerButton({
     className = '',
-    disabled,
+    disabled=false,
     children,
     ...props
-}) {
+}: ButtonProps) {
     return (
         <button
             {...props}

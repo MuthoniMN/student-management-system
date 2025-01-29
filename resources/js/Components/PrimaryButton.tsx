@@ -1,9 +1,18 @@
+import React from 'react';
+
+export type ButtonProps = {
+    className?: string,
+    disabled?: boolean,
+    children: React.ReactNode,
+    onClick?: (e) => void,
+}
+
 export default function PrimaryButton({
     className = '',
-    disabled,
+    disabled=false,
     children,
     ...props
-}) {
+}: ButtonProps) {
     return (
         <button
             {...props}
