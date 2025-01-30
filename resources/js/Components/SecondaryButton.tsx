@@ -1,10 +1,12 @@
+import { ButtonProps } from "@/Components/PrimaryButton";
+
 export default function SecondaryButton({
     type = 'button',
     className = '',
     disabled,
     children,
     ...props
-}) {
+}: ButtonProps) {
     return (
         <button
             {...props}

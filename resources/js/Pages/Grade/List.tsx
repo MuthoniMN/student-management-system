@@ -17,7 +17,6 @@ export type TGrade = {
 export default function GradeList({ grades }: {
     grades: TGrade[]
 }) {
-    console.log(grades);
     const [current, setCurrent] = useState<number|null>(null);
     const { submit, delete: destroy } = useForm();
 

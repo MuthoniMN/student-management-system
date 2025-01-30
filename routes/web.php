@@ -31,7 +31,7 @@ Route::resource('grades', GradeController::class)
     ->middleware(['auth', 'verified']);
 
 Route::resource('students', StudentController::class)
-    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
+    ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Student extends Model
 {
@@ -14,11 +14,11 @@ class Student extends Model
         'studentId'
     ];
 
-    public function grade(): HasOne {
-        return $this->hasOne(Grade::class);
+    public function grade(): BelongsTo {
+        return $this->belongsTo(Grade::class);
     }
 
-    public function parent(): HasOne {
-        return $this->hasOne(ParentData::class);
+    public function parent(): BelongsTo {
+        return $this->belongsTo(ParentData::class);
     }
 }

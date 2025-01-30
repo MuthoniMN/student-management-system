@@ -8,6 +8,7 @@ use App\Models\Grade;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StudentRequest;
+use App\Http\Requests\StudentUpdateRequest;
 use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
@@ -80,7 +81,11 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        return Inertia::render('Student/Show', [
+            'student' => $student,
+            'grade' => $student->grade,
+            'parent' => $student->parent
+        ]);
     }
 
     /**
@@ -88,15 +93,42 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        return Inertia::render('Student/Edit', [
+            'student' => $student,
+            'parents' => ParentData::all(),
+            'grades' => Grade::all()
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Student $student)
+    public function update(StudentUpdateRequest $request, Student $student)
     {
-        //
+        $validated = $request->validated();
+
+        $parent = ParentData::find($student->parent->id);
+
+        $parent->fill([
+            'name' => $validated['parent_name'],
+            'email' => $validated['email'],
+            'phone_number' => $validated['phone_number'],
+            'address' => $validated['address']
+        ]);
+
+        if($parent->isDirty()){
+            $parent->save();
+        }
+
+        $student->name = $validated['name'];
+        $student->studentId = $validated['studentId'];
+        $student->grade_id = $validated['grade_id'];
+
+        if($student->isDirty()){
+            $student->save();
+        }
+
+        return redirect(route('students.show', $student));
     }
 
     /**
@@ -104,6 +136,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+        $student->delete();
+
+        return redirect(route('students.index'));
     }
 }

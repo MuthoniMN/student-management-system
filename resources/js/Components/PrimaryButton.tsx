@@ -5,7 +5,7 @@ export type ButtonProps = {
     disabled?: boolean,
     children: React.ReactNode,
     onClick?: (e) => void,
-    type?: string
+    type?: "submit" | "reset" | "button" | undefined
 }
 
 export default function PrimaryButton({

@@ -11,7 +11,7 @@ type TFilter = {
     value: string
 }
 
-type TStudent = {
+export type TStudent = {
     id: number,
     name: string,
     studentId: string,
@@ -22,7 +22,8 @@ type TStudent = {
     phone_number: string,
     grade: string,
     created_at: Date,
-    updated_at: Date
+    updated_at: Date,
+    parent_name?: string
 }
 
 export default function List({ students, parents, grades }: { students: TStudent[], parents: any, grades: any}){
@@ -141,7 +142,7 @@ export default function List({ students, parents, grades }: { students: TStudent
                                     <td className="p-2">
                                         <input type="checkbox"/>
                                     </td>
-                                    <td className="px-2 min-w-24">{student.studentId}</td>
+                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out"><Link href={route('students.show', student.id)}>{student.studentId}</Link></td>
                                     <td className="px-2 min-w-36">{student.name}</td>
                                     <td className="px-2 min-w-24">{student.grade}</td>
                                     <td className="px-2 min-w-36">{student.email}</td>
@@ -163,7 +164,7 @@ export default function List({ students, parents, grades }: { students: TStudent
                                 return Array.from(
                                 { length: Math.ceil(students.length/10) },
                                 (_, i) => (
-                                    <p onClick={() => setPage(i+1)} className={`hover:underline ${((i + 1) == page) && 'underline text-blue-700'}`}>{i+1}</p>
+                                    <p onClick={() => setPage(i+1)} className={`hover:underline ${((i + 1) == page) && 'underline text-blue-700'}`} key={i}>{i+1}</p>
                                 )
                             )})()
                         }
