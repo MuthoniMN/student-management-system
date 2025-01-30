@@ -35,6 +35,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                     href={route('grades.index')}
                                     active={route().current('grades.index')}
                                 >Grades</NavLink>
+
+                                <NavLink
+                                    href={route('students.index')}
+                                    active={route().current('students.index')}
+                                >Students</NavLink>
                             </div>
                         </div>
 

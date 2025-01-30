@@ -5,17 +5,19 @@ import { FaAngleDown, FaAngleUp, FaPenToSquare, FaTrash } from "react-icons/fa6"
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 
-type TGrade = {
+export type TGrade = {
     id: number,
     name: string,
     description: string,
     created_at: Date|null,
     updated_at: Date|null,
+    students_count: number
 };
 
 export default function GradeList({ grades }: {
     grades: TGrade[]
 }) {
+    console.log(grades);
     const [current, setCurrent] = useState<number|null>(null);
     const { submit, delete: destroy } = useForm();
 
@@ -44,7 +46,7 @@ export default function GradeList({ grades }: {
                     grades.map(grade => (
                         <li className={`${current == grade.id && 'bg-slate-100'} w-full px-4 hover:bg-gray-100 hover:shadow-sm transition-all ease-in-out duration-200 space-y-2`} onClick={() => handleClick(grade.id)}>
                             <div className="flex w-full items-center justify-between">
-                                <h3 className="text-lg font-bold">{grade.name}</h3>
+                                <h3 className="text-lg font-bold">{grade.name}  <span className="italic font-light">({grade.students_count} learners)</span></h3>
                                 {
                                     current == grade.id ? <FaAngleUp /> : <FaAngleDown />
                                 }

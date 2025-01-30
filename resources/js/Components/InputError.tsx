@@ -1,4 +1,9 @@
-export default function InputError({ message, className = '', ...props }) {
+type TErrorProps = {
+    message: string,
+    className?: string
+}
+
+export default function InputError({ message, className = '', ...props }: TErrorProps) {
     return message ? (
         <p
             {...props}

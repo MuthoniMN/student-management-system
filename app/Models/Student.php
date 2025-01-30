@@ -10,7 +10,8 @@ class Student extends Model
     protected $fillable = [
         'name',
         'parent_id',
-        'grade_id'
+        'grade_id',
+        'studentId'
     ];
 
     public function grade(): HasOne {

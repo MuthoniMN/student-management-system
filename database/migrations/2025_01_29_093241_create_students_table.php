@@ -20,7 +20,8 @@ return new class extends Migration
             $table->timestamps();
         });
         Schema::create('students', function (Blueprint $table) {
-            $table->string('student_id')->unique();
+            $table->id();
+            $table->string('studentId')->unique();
             $table->string('name');
             $table->foreignId('parent_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

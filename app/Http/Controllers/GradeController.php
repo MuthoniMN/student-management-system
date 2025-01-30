@@ -14,7 +14,7 @@ class GradeController extends Controller
     public function index()
     {
         return Inertia::render('Grade/List', [
-            'grades' => Grade::all()
+            'grades' => Grade::withCount('students')->get(),
         ]);
     }
 

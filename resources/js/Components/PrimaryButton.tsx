@@ -5,6 +5,7 @@ export type ButtonProps = {
     disabled?: boolean,
     children: React.ReactNode,
     onClick?: (e) => void,
+    type?: string
 }
 
 export default function PrimaryButton({
