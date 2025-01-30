@@ -17,12 +17,16 @@ class StudentController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Student/List', [
-            "students" => DB::table('students')
+        $students = DB::table('students')
                 ->join('grades', 'students.grade_id', 'grades.id')
                 ->join('parents', 'students.parent_id', 'parents.id')
                 ->select('students.*', 'grades.name as grade', 'parents.email', 'parents.phone_number', 'parents.address')
-                ->paginate(10),
+                ->get();
+
+        return Inertia::render('Student/List', [
+            "students" => $students,
+            "grades" => Grade::all(),
+            "parents" => ParentData::all()
         ]);
     }
 
