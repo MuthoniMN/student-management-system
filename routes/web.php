@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\YearController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,6 +41,11 @@ Route::delete('/students/delete', [StudentController::class, 'deleteMany'])
 
 Route::resource('students', StudentController::class)
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
+    ->middleware(['auth', 'verified']);
+
+Route::resource('years', YearController::class)
+    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
+    ->parameters([ 'years' => 'academicYear' ])
     ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

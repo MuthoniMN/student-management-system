@@ -61,7 +61,6 @@ export default function StudentForm({ parents, grades, student }: { parents: TPa
             ...vals,
             [key]: value,
         }));
-        console.log(data);
         return;
     }
 
