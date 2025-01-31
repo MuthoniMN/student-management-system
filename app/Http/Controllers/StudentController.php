@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StudentRequest;
 use App\Http\Requests\StudentUpdateRequest;
+use App\Http\Requests\UpgradeGradeRequest;
+use App\Http\Requests\DeleteStudentsRequest;
 use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
@@ -129,6 +131,34 @@ class StudentController extends Controller
         }
 
         return redirect(route('students.show', $student));
+    }
+
+    /*
+     * Update many student's grade
+     * */
+    public function upgrade(UpgradeGradeRequest $request){
+        $validated = $request->validated();
+
+        foreach ($validated['data']['studentIds'] as $key) {
+            $student = Student::find($key);
+
+            $student['grade_id'] = $validated['data']['grade_id'];
+
+            $student->save();
+        }
+
+        return back()->with('update', 'Successfully updated!' );
+    }
+
+    /*
+     * Mass delete students
+     * */
+    public function deleteMany(DeleteStudentsRequest $request){
+        $validated = $request->validated();
+
+        Student::destroy($validated['studentIds']);
+
+        return back()->with('delete', 'Successfully deleted!');
     }
 
     /**

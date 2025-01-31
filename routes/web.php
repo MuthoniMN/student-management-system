@@ -30,6 +30,14 @@ Route::resource('grades', GradeController::class)
     ->only(['index', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
+Route::patch('/students/upgrade', [StudentController::class, 'upgrade'])
+    ->middleware(['auth', 'verified'])
+    ->name('students.upgrade');
+
+Route::delete('/students/delete', [StudentController::class, 'deleteMany'])
+    ->middleware(['auth', 'verified'])
+    ->name('students.delete');
+
 Route::resource('students', StudentController::class)
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
