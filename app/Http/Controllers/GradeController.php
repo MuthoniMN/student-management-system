@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\GradeRequest;
 
 class GradeController extends Controller
 {
@@ -47,15 +48,25 @@ class GradeController extends Controller
      */
     public function edit(Grade $grade)
     {
-        //
+        return Inertia::render('Grade/Edit', [
+            'grade' => $grade,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Grade $grade)
+    public function update(GradeRequest $request, Grade $grade)
     {
-        //
+        $validated = $request->validated();
+
+        $grade->fill($validated);
+
+        if($grade->isDirty()){
+            $grade->save();
+        }
+
+        return redirect(route('grades.index'));
     }
 
     /**
@@ -63,6 +74,8 @@ class GradeController extends Controller
      */
     public function destroy(Grade $grade)
     {
-        //
+        $grade->delete();
+
+        return redirect(route('grades.index'));
     }
 }
