@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\YearController;
+use App\Http\Controllers\SemesterController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -46,6 +47,10 @@ Route::resource('students', StudentController::class)
 Route::resource('years', YearController::class)
     ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
     ->parameters([ 'years' => 'academicYear' ])
+    ->middleware(['auth', 'verified']);
+
+Route::resource('semesters', SemesterController::class)
+    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

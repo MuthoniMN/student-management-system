@@ -36,7 +36,7 @@ export default function Dashboard() {
                                     <h3>Start a New Academic Year</h3>
                                 </div>
                             </Link>
-                            <Link href={route('students.create')} className="w-fit">
+                            <Link href={route('semesters.create')} className="w-fit">
                                 <div className="w-full min-w-[300px] hover:shadow-md rounded-md transition-all ease-in-out duration-300 p-4 border-[1px] border-gray-300">
                                     <h3>Start a New Semester</h3>
                                 </div>
