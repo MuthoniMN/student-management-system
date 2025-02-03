@@ -18,19 +18,17 @@ class SubjectSeeder extends Seeder
         $grades = Grade::all();
         $subjects = [];
 
-        foreach($grades as $grade){
-            foreach($titles as $title){
-                $subjects[] = [
-                    'grade_id' => $grade->id,
-                    'title' => $title,
-                    'description' => $title . ' for ' . $grade->name . ' learners.',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
-            }
+        foreach($titles as $title){
+            $subjects[] = [
+                'title' => $title,
+                'description' => $title . ' for Learners.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
         }
 
         DB::table('subjects')->insert($subjects);
 
+        $subjects = DB::table('subjects')->get();
     }
 }

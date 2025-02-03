@@ -40,7 +40,7 @@ export default function GradeList({ grades }: {
             }
         >
             <Head title="Grades" />
-            <ul className="w-[95vw] mx-auto my-6 bg-white rounded-lg py-4 space-y-4">
+            <ul className="mx-auto my-6 bg-white rounded-lg py-4 space-y-4">
                 {
                     grades.map(grade => (
                         <li key={grade.id} className={`${current == grade.id && 'bg-slate-100'} w-full px-4 hover:bg-gray-100 hover:shadow-sm transition-all ease-in-out duration-200 space-y-2`} onClick={() => handleClick(grade.id)}>

@@ -9,6 +9,7 @@ import { FaAnglesLeft, FaAnglesRight, FaTrash, FaPenToSquare, FaDownload } from 
 import { TGrade } from "@/Pages/Grade/List";
 
 export default function Index({ subjects, grades }:  { subjects: TSubject[], grades: TGrade[] }){
+    console.log(usePage().props);
     const { flash } = usePage().props;
     const perPage = 9;
     const [page, setPage] = useState(1);
@@ -60,23 +61,7 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
 
         }>
             <Head title="All Subjects" />
-            <section className="w-[95vw] h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
-            <div className="py-4 flex w-full gap-6 justify-between flex-wrap">
-                <div>
-                    <form className="flex gap-2 items-center min-w-320px">
-                        <p>Filter by Grade: </p>
-                        <select name="value" value={filters} onChange={(e) => setFilters(e.target.value)}>
-                            <option value="">----</option>
-                            {
-                        grades.map((grade: TGrade) => (
-                                <option key={grade.id} value={grade.id}>{grade.name}</option>
-                        ))
-                            }
-                        </select>
-                    </form>
-                </div>
-            </div>
-
+            <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
                 <section className="w-full flex gap-6 flex-wrap">
                 {
                     data.length > 0 ?
@@ -125,12 +110,12 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
                 </div>
             { flash && flash.update && (
                 <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>Grade updated successfully!</p>
+                    <p>Subject updated successfully!</p>
                 </div>
             )}
             { flash && flash.delete && (
                 <div className="bg-red-300 text-red-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>Students deleted successfully!</p>
+                    <p>Subject deleted successfully!</p>
                 </div>
             )}
         </section>

@@ -30,7 +30,7 @@ export default function GradeList({ years }: {
             }
         >
             <Head title="Grades" />
-            <ul className="w-[95vw] mx-auto my-6 bg-white rounded-lg py-4 divide-y-[1px] divide-gray-100">
+            <ul className="mx-auto my-6 bg-white rounded-lg py-4 divide-y-[1px] divide-gray-100">
                 {
                     years.length > 0 ?
                     years.map(year => (

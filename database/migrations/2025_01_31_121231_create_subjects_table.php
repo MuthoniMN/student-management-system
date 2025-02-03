@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('outline')->nullable();
             $table->string('description');
-            $table->foreignId('grade_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

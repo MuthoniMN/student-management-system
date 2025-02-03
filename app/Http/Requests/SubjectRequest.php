@@ -16,8 +16,6 @@ class SubjectRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'outline' => 'nullable|file|max:2048|mimes:pdf,doc,docx',
-            'grade_id' => 'required|integer|exists:grades,id'
         ];
     }
 }

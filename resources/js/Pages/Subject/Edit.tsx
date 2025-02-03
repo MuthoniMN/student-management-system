@@ -1,9 +1,10 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import SubjectForm, { TSubject } from "@/Components/SubjectForm";
 import { TGrade } from "@/Pages/Grade/List";
 
 export default function EditSubject({ grades, subject } : { grades: TGrade[], subject: TSubject }){
+    console.log(subject);
     return (
         <AuthenticatedLayout
             header={

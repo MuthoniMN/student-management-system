@@ -153,9 +153,9 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            <section className="flex gap-2">
+            <section className="w-full flex gap-2">
                 <Sidebar />
-                    <section>
+                    <section className="basis-full">
                     {header && (
                         <header className="bg-white shadow">
                             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

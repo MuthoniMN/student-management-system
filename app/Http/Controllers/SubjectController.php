@@ -27,9 +27,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Subject/Create', [
-            'grades' => Grade::all(),
-        ]);
+        return Inertia::render('Subject/Create');
     }
 
     /**
@@ -40,14 +38,6 @@ class SubjectController extends Controller
         $validated = $request->validated();
 
         $subject = Subject::create($validated);
-
-        if($validated['outline']){
-            $path = $request->file('outline')->store('course_outlines', 'public');
-            $url = Storage::url($path);
-
-            $subject->outline = $url;
-            $subject->save();
-        }
 
         return redirect(route('subjects.index'));
     }
@@ -67,7 +57,6 @@ class SubjectController extends Controller
     {
         return Inertia::render('Subject/Edit', [
             'subject' => $subject,
-            'grades' => Grade::all()
         ]);
     }
 
@@ -77,17 +66,7 @@ class SubjectController extends Controller
     public function update(SubjectRequest $request, Subject $subject)
     {
         $validated = $request->validated();
-        $url = null;
-
-        if($validated['outline']){
-            $path = $request->file('outline')->store('course_outlines', 'public');
-            $url = Storage::url($path);
-        }
-
-        $subject->fill([
-            ...$validated,
-            'outline' => $url ? $url : $subject->outline,
-        ]);
+        $subject->fill($validated);
 
         if($subject->isDirty()){
             $subject->save();

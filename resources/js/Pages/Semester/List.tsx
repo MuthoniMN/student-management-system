@@ -62,7 +62,7 @@ export default function SemesterList({ semesters, years }: { semesters: TSemeste
 
         } >
             <Head title="Semesters" />
-          <section className="w-[95vw] h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
+          <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
             <div className="py-4 flex w-full gap-6 justify-between flex-wrap">
                 <div>
                     <form className="flex gap-2 items-center min-w-320px">
