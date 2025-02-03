@@ -48,15 +48,20 @@ export default function Dashboard() {
                             </Link>
                         </div>
                         <h3 className="px-6 pt-2 text-lg font-bold">Subjects</h3>
-                        <div className="p-6 text-gray-900 flex flex-wrap w-full gap-6 justify-between">
-                            <Link href={route('students.create')} className="w-fit">
+                        <div className="p-6 text-gray-900 flex flex-wrap w-full gap-6">
+                            <Link href={route('subjects.create')} className="w-fit">
                                 <div className="w-full min-w-[300px] hover:shadow-md rounded-md transition-all ease-in-out duration-300 p-4 border-[1px] border-gray-300">
                                     <h3>Create a New Subject</h3>
                                 </div>
                             </Link>
+                            <Link href={route('subjects.index')} className="w-fit">
+                                <div className="w-full min-w-[300px] hover:shadow-md rounded-md transition-all ease-in-out duration-300 p-4 border-[1px] border-gray-300">
+                                    <h3>View All Subjects</h3>
+                                </div>
+                            </Link>
                         </div>
                         <h3 className="px-6 pt-2 text-lg font-bold">Assessments</h3>
-                        <div className="p-6 text-gray-900 flex flex-wrap w-full gap-6 justify-between">
+                        <div className="p-6 text-gray-900 flex flex-wrap w-full gap-6">
                             <Link href={route('students.create')} className="w-fit">
                                 <div className="w-full min-w-[300px] hover:shadow-md rounded-md transition-all ease-in-out duration-300 p-4 border-[1px] border-gray-300">
                                     <h3>Create a New Assessment</h3>

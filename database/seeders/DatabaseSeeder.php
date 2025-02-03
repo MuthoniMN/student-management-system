@@ -16,7 +16,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             GradeSeeder::class,
             ParentSeeder::class,
-            StudentSeeder::class
+            StudentSeeder::class,
+            SubjectSeeder::class,
+            AcademicYearSeeder::class,
+            SemesterSeeder::class
         ]);
     }
 }
