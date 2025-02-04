@@ -7,12 +7,12 @@ export default function Sidebar(){
     return (
         <div className="md:w-1/4 lg:w-1/5 min-h-screen h-full bg-white p-4 min-w-[240px] text-gray-600">
             <div className="p-2 space-y-2">
-                <h3 className={`flex justify-between mouse-pointer ${current === 1 ? 'text-black' : 'text-gray-600'}`} onClick={() => setCurrent(1)} >
+                <h3 className={`flex justify-between items-center mouse-pointer ${current === 1 ? 'text-black' : 'text-gray-600'}`} onClick={() => setCurrent(1)} >
                     Students
                     {current === 1 ? (<FaAngleUp />) : (<FaAngleDown />)}
                 </h3>
                 <nav className={`${current === 1 ? 'block' : 'hidden'} space-y-2`}>
-                    <ul className="space-y-2">
+                    <ul className="space-y-4">
                         <li>
                             <Link href={route('students.index')} className={`${route().current() === 'students.index' && 'text-black underline'}`}>All Students</Link>
                         </li>
@@ -23,12 +23,12 @@ export default function Sidebar(){
                 </nav>
             </div>
             <div className="p-2 space-y-2">
-                <h3 className={`flex justify-between ${current === 2 ? 'text-black' : 'text-gray-600'}`} onClick={() => setCurrent(2)}>
+                <h3 className={`flex justify-between items-center ${current === 2 ? 'text-black' : 'text-gray-600'}`} onClick={() => setCurrent(2)}>
                 Semesters
                 {current === 2 ? (<FaAngleUp />) : (<FaAngleDown />)}
                 </h3>
                 <nav className={`${current === 2 ? 'block' : 'hidden'}`}>
-                    <ul className="space-y-2">
+                    <ul className="space-y-4">
                        <li>
                             <Link href={route('semesters.index')} className={`${route().current() === 'semesters.index' && 'text-black underline'}`}>All semesters</Link>
                         </li>
@@ -46,12 +46,12 @@ export default function Sidebar(){
                 </nav>
             </div>
             <div className="space-y-2 p-2">
-                <h3 className={`flex justify-between ${current === 3 ? 'text-black' : 'text-gray-600'}`} onClick={() => setCurrent(3)}>
+                <h3 className={`flex justify-between items-center ${current === 3 ? 'text-black' : 'text-gray-600'}`} onClick={() => setCurrent(3)}>
                 Subjects
                 {current === 3 ? (<FaAngleUp />) : (<FaAngleDown />)}
                 </h3>
                 <nav className={`${current === 3 ? 'block' : 'hidden'}`}>
-                    <ul className="space-y-2">
+                    <ul className="space-y-4">
                        <li>
                             <Link href={route('subjects.index')} className={`${route().current() == 'subjects.index' ? 'text-black underline' : 'no-underline'}`}>All Subjects</Link>
                         </li>

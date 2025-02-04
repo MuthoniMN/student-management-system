@@ -47,7 +47,9 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
-        //
+        return Inertia::render('Subject/Show', [
+            'subject' => $subject,
+        ]);
     }
 
     /**

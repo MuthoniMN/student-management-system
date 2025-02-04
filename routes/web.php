@@ -6,6 +6,8 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\ExamsController;
+use App\Http\Controllers\ResultController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -55,7 +57,13 @@ Route::resource('semesters', SemesterController::class)
     ->middleware(['auth', 'verified']);
 
 Route::resource('subjects', SubjectController::class)
-    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
+    ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
+    ->middleware(['auth', 'verified']);
+
+Route::resource('subjects.exams', ExamsController::class)
+    ->middleware(['auth', 'verified']);
+
+Route::resource('subjects.exams.results', ResultController::class)
     ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

@@ -21,4 +21,8 @@ class Student extends Model
     public function parent(): BelongsTo {
         return $this->belongsTo(ParentData::class);
     }
+
+    public function results(): HasMany {
+        return $this->hasMany(Result::class);
+    }
 }

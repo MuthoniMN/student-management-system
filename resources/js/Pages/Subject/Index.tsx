@@ -37,14 +37,6 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
     }
 
     useEffect(() => {
-        if(filters){
-            setData(subjects.filter(subject => subject.grade_id == +filters).slice(start, end));
-        }else {
-            setData(subjects.slice(start, end));
-        }
-    }, [filters]);
-
-    useEffect(() => {
         setData(subjects.slice(start,end));
     }, [page]);
 
@@ -66,10 +58,10 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
                 {
                     data.length > 0 ?
                         data.map(subject =>(
-                            <div key={subject.id} className="w-full md:w-[29%] h-fit min-h-36 border-[1px] border-gray-300 hover:shadow-md px-4 py-2 space-y-2">
+                            <Link href={route('subjects.show', subject)} key={subject.id} className="w-full md:w-[29%] h-fit min-h-36 border-[1px] border-gray-300 hover:shadow-md px-4 py-2 space-y-2">
                                 <h3 className="text-lg font-bold">{subject.title}</h3>
                                 <p>{subject.description}</p>
-                                {subject.outline && (<Link href={subject.outline as string} download className="flex px-4 py-2 bg-gray-100 gap-2 items-center rounded-full w-fit hover:text-black text-gray-700 text-xs"><FaDownload /> Subject Outline</Link>)}
+
                                 <div className="flex gap-4 w-full justify-end">
                                     <Link href={route('subjects.edit', subject)}>
                                         <SecondaryButton>
@@ -80,7 +72,7 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
                                         <FaTrash />
                                     </DangerButton>
                                 </div>
-                            </div>
+                            </Link>
                     )) : (
                         <div className="w-full h-[65vh] flex justify-center items-center">
                             <h2 className="font-bold text-lg">No Available Subjects!</h2>
