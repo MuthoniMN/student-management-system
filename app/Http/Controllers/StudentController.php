@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\ParentData;
 use App\Models\Grade;
+use App\Models\AcademicYear;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StudentRequest;
@@ -86,7 +87,20 @@ class StudentController extends Controller
         return Inertia::render('Student/Show', [
             'student' => $student,
             'grade' => $student->grade,
-            'parent' => $student->parent
+            'parent' => $student->parent,
+            'grades' => Grade::all(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->get(),
+            'years' => AcademicYear::all(),
+            'results' => DB::table('results')
+                ->join('students', 'results.student_id', '=', 'students.id')
+                ->join('exams', 'results.exam_id', '=', 'exams.id')
+                ->join('grades', 'exams.grade_id', '=', 'grades.id')
+                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->where('results.student_id', $student->id)
+                ->select('results.*', 'students.name as student', 'students.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year')
+                ->get(),
+
         ]);
     }
 

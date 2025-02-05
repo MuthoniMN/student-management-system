@@ -25,6 +25,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/file/{filePath}', function ($filePath) {
+    return response()->file($filePath);
+})->middleware(['auth', 'verified'])->name('files');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -53,7 +58,6 @@ Route::resource('years', YearController::class)
     ->middleware(['auth', 'verified']);
 
 Route::resource('semesters', SemesterController::class)
-    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
 Route::resource('subjects', SubjectController::class)

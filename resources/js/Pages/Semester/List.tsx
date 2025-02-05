@@ -64,7 +64,7 @@ export default function SemesterList({ semesters, years }: { semesters: TSemeste
             <Head title="Semesters" />
           <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
             <div className="py-4 flex w-full gap-6 justify-between flex-wrap">
-                <div>
+                <div className="flex justify-end">
                     <form className="flex gap-2 items-center min-w-320px">
                         <p>Filter by Academic Year: </p>
                         <select name="value" value={filters} onChange={(e) => setFilters(e.target.value)}>
@@ -94,7 +94,9 @@ export default function SemesterList({ semesters, years }: { semesters: TSemeste
                             data.length > 0 ?
                             data.map(semester => (
                                 <tr className="divide-x-2 divide-gray-300" key={semester.id}>
-                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{semester.title}</td>
+                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">
+                                    <Link href={route('semesters.show', semester)}>{semester.title}</Link>
+                                    </td>
                                     <td className="px-2 min-w-36">{semester.year}</td>
                                     <td className="px-2 min-w-24">{semester.start_date}</td>
                                     <td className="px-2 min-w-36">{semester.end_date}</td>

@@ -17,15 +17,33 @@ class ResultSeeder extends Seeder
         $exams = DB::table('exams')->select('id')->get()->toArray();
         $results = [];
 
-        for($i = 0; $i < 10; $i++){
-            $results[] = [
-                'result' => 80,
-                'grade' => 'A',
-                'exam_id' => $exams[array_rand($exams)]->id,
-                'student_id' => $students[array_rand($students)]->id,
-                'created_at' => now(),
-                'updated_at' => now()
-            ];
+        function getGrade($num){
+            if ($num > 85) {
+                return 'A';
+            }else if ($num > 70) {
+                return 'B';
+            }else if ($num > 55) {
+                return 'C';
+            }else if ($num > 40) {
+                return 'D';
+            } else {
+                return 'E';
+            }
+
+        }
+
+        foreach ($students as $student) {
+            foreach ($exams as $exam) {
+                $score = rand(1, 100);
+                $results[] = [
+                    'result' => $score,
+                    'grade' => getGrade($score),
+                    'student_id' => $student->id,
+                    'exam_id' => $exam->id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
         }
 
         DB::table('results')->insert($results);

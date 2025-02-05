@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Exam;
 use App\Models\Subject;
 use App\Models\Grade;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -45,9 +46,8 @@ class ExamsController extends Controller
 
         if($request->file('file')){
             $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
-            $url = Storage::url($path);
 
-            $exam->file = $url;
+            $exam->file = $path;
             $exam->save();
         }
 
@@ -59,7 +59,22 @@ class ExamsController extends Controller
      */
     public function show(Subject $subject, Exam $exam)
     {
-        //
+        return Inertia::render('Exam/Show', [
+            'exam' => $exam,
+            'subject' => $subject,
+            'grades' => Grade::all(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->get(),
+            'students' => Student::all(),
+            'results' => DB::table('results')
+                ->join('students', 'results.student_id', '=', 'students.id')
+                ->join('grades', 'students.grade_id', '=', 'grades.id')
+                ->join('exams', 'results.exam_id', '=', 'exams.id')
+                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->where('results.exam_id', $exam->id)
+                ->select('results.*', 'students.name as student', 'students.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'academic_years.year')
+                ->get(),
+        ]);
     }
 
     /**
@@ -86,9 +101,7 @@ class ExamsController extends Controller
 
         if($request->file('file')){
             $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
-            $url = Storage::url($path);
-
-            $exam->file = $url;
+            $exam->file = $path;
         }
 
         if($exam->isDirty()){

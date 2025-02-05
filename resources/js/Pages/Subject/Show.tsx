@@ -10,7 +10,12 @@ import { TExam } from "@/Components/ExamForm";
 import { TGrade } from "@/Pages/Grade/List";
 import { TSemester } from "@/Components/SemesterForm";
 
-export default function SubjectShow({ subject, exams, grades, semesters }: { subject: TSubject, exams: TExam[], grades: TGrade[], semesters: TSemester[] }){
+export default function SubjectShow({ subject, exams, grades, semesters }: {
+    subject: TSubject,
+    exams: TExam[],
+    grades: TGrade[],
+    semesters: TSemester[]
+}){
     const [filters, setFilters] = useState<TFilter>({
         type: '',
         value: ''
@@ -30,7 +35,8 @@ export default function SubjectShow({ subject, exams, grades, semesters }: { sub
     useEffect(() => {
         if(filters.type && filters.value){
             filters.type == "grade" ? setData(exams.filter(exam => exam.grade_id == +filters.value).slice(start, end)) :
-            filters.type == 'semester' ? setData(exams.filter(exam => exam.semester_id == +filters.value).slice(start, end)) : setData(exams.slice(start, end));
+            filters.type == 'semester' ? setData(exams.filter(exam => exam.semester_id == +filters.value).slice(start, end)) :
+            setData(exams.slice(start, end));
         }else{
             setData(exams.slice(start, end));
         }
@@ -111,10 +117,12 @@ export default function SubjectShow({ subject, exams, grades, semesters }: { sub
                         {
                             data.length > 0 ? data.map(exam => (
                                 <tr className="divide-x-2 divide-gray-300" key={exam.id}>
-                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{exam.title}</td>
+                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">
+                                        <Link href={route('subjects.exams.show', [subject.id, exam.id])}>{exam.title}</Link>
+                                    </td>
                                     <td className="px-2 min-w-24">{exam.grade}</td>
                                     <td className="px-2 min-w-36">{exam.semester} ({exam.year})</td>
-                                    <td className="px-2 min-w-36">{exam.file ? (<Link href={exam.file as string} className="rounded-full flex gap-2 items-center bg-gray-200 px-4 w-fit">File <FaDownload /> </Link>): "No uploaded file"}</td>
+                                    <td className="px-2 min-w-36">{exam.file ? (<Link href={route('files',exam.file as string)} className="rounded-full flex gap-2 items-center bg-gray-200 px-4 w-fit">File <FaDownload /> </Link>): "No uploaded file"}</td>
                                     <td className="px-2 w-fit">
                                         <SecondaryButton className="w-fit">
                                             <Link href={route('subjects.exams.edit', [subject.id, exam.id])}><FaPen /></Link>
