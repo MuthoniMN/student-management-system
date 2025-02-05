@@ -6,7 +6,7 @@ import DangerButton from "@/Components/DangerButton";
 import TextInput from "@/Components/TextInput";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 
-type TFilter = {
+export type TFilter = {
     type: string,
     value: string
 }

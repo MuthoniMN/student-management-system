@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Exams extends Model
+class Exam extends Model
 {
     protected $fillable = [
         'title',
         'file',
         'grade_id',
-        'subject_id'
+        'subject_id',
+        'semester_id'
     ];
 
     public function subject(): BelongsTo {
@@ -25,5 +26,9 @@ class Exams extends Model
 
     public function results(): HasMany {
         return $this->hasMany(Result::class);
+    }
+
+    public function semester(): BelongsTo {
+        return $this->belongsTo(Semester::class);
     }
 }

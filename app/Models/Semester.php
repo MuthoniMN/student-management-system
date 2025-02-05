@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Semester extends Model
 {
@@ -16,5 +17,9 @@ class Semester extends Model
 
     public function year(): BelongsTo {
         return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function exams(): HasMany {
+        return $this->hasMany(Exam::class);
     }
 }

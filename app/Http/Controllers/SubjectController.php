@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use App\Models\Semester;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\SubjectRequest;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -49,6 +51,15 @@ class SubjectController extends Controller
     {
         return Inertia::render('Subject/Show', [
             'subject' => $subject,
+            'exams' => DB::table('exams')
+                ->join('grades', 'exams.grade_id', '=', 'grades.id')
+                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year as year')
+                ->where('exams.subject_id', $subject->id)
+                ->get(),
+            'grades' => Grade::all(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->get(),
         ]);
     }
 
