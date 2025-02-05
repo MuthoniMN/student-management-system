@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('year');
             $table->date('start_date');
             $table->date('end_date');
+            $table->softDeletes();
             $table->timestamps();
         });
 
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('title');
             $table->date('start_date');
             $table->date('end_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

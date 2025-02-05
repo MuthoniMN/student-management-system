@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('grade', ['A', 'B', 'C', 'D', 'E']);
             $table->foreignId('exam_id')->constrained()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->string('address');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::create('students', function (Blueprint $table) {
             $table->id();
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('parent_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
