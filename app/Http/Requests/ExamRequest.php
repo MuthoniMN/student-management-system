@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\ExamDateValidation;
 
 class ExamRequest extends FormRequest
 {
@@ -15,9 +16,10 @@ class ExamRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'file' => 'nullable|file|max:2048|mime:doc,docx,pdf',
+            'semester_id' => 'required|integer|exists:semesters,id',
+            'exam_date' => ['required', 'date', new ExamDateValidation($this->input('semester_id'))],
+            'file' => 'nullable|file|max:2048|mimes:doc,docx,pdf',
             'grade_id' => 'required|integer|exists:grades,id',
-            'semester_id' => 'required|integer|exists:semesters,id'
         ];
     }
 }

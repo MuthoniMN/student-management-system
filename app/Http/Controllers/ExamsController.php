@@ -44,7 +44,7 @@ class ExamsController extends Controller
         $exam = $subject->exams()->create($validated);
 
         if($request->file('file')){
-            $path = $request->file('file')->storeAs("exams", "{$exam->title} - {$exam->semester->title} {$exam->semester->year->year}.{$request->file('file')->getClientOriginalExtension()}", 'public');
+            $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
             $url = Storage::url($path);
 
             $exam->file = $url;
@@ -85,7 +85,7 @@ class ExamsController extends Controller
         $exam->fill($validated);
 
         if($request->file('file')){
-            $path = $request->file('file')->storeAs("exams", "{$exam->title} - {$exam->semester->title} {$exam->semester->start_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
+            $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
             $url = Storage::url($path);
 
             $exam->file = $url;

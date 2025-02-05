@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('file')->nullable($value=true);
+            $table->date('exam_date');
             $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
             $table->foreignId('grade_id')->constrained()->cascadeOnDelete();
             $table->foreignId('semester_id')->constrained()->cascadeOnDelete();

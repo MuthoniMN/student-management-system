@@ -19,11 +19,14 @@ class ExamSeeder extends Seeder
         $exams = [];
 
         for($i = 0; $i < 10; $i++){
+            $n = $i + 4;
+            $gap = "{$n} days";
             $exams[] = [
                 'title' => "Final assessment",
                 'grade_id' => $grades[array_rand($grades)]->id,
                 'subject_id' => $subjects[array_rand($subjects)]->id,
                 'semester_id' => $semesters[array_rand($semesters)]->id,
+                'exam_date' => date('Y-m-d h:i:sa',strtotime($gap, strtotime(now()))),
                 'file' => null,
                 'created_at' => now(),
                 'updated_at' => now()

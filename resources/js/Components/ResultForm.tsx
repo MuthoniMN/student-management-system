@@ -14,7 +14,6 @@ export type TExam = {
     'grade_id': number,
     'subject_id': number,
     'semester_id': number,
-    'exam_date': string,
     'grade': string,
     'semester': string,
     'year': string,
@@ -28,7 +27,6 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
         'file': (exam && exam.file) || null,
         'grade_id': (exam && exam.grade_id) || 0,
         'semester_id': (exam && exam.semester_id) || 0,
-        'exam_date': (exam && exam.exam_date) || null
     });
 
     const handleSubmit = (e) => {
@@ -71,11 +69,6 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
                 <TextInput name="file" id="file" type="file" className="w-full" onChange={(e) => setData({ ...data, file: e.target.files[0] })} />
                 {progress && <progress value={progress.percentage} max="100" className="bg-gray-200">{progress.percentage}%</progress>}
                 {errors.file && <InputError message={errors.file} />}
-            </div>
-            <div className="space-y-2 w-full">
-                <InputLabel htmlFor="exam_date" value="Exam Date: " />
-                <TextInput type="date" value={data.exam_date} name="exam_date" id="exam_date" onChange={handleChange} className="w-full" />
-                {errors.exam_date && <InputError message={errors.exam_date} />}
             </div>
             <div className="space-y-2 w-full">
                 <InputLabel htmlFor="grade_id" value="Grade: " />
