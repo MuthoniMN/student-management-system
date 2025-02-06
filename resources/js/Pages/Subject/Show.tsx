@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaAnglesLeft, FaAnglesRight, FaPen, FaDownload } from "react-icons/fa6";
+import { FaPen, FaDownload } from "react-icons/fa6";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import { TSubject } from "@/Components/SubjectForm";
@@ -9,6 +9,7 @@ import { TFilter } from "@/Pages/Student/List";
 import { TExam } from "@/Components/ExamForm";
 import { TGrade } from "@/Pages/Grade/List";
 import { TSemester } from "@/Components/SemesterForm";
+import Pagination from "@/Components/Pagination";
 
 export default function SubjectShow({ subject, exams, grades, semesters }: {
     subject: TSubject,
@@ -21,24 +22,25 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
         value: ''
     });
     // pagination
-    const perPage = 5;
+    const perPage = 8;
     const [page, setPage] = useState(1);
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const [data, setData] = useState(exams.slice(start, end));
+    const [data, setData] = useState(exams);
+    const [paginatedData, setPaginatedData] = useState(exams.slice(start, end));
     const flash = usePage().props.flash;
 
     useEffect(() => {
-        setData(exams.slice(start,end));
-    }, [page]);
+        setPaginatedData(data.slice(start,end));
+    }, [page, data]);
 
     useEffect(() => {
         if(filters.type && filters.value){
-            filters.type == "grade" ? setData(exams.filter(exam => exam.grade_id == +filters.value).slice(start, end)) :
-            filters.type == 'semester' ? setData(exams.filter(exam => exam.semester_id == +filters.value).slice(start, end)) :
-            setData(exams.slice(start, end));
+            filters.type == "grade" ? setData(exams.filter(exam => exam.grade_id == +filters.value)) :
+            filters.type == 'semester' ? setData(exams.filter(exam => exam.semester_id == +filters.value)) :
+            setData(exams);
         }else{
-            setData(exams.slice(start, end));
+            setData(exams);
         }
 
     }, [filters]);
@@ -51,18 +53,6 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
             ...vals,
             [key]: value
         }))
-    }
-
-    const prevPage = () => {
-        if((page - 1) <= 0) return;
-
-        setPage(page-1);
-    }
-
-    const nextPage = () => {
-        if((page + 1) > Math.ceil(exams.length/10)) return;
-
-        setPage(page+1);
     }
 
     return  (
@@ -91,6 +81,7 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                             <option value="semester">Semester</option>
                         </select>
                         <select name="value" value={filters.value} onChange={handleChange}>
+                            <option value="">---</option>
                             {
                         filters.type === 'grade' ?
                             grades.map(grade => (
@@ -115,7 +106,7 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                     </thead>
                     <tbody className="divide-y-2 divide-gray-300">
                         {
-                            data.length > 0 ? data.map(exam => (
+                            paginatedData.length > 0 ? paginatedData.map(exam => (
                                 <tr className="divide-x-2 divide-gray-300" key={exam.id}>
                                     <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">
                                         <Link href={route('subjects.exams.show', [subject.id, exam.id])}>{exam.title}</Link>
@@ -136,26 +127,7 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                         }
                     </tbody>
                 </table>
-                <div className="py-4 text-center flex justify-between items-center">
-                    <p className="font-light text-gray-500 italic">Showing page {page} of {Math.ceil(exams.length/10)}</p>
-                    <div className="flex gap-4">
-                        <PrimaryButton onClick={prevPage}>
-                            <FaAnglesLeft />
-                        </PrimaryButton>
-                        {
-                            (() => {
-                                return Array.from(
-                                { length: Math.ceil(exams.length/10) },
-                                (_, i) => (
-                                    <p onClick={() => setPage(i+1)} className={`hover:underline ${((i + 1) == page) && 'underline text-blue-700'}`} key={i}>{i+1}</p>
-                                )
-                            )})()
-                        }
-                        <PrimaryButton onClick={nextPage}>
-                            <FaAnglesRight />
-                        </PrimaryButton>
-                    </div>
-                </div>
+                <Pagination length={Math.ceil(data.length/perPage)} perPage={perPage} page={page} setPage={setPage} />
             { flash && (flash.create || flash.update) && (
                 <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
                     <p>{flash.create || flash.update}</p>
