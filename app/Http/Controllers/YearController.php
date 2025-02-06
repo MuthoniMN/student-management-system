@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
+use App\Models\Grade;
+use App\Models\Subject;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\YearRequest;
 use App\Http\Requests\YearUpdateRequest;
+use Illuminate\Support\Facades\DB;
 
 class YearController extends Controller
 {
@@ -45,7 +49,29 @@ class YearController extends Controller
      */
     public function show(AcademicYear $academicYear)
     {
-        //
+        return Inertia::render('Year/Show', [
+            'year' => $academicYear,
+            'grades' => Grade::all(),
+            'semesters' => DB::table('semesters')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->select('semesters.*', 'academic_years.year as year')
+                ->where('semesters.academic_year_id', $academicYear->id)
+                ->get(),
+            'subjects' => Subject::all(),
+            'students' => Student::all(),
+            'results' => DB::table('results')
+                ->join('students', 'results.student_id', '=', 'students.id')
+                ->join('exams', 'results.exam_id', '=', 'exams.id')
+                ->join('grades', 'exams.grade_id', '=', 'grades.id')
+                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
+                ->join('subjects', 'exams.subject_id', '=', 'subjects.id')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->where('semesters.academic_year_id', $academicYear->id)
+                ->where('results.deleted_at', null)
+                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id')
+                ->get(),
+
+        ]);
     }
 
     /**

@@ -18,6 +18,7 @@ export type TResult = {
     'semester_id': number,
     'subject_id': number,
     'exam': string,
+    'type': string,
     'student': string,
     'subject': string,
     'class_grade': string,

@@ -25,6 +25,7 @@ class StudentController extends Controller
                 ->join('grades', 'students.grade_id', 'grades.id')
                 ->join('parents', 'students.parent_id', 'parents.id')
                 ->select('students.*', 'grades.name as grade', 'parents.email', 'parents.phone_number', 'parents.address')
+                ->where('students.deleted_at', null)
                 ->get();
 
         return Inertia::render('Student/List', [
@@ -89,7 +90,7 @@ class StudentController extends Controller
             'grade' => $student->grade,
             'parent' => $student->parent,
             'grades' => Grade::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->get(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
             'years' => AcademicYear::all(),
             'results' => DB::table('results')
                 ->join('students', 'results.student_id', '=', 'students.id')
@@ -98,7 +99,8 @@ class StudentController extends Controller
                 ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
                 ->where('results.student_id', $student->id)
-                ->select('results.*', 'students.name as student', 'students.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year')
+                ->where('results.deleted_at', null)
+                ->select('results.*', 'students.name as student', 'exams.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'exams.type', 'exams.subject_id')
                 ->get(),
 
         ]);

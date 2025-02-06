@@ -4,7 +4,7 @@ import { Head, Link, usePage, router } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import DangerButton from "@/Components/DangerButton";
 import TextInput from "@/Components/TextInput";
-import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import Pagination from "@/Components/Pagination";
 
 export type TFilter = {
     type: string,
@@ -38,7 +38,8 @@ export default function List({ students, parents, grades }: { students: TStudent
     const [page, setPage] = useState(1);
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const [data, setData] = useState(students.slice(start, end));
+    const [data, setData] = useState(students);
+    const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
     const [gradeId, setGradeId] = useState('');
     const flash = usePage().props.flash;
 
@@ -60,8 +61,8 @@ export default function List({ students, parents, grades }: { students: TStudent
     }
 
     useEffect(() => {
-        setData(students.slice(start,end));
-    }, [page])
+        setPaginatedData(students.slice(start,end));
+    }, [page, data])
 
     const handleChange = (e) => {
         const key = e.target.name;
@@ -82,39 +83,31 @@ export default function List({ students, parents, grades }: { students: TStudent
     }
 
     const handleSelectAll = () => {
+        if(selected.length === data.length){
+            setSelected([]);
+            return;
+        }
         data.map(val => {
-            console.log(val)
             setSelected(selected => [...selected, val.id]);
         });
     }
 
     useEffect(() => {
         if(filters.type && filters.value){
-            filters.type == "grade" ? setData(students.filter(student => student.grade_id == +filters.value).slice(start, end)) :
-            filters.type == 'parent' ? setData(students.filter(student => student.parent_id == +filters.value).slice(start, end)) : setData(students.slice(start, end));
+            filters.type == "grade" ? setData(students.filter(student => student.grade_id == +filters.value)) :
+            filters.type == 'parent' ? setData(students.filter(student => student.parent_id == +filters.value)) : setData(students);
         }else{
-            setData(students.slice(start, end));
+            setData(students);
         }
 
     }, [filters]);
 
-    const prevPage = () => {
-        if((page - 1) <= 0) return;
-
-        setPage(page-1);
-    }
-
-    const nextPage = () => {
-        if((page + 1) > Math.ceil(students.length/10)) return;
-
-        setPage(page+1);
-    }
 
     const handleSearch = (e) => {
         const value = e.target.value;
         const results = students.filter(student => student.name.includes(value));
 
-        setData(results.slice(start, end));
+        setData(results);
     }
 
     return (
@@ -174,7 +167,7 @@ export default function List({ students, parents, grades }: { students: TStudent
                     </thead>
                     <tbody className="divide-y-2 divide-gray-300">
                         {
-                            data.map(student => (
+                            paginatedData.map(student => (
                                 <tr className="divide-x-2 divide-gray-300" key={student.id}>
                                     <td className="p-2">
                                         <input type="checkbox" checked={(selected && (selected as number[]).includes(student.id)) || false} onChange={() => handleSelect(student.id)} />
@@ -190,26 +183,7 @@ export default function List({ students, parents, grades }: { students: TStudent
                         }
                     </tbody>
                 </table>
-                <div className="py-4 text-center flex justify-between items-center">
-                    <p className="font-light text-gray-500 italic">Showing page {page} of {Math.ceil(students.length/10)}</p>
-                    <div className="flex gap-4">
-                        <PrimaryButton onClick={prevPage}>
-                            <FaAnglesLeft />
-                        </PrimaryButton>
-                        {
-                            (() => {
-                                return Array.from(
-                                { length: Math.ceil(students.length/10) },
-                                (_, i) => (
-                                    <p onClick={() => setPage(i+1)} className={`hover:underline ${((i + 1) == page) && 'underline text-blue-700'}`} key={i}>{i+1}</p>
-                                )
-                            )})()
-                        }
-                        <PrimaryButton onClick={nextPage}>
-                            <FaAnglesRight />
-                        </PrimaryButton>
-                    </div>
-                </div>
+                <Pagination length={data.length} perPage={perPage} page={page} setPage={setPage} />
                 { selected.length >= 1 &&
                 <div className="flex gap-6">
                     <PrimaryButton onClick={() => setUpdate(update => !update)}>Update Grade</PrimaryButton>

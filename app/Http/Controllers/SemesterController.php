@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Semester;
 use App\Models\Subject;
+use App\Models\Student;
 use App\Models\AcademicYear;
 use App\Models\Grade;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class SemesterController extends Controller
     {
         return Inertia::render('Semester/List', [
             'years' => AcademicYear::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', 'academic_years.id')->select('semesters.*', 'academic_years.year')->get(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year')->get(),
         ]);
     }
 
@@ -54,9 +55,10 @@ class SemesterController extends Controller
         return Inertia::render('Semester/Show', [
             'semester' => $semester,
             'grades' => Grade::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->get(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
             'years' => AcademicYear::all(),
             'subjects' => Subject::all(),
+            'students' => Student::all(),
             'results' => DB::table('results')
                 ->join('students', 'results.student_id', '=', 'students.id')
                 ->join('exams', 'results.exam_id', '=', 'exams.id')
@@ -65,7 +67,8 @@ class SemesterController extends Controller
                 ->join('subjects', 'exams.subject_id', '=', 'subjects.id')
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
                 ->where('exams.semester_id', $semester->id)
-                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject')
+                ->where('results.deleted_at', null)
+                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id')
                 ->get(),
 
         ]);

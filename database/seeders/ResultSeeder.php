@@ -13,8 +13,10 @@ class ResultSeeder extends Seeder
      */
     public function run(): void
     {
-        $students = DB::table('students')->select('id')->get()->toArray();
-        $exams = DB::table('exams')->select('id')->get()->toArray();
+        $students = DB::table('students')->select('id', 'grade_id')->get()->toArray();
+        $exams = DB::table('exams')->select('id', 'grade_id', 'exam_date')->get()->toArray();
+        shuffle($exams);
+        $grades = DB::table('grades')->select('id')->get()->toArray();
         $results = [];
 
         function getGrade($num){
@@ -32,17 +34,26 @@ class ResultSeeder extends Seeder
 
         }
 
+        $n = 0;
         foreach ($students as $student) {
             foreach ($exams as $exam) {
-                $score = rand(1, 100);
-                $results[] = [
-                    'result' => $score,
-                    'grade' => getGrade($score),
-                    'student_id' => $student->id,
-                    'exam_id' => $exam->id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
+                $exam_date = date_create($exam->exam_date);
+                $today = date_create(now());
+                $diff = date_diff($today, $exam_date);
+                $diff = explode(' ', $diff->format('%R %y'));
+                $grade = ($diff[0] == '-' ? $student->grade_id - ((int)$diff[1] + 1) : $student->grade_id + (int)$diff[1]);
+                if($grade === $exam->grade_id){
+                    $score = rand(30, 100);
+                    $results[] = [
+                        'result' => $score,
+                        'grade' => getGrade($score),
+                        'student_id' => $student->id,
+                            'exam_id' => $exam->id,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                    ];
+                    $n += 1;
+                }
             }
         }
 

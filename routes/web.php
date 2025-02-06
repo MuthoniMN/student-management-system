@@ -22,7 +22,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return redirect(route('students.index'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/file/{filePath}', function ($filePath) {
@@ -53,7 +53,6 @@ Route::resource('students', StudentController::class)
     ->middleware(['auth', 'verified']);
 
 Route::resource('years', YearController::class)
-    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
     ->parameters([ 'years' => 'academicYear' ])
     ->middleware(['auth', 'verified']);
 

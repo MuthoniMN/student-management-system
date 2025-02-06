@@ -65,7 +65,7 @@ export default function Show({ student, parent, grade, results, grades, semester
                         </div>
                     </div>
                 </div>
-                <ResultsTable results={results} grades={grades} semesters={semesters} years={years} />
+                <ResultsTable results={results} grades={grades} semesters={semesters} years={years} perPage={10} />
             </section>
         </AuthenticatedLayout>
     );

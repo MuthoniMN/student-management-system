@@ -153,7 +153,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            <section className="w-full flex gap-2">
+            <section className="w-full overflow-hidden flex gap-2">
                 <Sidebar />
                     <section className="basis-full">
                     {header && (

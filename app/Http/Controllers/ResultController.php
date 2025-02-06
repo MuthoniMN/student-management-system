@@ -33,10 +33,11 @@ class ResultController extends Controller
                 ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
                 ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year')
-                ->where('exams.id', $exam->id)->first(),
+                ->where('exams.id', $exam->id)->where('exams.deleted_at', null)->first(),
             'students' => DB::table('students')
                 ->join('grades', 'students.grade_id', '=', 'grades.id')
                 ->select('students.*', 'grades.name as grade')
+                ->where('students.deleted_at', null)
                 ->get()
         ]);
     }
@@ -56,7 +57,7 @@ class ResultController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Result $result)
+    public function show(Subject $subject, Exam $exam, Result $result)
     {
         //
     }
@@ -64,24 +65,48 @@ class ResultController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Result $result)
+    public function edit(Subject $subject, Exam $exam, Result $result)
     {
-        //
+         return Inertia::render('Result/Edit', [
+            'subject' => $subject,
+            'exam' => DB::table('exams')
+                ->join('grades', 'exams.grade_id', '=', 'grades.id')
+                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year')
+                ->where('exams.id', $exam->id)->where('exams.deleted_at', null)->first(),
+            'result' => $result,
+            'students' => DB::table('students')
+                ->join('grades', 'students.grade_id', '=', 'grades.id')
+                ->select('students.*', 'grades.name as grade')
+                ->where('students.deleted_at', null)
+                ->get()
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Result $result)
+    public function update(ResultRequest $request,Subject $subject, Exam $exam,  Result $result)
     {
-        //
+        $validated = $request->validated();
+
+        $result->fill($validated);
+
+        if($result->isDirty()){
+            $result->save();
+        }
+
+        return back()->with('update', "Results updated successfully!");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Result $result)
+    public function destroy(Subject $subject, Exam $exam, Result $result)
     {
-        //
+        $result->delete();
+
+        return back()->with('delete', "Results deleted successfully!");
     }
 }

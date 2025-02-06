@@ -7,6 +7,11 @@ import { TYear } from "@/Components/YearForm";
 import { TFilter } from "@/Pages/Student/List";
 import Pagination from "@/Components/Pagination";
 import { TSubject } from "@/Components/SubjectForm";
+import { Link, useForm } from "@inertiajs/react";
+import SecondaryButton from "@/Components/SecondaryButton";
+import DangerButton from "@/Components/DangerButton";
+import { FaTrash, FaPenToSquare } from "react-icons/fa6";
+
 
 export default function ResultsTable({ results, grades, semesters, students, years, subjects, perPage=5 }:
     {
@@ -18,34 +23,70 @@ export default function ResultsTable({ results, grades, semesters, students, yea
         years?: TYear[],
         perPage?: number
     }){
-        console.log(subjects);
+
     const [filters, setFilters] = useState<TFilter>({
         type: '',
         value: ''
     });
+
+    const [type, setType] = useState('');
+    const [grade, setGrade] = useState('');
+    const [subject, setSubject] = useState('');
+
     // pagination
     const [page, setPage] = useState(1);
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const [data, setData] = useState(results.slice(start, end));
+    const [data, setData] = useState(results);
+    const [paginatedData, setPaginatedData] = useState(results.slice(start, end));
 
     useEffect(() => {
-        setData(results.slice(start,end));
-    }, [page]);
+        setPaginatedData(data.slice(start,end));
+    }, [page, data]);
 
-    useEffect(() => {
-        if(filters.type && filters.value){
-            console.log(filters);
-            filters.type == "student" ? setData(results.filter(result => result.student_id == +filters.value).slice(start, end)) :
-            filters.type == "grade" ? setData(results.filter(result => result.grade_id == +filters.value).slice(start, end)) :
-            filters.type == 'semester' ? setData(results.filter(result => result.semester_id == +filters.value).slice(start, end)) :
-            filters.type == 'year' ? setData(results.filter(result => result.year == filters.value).slice(start, end)) :
-            filters.type == 'subject' ? setData(results.filter(result => result.subject_id == +filters.value).slice(start, end)) : setData(results.slice(start, end));
-        }else{
-            setData(results.slice(start, end));
+    const filterResults = (results: TResult[], filters: TFilter, type: string, grade: string, subject: string) => {
+        const { type: filterType, value: filterValue } = filters;
+
+        // Base filter conditions
+        const baseFilters = [];
+        if (type) baseFilters.push(result => result.type === type);
+        if (grade) baseFilters.push(result => result.grade === grade);
+        if (subject) baseFilters.push(result => result.subject_id === +subject);
+
+        // Additional filter conditions based on filterType
+        if (filterType && filterValue) {
+            switch (filterType) {
+                case 'student':
+                    baseFilters.push(result => result.student_id === +filterValue);
+                    break;
+                case 'grade':
+                    baseFilters.push(result => result.grade_id === +filterValue);
+                    break;
+                case 'semester':
+                    baseFilters.push(result => result.semester_id === +filterValue);
+                    break;
+                case 'year':
+                    baseFilters.push(result => result.year === filterValue);
+                    break;
+                case 'subject':
+                    baseFilters.push(result => result.subject_id === +filterValue);
+                    break;
+                default:
+                    break;
+            }
         }
 
-    }, [filters]);
+        // Apply all filters
+        const filteredResults = results.filter(result => baseFilters.every(filter => filter(result)));
+
+        // Update the data
+        setData(filteredResults);
+    };
+
+    // filtering data
+    useEffect(() => {
+        filterResults(results, filters, type, grade, subject);
+    }, [filters, type, grade, subject]);
 
     const handleChange = (e) => {
         const key = e.target.name;
@@ -57,40 +98,85 @@ export default function ResultsTable({ results, grades, semesters, students, yea
         }))
     }
 
+    const { submit, delete: destroy } = useForm();
+    const handleSubmit = (e, result: TResult) => {
+        e.preventDefault();
+        submit('delete', route('subjects.exams.results.destroy', [result.subject_id, result.exam_id, result.id]));
+    };
 
     return (
         <section className="space-y-4">
             <div className="flex w-full justify-end">
-                <form className="flex gap-2 items-center min-w-320px">
+                <form className="flex gap-2 items-center w-full justify-between min-w-320px space-x-2">
                     <p>Filter by: </p>
-                    <select name="type" value={filters.type} onChange={handleChange}>
+                    <div className="space-x-2">
+                        <label htmlFor="type">Type</label>
+                        <select onChange={(e) => setType(e.target.value)}>
+                            <option value="">--</option>
+                            <option value="exam">Exam</option>
+                            <option value="CAT">CAT</option>
+                        </select>
+                    </div>
+                    <div className="space-x-2">
+                        <label htmlFor="subject">Subject</label>
+                        <select onChange={(e) => setSubject(e.target.value)}>
+                            <option value="">--</option>
+                            {subjects && subjects.map(subject => (
+                                <option key={subject.id} value={subject.id}>{subject.title}</option>
+                        ))}
+                        </select>
+                    </div>
+                    <div className="space-x-2">
+                        <label htmlFor="grade">Grade</label>
+                        <select onChange={(e) => setGrade(e.target.value)}>
+                            <option value="">--</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+                    </div>
+                    <div className="space-x-2">
+                        <select name="type" value={filters.type} onChange={handleChange}>
+                            <option value="">--</option>
+                            {grades && <option value="grade">Grade</option>}
+                            {semesters && <option value="semester">Semester</option>}
+                            {students &&(<option value="student">Student</option>)}
+                            {subjects &&(<option value="subject">Subject</option>)}
+                            {years &&(<option value="year">Year</option>)}
+                        </select>
+                        <select name="value" value={filters.value} onChange={handleChange}>
+                            {
+                        filters.type === 'grade' ?
+                            <>
                         <option value="">--</option>
-                        {grades && <option value="grade">Grade</option>}
-                        {semesters && <option value="semester">Semester</option>}
-                        {students &&(<option value="student">Student</option>)}
-                        {subjects &&(<option value="subject">Subject</option>)}
-                        {years &&(<option value="year">Year</option>)}
-                    </select>
-                    <select name="value" value={filters.value} onChange={handleChange}>
-                        {
-                    filters.type === 'grade' ?
-                        grades && grades.map(grade => (
-                            <option key={grade.id} value={grade.id}>{grade.name}</option>
-                    )) : filters.type === 'semester' ?
-                        semesters && semesters.map(semester => (
-                            <option key={semester.id} value={semester.id}>{semester.title} - {semester.year}</option>
-                    )) : filters.type === 'student' ?
-                        students && students.map(student => (
-                            <option key={student.id} value={student.id}>{student.name}</option>
-                    )) : filters.type === 'subject' ?
-                        subjects && subjects.map(subject => (
-                            <option key={subject.id} value={subject.id}>{subject.title}</option>
-                    )) : filters.type === 'year' ?
-                        years && years.map(year => (
-                            <option key={year.id} value={year.year}>{year.year}</option>
-                    )) : (<option value="">--</option>)
-                        }
-                    </select>
+                        {grades && grades.map(grade => (
+                                <option key={grade.id} value={grade.id}>{grade.name}</option>
+                        ))}</> : filters.type === 'semester' ?
+                        <>
+                            <option value="">--</option>
+                            {semesters && semesters.map(semester => (
+                                    <option key={semester.id} value={semester.id}>{semester.title} - {semester.year}</option>
+                    ))}</> : filters.type === 'student' ?
+                        <>
+                        <option value="">--</option>
+                            {students && students.map(student => (
+                                <option key={student.id} value={student.id}>{student.name}</option>
+                        ))}</> : filters.type === 'subject' ?
+                            <>
+                        <option value="">--</option>
+                            {subjects && subjects.map(subject => (
+                                <option key={subject.id} value={subject.id}>{subject.title}</option>
+                        ))}</> : filters.type === 'year' ?
+                            <>
+                        <option value="">--</option>
+                            {years && years.map(year => (
+                                <option key={year.id} value={year.year}>{year.year}</option>
+                        ))}</> : (<option value="">--</option>)
+                            }
+                        </select>
+                    </div>
                 </form>
             </div>
             <table className="w-full divide-y-2 divide-gray-300 border-gray-300 border-2 overflow-scroll">
@@ -100,6 +186,7 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                         {grades && <th className="px-2">Class</th>}
                         {semesters && <th className="px-2">Semester</th>}
                         {subjects && <th className="px-2">Subject</th>}
+                        <th className="px-2">Exam Type</th>
                         <th className="px-2">Score</th>
                         <th className="px-2">Grade</th>
                         <th className="w-fit"></th>
@@ -107,14 +194,27 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                 </thead>
                 <tbody className="divide-y-2 divide-gray-300">
                     {
-                        data.length > 0 ? data.map(result => (
+                        paginatedData.length > 0 ? paginatedData.map(result => (
                             <tr className="divide-x-2 divide-gray-300" key={result.id}>
                             {students &&<td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{result.student}</td>}
                             {grades && <td className="px-2 min-w-36">{result.class_grade}</td>}
                             {semesters && <td className="px-2 min-w-36">{result.semester} ({result.year})</td>}
                             {subjects && <td className="px-2 min-w-36">{result.subject}</td>}
+                                <td className="px-2 min-w-36">{result.type}</td>
                                 <td className="px-2 min-w-36">{result.result}</td>
                                 <td className="px-2 min-w-36">{result.grade}</td>
+                                <td className="px-2 text-center w-fit">
+                                    <Link href={route('subjects.exams.results.edit', [result.subject_id, result.exam_id, result.id])}>
+                                        <SecondaryButton>
+                                            <FaPenToSquare />
+                                        </SecondaryButton>
+                                    </Link>
+                                </td>
+                                <td className="px-2 text-center w-fit">
+                                    <DangerButton onClick={(e) => handleSubmit(e, result)}>
+                                        <FaTrash />
+                                    </DangerButton>
+                                </td>
                             </tr>
                         )) :
                         <tr className="py-2">
@@ -123,14 +223,29 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                     }
                 </tbody>
             </table>
-            <div className="italic flex w-full justify-between px-2">
-                <p>Average: {data.length > 0 ? Math.floor(data.map(res => res.result).reduce((acc, curr) => acc + curr) / data.length) : 0}</p>
-                <p>Average Grade: {getGrade(data.map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.length)}</p>
-                <p>Last Mark: {data.length > 0 ? Math.min(...data.map(res => res.result)) : 0}</p>
-                <p>Top Mark: {data.length > 0 ? Math.max(...data.map(res => res.result)) : 0}</p>
-                {students && (<p>Total Students: {results.length}</p>)}
+            <div className="px-2 space-y-2">
+                <h3 className="text-lg font-bold">Exam Results: </h3>
+                <div className="italic flex w-full justify-between">
+                {!students && (<p>Total Marks: {data.filter(res => res.type == 'exam').length > 0 ? Math.floor(data.filter(res => res.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr)) : 0}</p>)}
+                    <p>Average: {data.filter(res => res.type == 'exam').length > 0 ? Math.floor(data.filter(res => res.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr) / data.filter(res => res.type == 'exam').length) : 0}</p>
+                    <p>Average Grade: {getGrade(data.filter(res => res.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.filter(res => res.type == 'exam').length)}</p>
+                    <p>Last Mark: {data.filter(res => res.type == 'exam').length > 0 ? Math.min(...data.filter(res => res.type == 'exam').map(res => res.result)) : 0}</p>
+                    <p>Top Mark: {data.filter(res => res.type == 'exam').length > 0 ? Math.max(...data.filter(res => res.type == 'exam').map(res => res.result)) : 0}</p>
+                    {students && (<p>Total Students: {students.length}</p>)}
+                </div>
             </div>
-            <Pagination page={page} setPage={setPage} perPage={perPage} length={results.length} />
+            <div className="px-2 space-y-2">
+                <h3 className="text-lg font-bold">CAT Results: </h3>
+                <div className="italic flex w-full justify-between">
+                    <p>Average: {data.filter(res => res.type == 'CAT').length > 0 ? Math.floor(data.filter(res => res.type == 'CAT').map(res => res.result).reduce((acc, curr) => acc + curr) / data.filter(res => res.type == 'CAT').length) : 0}</p>
+                    <p>Average Grade: {getGrade(data.filter(res => res.type == 'CAT').map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.filter(res => res.type == 'CAT').length)}</p>
+                    <p>Last Mark: {data.filter(res => res.type == 'CAT').length > 0 ? Math.min(...data.filter(res => res.type == 'CAT').map(res => res.result)) : 0}</p>
+                    <p>Top Mark: {data.filter(res => res.type == 'CAT').length > 0 ? Math.max(...data.filter(res => res.type == 'CAT').map(res => res.result)) : 0}</p>
+                    {students && (<p>Total Students: {students.length}</p>)}
+                </div>
+            </div>
+
+            <Pagination page={page} setPage={setPage} perPage={perPage} length={data.length} />
     </section>
     );
 }

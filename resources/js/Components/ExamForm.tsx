@@ -10,6 +10,7 @@ import PrimaryButton from "@/Components/PrimaryButton";
 export type TExam = {
     'id': number,
     'title': string,
+    'type': string,
     'file': string|File|null,
     'grade_id': number,
     'subject_id': number,
@@ -25,6 +26,7 @@ export type TExam = {
 export default function ExamForm({ exam, semesters, grades, subject }: { exam?: TExam, semesters: TSemester[], grades: TGrade[], subject: TSubject }){
     const { data, setData, post, progress, errors } = useForm({
         'title': (exam && exam.title) || '',
+        'type': (exam && exam.type) || '',
         'file': (exam && exam.file) || null,
         'grade_id': (exam && exam.grade_id) || 0,
         'semester_id': (exam && exam.semester_id) || 0,
@@ -65,6 +67,15 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
                 <InputLabel htmlFor="title" value="Title: " />
                 <TextInput value={data.title} name="title" id="title" onChange={handleChange} className="w-full" />
                 {errors.title && <InputError message={errors.title} />}
+            </div>
+            <div className="space-y-2 w-full">
+                <InputLabel htmlFor="type" value="Type: " />
+                <select onChange={handleChange} name="type" className="w-full rounded-md border-gray-300" value={`${data.type}`}>
+                    <option value="null">-- Please Select --</option>
+                    <option value="exam">Exam</option>
+                    <option value="CAT">CAT</option>
+                </select>
+                {errors.file && <InputError message={errors.file} />}
             </div>
             <div className="space-y-2 w-full">
                 <InputLabel htmlFor="file" value="Document: " />

@@ -13,7 +13,7 @@ class StudentSeeder extends Seeder
         $parents = DB::table('parents')->pluck('id')->toArray(); // Get parent IDs
 
         $students = [];
-        for ($i = 1; $i <= 24; $i++) {
+        for ($i = 1; $i <= 15; $i++) {
             $students[] = [
                 'studentId' => strtoupper(Str::random(8)), // Unique student ID
                 'grade_id' => rand(1, 8), // Random grade from 1 to 8
