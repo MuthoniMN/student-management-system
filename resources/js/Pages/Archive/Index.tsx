@@ -25,6 +25,11 @@ export default function Dashboard() {
                                 <h3>Semesters Archive</h3>
                             </div>
                         </Link>
+                        <Link href={route('archive.grades')} className="w-fit">
+                            <div className="w-full min-w-[300px] hover:shadow-md rounded-md transition-all ease-in-out duration-300 p-4 border-[1px] border-gray-300">
+                                <h3>Grades Archive</h3>
+                            </div>
+                        </Link>
                         <Link href={route('archive.subjects')} className="w-fit">
                             <div className="w-full min-w-[300px] hover:shadow-md rounded-md transition-all ease-in-out duration-300 p-4 border-[1px] border-gray-300">
                                 <h3>Subjects Archive</h3>

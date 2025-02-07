@@ -155,7 +155,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
             <section className="w-full flex">
                 <Sidebar />
-                    <section className="basis-full h-screen overflow-scroll">
+                    <section className="basis-full h-full min-h-screen overflow-scroll">
                     {header && (
                         <header className="bg-white shadow">
                             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

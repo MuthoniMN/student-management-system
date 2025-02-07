@@ -48,6 +48,12 @@ class ArchiveController extends Controller
         ]);
     }
 
+    public function gradeArchive(){
+        return Inertia::render('Archive/Grade', [
+            'grades' => Grade::onlyTrashed('students')->get(),
+        ]);
+    }
+
     public function examsArchive(){
         return Inertia::render('Archive/Exam', [
             'exams' => DB::table('exams')

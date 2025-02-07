@@ -21,9 +21,9 @@ class ExamDateValidation implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if(
-            ($value > $this->semester->start_date)
+            ($value < $this->semester->start_date)
             &&
-            ($value <= $this->semester->end_date)
+            ($value >= $this->semester->end_date)
         ){
             $fail('The :attribute should be within the semester dates.');
         }

@@ -14,13 +14,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+    return redirect(route('students.index'));
+})->middleware(['auth', 'verified']);
 
 Route::get('/dashboard', function () {
     return redirect(route('students.index'));
@@ -36,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::put('/grades/restore/', [GradeController::class, 'restore'])
+    ->middleware(['auth', 'verified'])->name('grades.restore');
 
 Route::resource('grades', GradeController::class)
     ->middleware(['auth', 'verified']);
@@ -97,5 +95,7 @@ Route::get('/archive/subjects', [ArchiveController::class, 'subjectArchive'])->m
 Route::get('/archive/exams', [ArchiveController::class, 'examsArchive'])->middleware(['auth', 'verified'])->name('archive.exams');
 
 Route::get('/archive/results', [ArchiveController::class, 'resultsArchive'])->middleware(['auth', 'verified'])->name('archive.results');
+
+Route::get('/archive/grades', [ArchiveController::class, 'gradeArchive'])->middleware(['auth', 'verified'])->name('archive.grades');
 
 require __DIR__.'/auth.php';

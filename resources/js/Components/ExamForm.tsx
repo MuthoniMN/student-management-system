@@ -14,6 +14,7 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
         'semester_id': (exam && exam.semester_id) || 0,
         'exam_date': (exam && exam.exam_date) || null
     });
+    console.log(semesters);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -57,7 +58,7 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
                     <option value="exam">Exam</option>
                     <option value="CAT">CAT</option>
                 </select>
-                {errors.file && <InputError message={errors.file} />}
+                {errors.type && <InputError message={errors.type} />}
             </div>
             <div className="space-y-2 w-full">
                 <InputLabel htmlFor="file" value="Document: " />

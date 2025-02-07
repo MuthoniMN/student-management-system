@@ -82,4 +82,15 @@ class GradeController extends Controller
 
         return redirect(route('grades.index'));
     }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Request $request)
+    {
+        $grade = Grade::withTrashed()->where('id', $request->input('id'))->first();
+        $grade->restore();
+
+        return redirect(route('grades.index'))->with('update', 'Grade restored!');
+    }
 }

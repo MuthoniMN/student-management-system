@@ -15,19 +15,37 @@ class SemesterRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             'academic_year_id' => [
                 'required',
                 'integer',
                 'exists:academic_years,id',
                 function ($attribute, $value, $fail) {
+                    $semester = $this->route('semester');
+                    if($semester && $semester->academic_year_id == $value){
+                            return;
+                    }
                     $semesterCount = Semester::where('academic_year_id', $value)->count();
                     if ($semesterCount >= 2) {
                         $fail('An academic year cannot have more than 2 semesters.');
                     }
                 },
             ],
-            'title' => 'required|string|max:255',
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                function($attribute, $value, $fail){
+                    $year = $this->input('academic_year_id');
+
+                    $saved = Semester::where('title', $value)->where('academic_year_id', $year)->get();
+
+                    if(count($saved) > 0) {
+                        $fail("This academic year already has $value");
+                    }
+                }
+            ],
             'start_date' => 'required|date',
             'end_date' => 'required|date'
         ];
