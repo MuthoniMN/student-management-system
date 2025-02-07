@@ -19,8 +19,8 @@ export default function YearList({ years }: {
     return (
         <AuthenticatedLayout
             header={
-                <div className="w-full flex justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">Available Academic Years</h2>
+                <div className="w-full flex flex-col items-end md:flex-row justify-between gap-4">
+                    <h2 className="text-xl font-semibold text-gray-800 w-full md:w-auto">Available Academic Years</h2>
                     <Link href={route('years.create')}>
                         <PrimaryButton>
                             Create Academic Year
@@ -37,7 +37,7 @@ export default function YearList({ years }: {
                         <li key={year.id} className="w-full py-2 px-4 space-y-2">
                             <div className="flex w-full items-center justify-between">
                             <Link href={route('years.show', year.id)}>
-                                <h3 className="text-lg font-bold">{year.year}  <span className="italic font-light">({new Date(year.start_date).toDateString()} - {new Date(year.end_date).toDateString()})</span></h3>
+                                <h3 className="flex flex-col md:flex-row text-lg font-bold">{year.year}  <span className="italic font-light">({new Date(year.start_date).toDateString()} - {new Date(year.end_date).toDateString()})</span></h3>
                             </Link>
                                 <div className="flex gap-4 items-center">
                                     <Link href={route('years.edit', { id: year.id })}>

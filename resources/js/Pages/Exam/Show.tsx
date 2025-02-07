@@ -21,7 +21,7 @@ export default function ExamShow({ students, exam, subject, results }:
             }
         >
             <Head title={exam.title} />
-            <section className="bg-white mt-4 py-4 px-2 rounded-lg space-y-4">
+            <section className="bg-white mt-4 w-fit md:w-full py-4 px-2 rounded-lg space-y-4">
                 <div className="flex justify-between">
                     <h3 className="text-xl font-bold">Results</h3>
                     <PrimaryButton>

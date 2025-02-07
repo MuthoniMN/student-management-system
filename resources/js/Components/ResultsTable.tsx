@@ -19,7 +19,6 @@ export default function ResultsTable({ results, grades, semesters, students, yea
         perPage?: number,
         archive?: boolean
     }){
-        console.log(subjects);
 
     const [filters, setFilters] = useState<TFilter>({
         type: '',

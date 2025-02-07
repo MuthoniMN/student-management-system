@@ -20,7 +20,7 @@ export default function ArchivedResults({ students, semesters, subjects, grades,
             }
         >
             <Head title="Archived Results" />
-            <section className="bg-white mt-4 py-4 px-2 rounded-lg space-y-4">
+            <section className="bg-white w-fit md:w-full mt-4 py-4 px-2 rounded-lg space-y-4">
                 <ResultsTable results={results} perPage={7} students={students} subjects={subjects} grades={grades} semesters={semesters} archive={true} />
             </section>
         </AuthenticatedLayout>

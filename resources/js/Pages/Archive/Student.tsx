@@ -86,7 +86,7 @@ export default function List({ students, parents, grades }: { students: TStudent
             }
         >
             <Head title="Student Archive" />
-            <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
+            <section className="h-fit w-fit md:w-full mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
             <div className="py-4 flex w-full gap-6 justify-between flex-wrap">
                 <div className="w-full max-w-[480px]">
                     <TextInput name="query" id="query" onChange={handleSearch} placeholder="Search student by name" className="w-full" />

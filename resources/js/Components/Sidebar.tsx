@@ -47,16 +47,16 @@ export default function Sidebar(){
                         <nav className={`${current === 2 ? 'block' : 'hidden'}`}>
                             <ul className="space-y-4">
                                <li>
-                                    <Link href={route('semesters.index')} className={`${route().current() === 'semesters.index' && 'text-black underline'} hover:underline`}>All semesters</Link>
+                                    <Link href={route('semesters.index')} className={`${route().current() === 'semesters.index' && 'text-white underline'} hover:underline`}>All semesters</Link>
                                 </li>
                                <li>
-                                    <Link href={route('years.index')} className={`${route().current() === 'years.index' && 'text-black underline'}`}>All Academic Years</Link>
+                                    <Link href={route('years.index')} className={`${route().current() === 'years.index' && 'text-white underline'}`}>All Academic Years</Link>
                                 </li>
                                <li>
-                                    <Link href={route('years.create')} className={`${route().current() === 'years.create' && 'text-black underline'} hover:underline`}>Start An Academic Year</Link>
+                                    <Link href={route('years.create')} className={`${route().current() === 'years.create' && 'text-white underline'} hover:underline`}>Start An Academic Year</Link>
                                 </li>
                                <li>
-                                    <Link href={route('semesters.create')} className={`${route().current() === 'semesters.create' && 'text-black underline'} hover:underline`}>Create a New Semester</Link>
+                                    <Link href={route('semesters.create')} className={`${route().current() === 'semesters.create' && 'text-white underline'} hover:underline`}>Create a New Semester</Link>
                                 </li>
 
                             </ul>
@@ -76,7 +76,7 @@ export default function Sidebar(){
                                     <Link href={route('grades.index')} className={`${route().current() == 'grades.index' && 'text-white underline'} hover:underline`}>All Grades</Link>
                                 </li>
                                <li>
-                                    <Link href={route('subjects.create')} className={`${route().current() === 'subjects.create' && 'text-black underline'} hover:underline`}>Create a New Subject</Link>
+                                    <Link href={route('subjects.create')} className={`${route().current() === 'subjects.create' && 'text-white underline'} hover:underline`}>Create a New Subject</Link>
                                 </li>
                             </ul>
                         </nav>

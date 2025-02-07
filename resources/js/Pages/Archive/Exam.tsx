@@ -66,7 +66,7 @@ export default function ExamArchive({ exams, grades, semesters }: {
             }
         >
             <Head title="Archived Exams" />
-            <section className="bg-white mt-4 py-4 px-2 rounded-lg space-y-4">
+            <section className="bg-white w-fit md:w-full mt-4 py-4 px-2 rounded-lg space-y-4">
                 <div>
                     <form className="flex gap-2 items-center min-w-320px">
                         <p>Filter by: </p>

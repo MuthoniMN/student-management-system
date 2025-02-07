@@ -42,7 +42,7 @@ export default function Show({ student, parent, grade, results, grades, semester
             }
         >
             <Head title="Student Profile" />
-            <section className="p-4">
+            <section className="p-4 w-fit md:w-full">
                 <div className="flex justify-between gap-4 flex-col lg:flex-row">
                     <div>
                         <h2 className="font-bold text-lg">Student Information</h2>

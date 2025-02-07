@@ -61,7 +61,7 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
             }
         >
             <Head title={subject.title} />
-            <section className="bg-white mt-4 py-4 px-2 rounded-lg space-y-4">
+            <section className="bg-white w-fit md:w-full mt-4 w-fit md:w-full py-4 px-2 rounded-lg space-y-4">
                 <div className="flex justify-between">
                     <h3 className="text-xl font-bold">Exams</h3>
                     <PrimaryButton>

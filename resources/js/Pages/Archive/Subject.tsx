@@ -32,7 +32,7 @@ export default function SubjectArchive({ subjects }:  { subjects?: TSubject[] })
 
         }>
             <Head title="Archived Subjects" />
-            <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
+            <section className="h-fit w-fit md:w-full mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
                 <section className="w-full flex gap-6 flex-wrap">
                 {
                     paginatedData.length > 0 ?

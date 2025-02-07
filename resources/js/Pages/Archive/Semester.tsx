@@ -44,7 +44,7 @@ export default function SemesterArchive({ semesters, years }: { semesters: TSeme
 
         } >
             <Head title="Semesters" />
-          <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
+          <section className="h-fit w-fit md:w-full mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
             <div className="py-4 flex w-full gap-6 justify-between flex-wrap">
                 <div className="flex justify-end">
                     <form className="flex gap-2 items-center min-w-320px">

@@ -22,7 +22,7 @@ export default function YearShow({ students, year, semesters, subjects, grades, 
             }
         >
             <Head title={`${year.year} Academic Year`} />
-            <section className="bg-white mt-4 py-4 px-2 rounded-lg space-y-4">
+            <section className="bg-white w-fit md:w-full mt-4 py-4 px-2 rounded-lg space-y-4">
                 <div className="flex justify-between">
                     <h3 className="text-xl font-bold">Results</h3>
                 </div>
