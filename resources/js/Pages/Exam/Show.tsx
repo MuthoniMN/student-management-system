@@ -1,12 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
-import { TStudent } from "@/Pages/Student/List";
 import PrimaryButton from "@/Components/PrimaryButton";
-import { TExam } from "@/Components/ExamForm";
-import { TGrade } from "@/Pages/Grade/List";
-import { TSemester } from "@/Components/SemesterForm";
-import { TSubject } from "@/Components/SubjectForm";
-import { TResult } from "@/Components/ResultForm";
+import { TExam, TSubject, TResult, TStudent, TFlash } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
 
 export default function ExamShow({ students, exam, subject, results }:
@@ -16,7 +11,7 @@ export default function ExamShow({ students, exam, subject, results }:
         subject: TSubject,
         results: TResult[]
 }){
-    const { flash } = usePage().props;
+    const flash = usePage().props.flash as TFlash;
     return  (
         <AuthenticatedLayout
             header={

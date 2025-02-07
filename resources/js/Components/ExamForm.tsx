@@ -2,26 +2,8 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import { useForm, router } from "@inertiajs/react";
-import { TSemester } from "@/Components/SemesterForm";
-import { TSubject } from "@/Components/SubjectForm";
-import { TGrade } from "@/Pages/Grade/List";
+import { TSemester, TSubject, TGrade, TExam} from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
-
-export type TExam = {
-    'id': number,
-    'title': string,
-    'type': string,
-    'file': string|File|null,
-    'grade_id': number,
-    'subject_id': number,
-    'semester_id': number,
-    'exam_date': string,
-    'grade': string,
-    'semester': string,
-    'year': string,
-    'created_at'?: string,
-    'updated_at'?: string
-}
 
 export default function ExamForm({ exam, semesters, grades, subject }: { exam?: TExam, semesters: TSemester[], grades: TGrade[], subject: TSubject }){
     const { data, setData, post, progress, errors } = useForm({

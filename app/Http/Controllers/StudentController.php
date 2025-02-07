@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\ParentData;
 use App\Models\Grade;
 use App\Models\AcademicYear;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StudentRequest;
@@ -90,6 +91,7 @@ class StudentController extends Controller
             'grade' => $student->grade,
             'parent' => $student->parent,
             'grades' => Grade::all(),
+            'subjects' => Subject::all(),
             'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
             'years' => AcademicYear::all(),
             'results' => DB::table('results')
@@ -98,9 +100,10 @@ class StudentController extends Controller
                 ->join('grades', 'exams.grade_id', '=', 'grades.id')
                 ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->join('subjects', 'exams.subject_id', 'subjects.id')
                 ->where('results.student_id', $student->id)
                 ->where('results.deleted_at', null)
-                ->select('results.*', 'students.name as student', 'exams.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'exams.type', 'exams.subject_id')
+                ->select('results.*', 'students.name as student', 'exams.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'exams.type', 'exams.subject_id', 'exams.title as exam_title', 'subjects.title as subject')
                 ->get(),
 
         ]);
@@ -152,13 +155,13 @@ class StudentController extends Controller
     /*
      * Update many student's grade
      * */
-    public function upgrade(UpgradeGradeRequest $request){
-        $validated = $request->validated();
+    public function upgrade(Request $request){
+        $validated = $request->input('data');
 
-        foreach ($validated['data']['studentIds'] as $key) {
+        foreach ($validated['studentIds'] as $key) {
             $student = Student::find($key);
 
-            $student['grade_id'] = $validated['data']['grade_id'];
+            $student['grade_id'] = $validated['grade_id'];
 
             $student->save();
         }
@@ -169,10 +172,10 @@ class StudentController extends Controller
     /*
      * Mass delete students
      * */
-    public function deleteMany(DeleteStudentsRequest $request){
-        $validated = $request->validated();
+    public function deleteMany(Request $request){
+        $validated = $request->input('studentIds');
 
-        Student::destroy($validated['studentIds']);
+        Student::destroy($validated);
 
         return back()->with('delete', 'Successfully deleted!');
     }
@@ -185,5 +188,20 @@ class StudentController extends Controller
         $student->delete();
 
         return redirect(route('students.index'));
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Request $request)
+    {
+        $data = $request->input('data');
+        $students = $data['studentIds'];
+        foreach ($students as $id) {
+            $student = Student::withTrashed()->where('id', $id)->first();
+            $student->restore();
+        }
+
+        return redirect(route('students.index'))->with('update', 'Student restored!');
     }
 }

@@ -21,7 +21,7 @@ class SemesterController extends Controller
     {
         return Inertia::render('Semester/List', [
             'years' => AcademicYear::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year')->get(),
+            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year')->orderByDesc('start_date')->get(),
         ]);
     }
 
@@ -68,7 +68,7 @@ class SemesterController extends Controller
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
                 ->where('exams.semester_id', $semester->id)
                 ->where('results.deleted_at', null)
-                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id')
+                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id', 'exams.title as exam_title')
                 ->get(),
 
         ]);
@@ -109,5 +109,16 @@ class SemesterController extends Controller
         $semester->delete();
 
         return redirect(route('semesters.index'))->with('delete', 'Semester deleted!');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Request $request)
+    {
+        $semester = Semester::withTrashed()->where('id', $request->input('id'))->first();
+        $semester->restore();
+
+        return redirect(route('semesters.index'))->with('update', 'Semester restored!');
     }
 }

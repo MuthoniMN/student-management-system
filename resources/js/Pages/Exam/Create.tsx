@@ -1,9 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ExamForm from "@/Components/ExamForm";
-import { TGrade } from "@/Pages/Grade/List";
-import { TSemester } from "@/Components/SemesterForm";
-import { TSubject } from "@/Components/SubjectForm";
+import { TGrade, TSemester, TSubject } from "@/types/";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
 

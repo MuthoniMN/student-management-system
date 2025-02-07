@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { TSemester } from "@/Components/SemesterForm";
-import { TYear } from "@/Components/YearForm";
+import { TYear, TSemester, TFlash } from "@/types/";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage, useForm } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -15,7 +14,7 @@ export default function SemesterList({ semesters, years }: { semesters: TSemeste
     const end = start + perPage;
     const [data, setData] = useState(semesters.slice(start, end));
     const [filters, setFilters] = useState('');
-    const { flash } = usePage().props;
+    const flash = usePage().props.flash as TFlash;
 
     const { submit, delete: destroy } = useForm();
     const handleSubmit = (e, semester: TSemester) => {

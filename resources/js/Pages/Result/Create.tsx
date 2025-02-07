@@ -1,14 +1,11 @@
 import { Head, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { TExam } from "@/Components/ExamForm";
+import { TExam, TStudent, TSubject } from "@/types/";
 import ResultForm from "@/Components/ResultForm";
-import { TStudent } from "@/Pages/Student/List";
-import { TSubject } from "@/Components/SubjectForm";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
 
 export default function CreateResult({ students, exam, subject } : { exam: TExam, students: TStudent[], subject: TSubject }){
-    console.log(exam);
     return (
         <AuthenticatedLayout
             header={
@@ -23,8 +20,7 @@ export default function CreateResult({ students, exam, subject } : { exam: TExam
                         <p>{exam.grade} {exam.title} - {exam.year} {exam.semester} </p>
                     </div>
                 </div>
-            }
-        >
+            }>
             <Head title="Add Results" />
             <section className="py-8 w-fit mx-auto">
                 <ResultForm students={students} exam={exam} subject={subject} />

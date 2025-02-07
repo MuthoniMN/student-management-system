@@ -3,18 +3,7 @@ import InputError from "@/Components/InputError";
 import TextInput from "@/Components/TextInput";
 import PrimaryButton from "@/Components/PrimaryButton";
 import { useForm } from "@inertiajs/react";
-import { TYear } from "@/Components/YearForm";
-
-export type TSemester = {
-    id?: number,
-    year?: string,
-    academic_year_id: number,
-    title: string,
-    end_date: string,
-    start_date: string,
-    created_at?: string,
-    updated_at?: string
-}
+import { TYear, TSemester } from "@/types/";
 
 export default function SemesterForm ( { years, semester } : { semester?: TSemester, years: TYear[] } ){
     const { data, setData, post, patch, errors } = useForm({

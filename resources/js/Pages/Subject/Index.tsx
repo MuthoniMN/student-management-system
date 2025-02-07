@@ -4,19 +4,18 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import DangerButton from "@/Components/DangerButton";
-import { TSubject } from "@/Components/SubjectForm";
-import { FaAnglesLeft, FaAnglesRight, FaTrash, FaPenToSquare, FaDownload } from "react-icons/fa6";
-import { TGrade } from "@/Pages/Grade/List";
+import Pagination from "@/Components/Pagination";
+import { TSubject, TFlash } from "@/types/";
+import { FaTrash, FaPenToSquare } from "react-icons/fa6";
 
-export default function Index({ subjects, grades }:  { subjects: TSubject[], grades: TGrade[] }){
-    console.log(usePage().props);
-    const { flash } = usePage().props;
+export default function Index({ subjects }:  { subjects: TSubject[] }){
+    const flash = usePage().props.flash as TFlash;
     const perPage = 9;
     const [page, setPage] = useState(1);
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const [data, setData] = useState(subjects.slice(start, end));
-    const [filters, setFilters] = useState('');
+    const [data, setData] = useState(subjects);
+    const [paginatedData, setPaginatedData] = useState(subjects.slice(start, end));
 
     const { submit } = useForm();
     const handleSubmit = (e, subject: TSubject) => {
@@ -24,21 +23,9 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
         submit('delete', route('subjects.destroy', subject.id));
     };
 
-    const prevPage = () => {
-        if((page - 1) <= 0) return;
-
-        setPage(page-1);
-    }
-
-    const nextPage = () => {
-        if((page + 1) > Math.ceil(subjects.length/perPage)) return;
-
-        setPage(page+1);
-    }
-
     useEffect(() => {
-        setData(subjects.slice(start,end));
-    }, [page]);
+        setPaginatedData(subjects.slice(start,end));
+    }, [page, data]);
 
     return (
         <AuthenticatedLayout header={
@@ -56,7 +43,7 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
             <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
                 <section className="w-full flex gap-6 flex-wrap">
                 {
-                    data.length > 0 ?
+                    paginatedData.length > 0 ?
                         data.map(subject =>(
                             <Link href={route('subjects.show', subject)} key={subject.id} className="w-full md:w-[29%] h-fit min-h-36 border-[1px] border-gray-300 hover:shadow-md px-4 py-2 space-y-2">
                                 <h3 className="text-lg font-bold">{subject.title}</h3>
@@ -80,34 +67,15 @@ export default function Index({ subjects, grades }:  { subjects: TSubject[], gra
                     )
                 }
                 </section>
-                <div className="py-4 text-center flex justify-between items-center">
-                    <p className="font-light text-gray-500 italic">Showing page {page} of {Math.ceil(subjects.length/10)}</p>
-                    <div className="flex gap-4">
-                        <PrimaryButton onClick={prevPage}>
-                            <FaAnglesLeft />
-                        </PrimaryButton>
-                        {
-                            (() => {
-                                return Array.from(
-                                { length: Math.ceil(subjects.length/10) },
-                                (_, i) => (
-                                    <p onClick={() => setPage(i+1)} className={`hover:underline ${((i + 1) == page) && 'underline text-blue-700'}`} key={i}>{i+1}</p>
-                                )
-                            )})()
-                        }
-                        <PrimaryButton onClick={nextPage}>
-                            <FaAnglesRight />
-                        </PrimaryButton>
-                    </div>
-                </div>
-            { flash && flash.update && (
+                <Pagination page={page} length={subjects.length} setPage={setPage} perPage={perPage} />
+                { flash && flash.update && (
                 <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>Subject updated successfully!</p>
+                    <p>{flash.update}</p>
                 </div>
             )}
             { flash && flash.delete && (
                 <div className="bg-red-300 text-red-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>Subject deleted successfully!</p>
+                    <p>{flash.delete}</p>
                 </div>
             )}
         </section>

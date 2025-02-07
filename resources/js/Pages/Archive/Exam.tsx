@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import { FaPen, FaDownload } from "react-icons/fa6";
+import { FaDownload } from "react-icons/fa6";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, usePage } from "@inertiajs/react";
-import { TSubject, TFilter, TExam, TGrade, TSemester, TFlash } from "@/types/";
-import PrimaryButton from "@/Components/PrimaryButton";
-import SecondaryButton from "@/Components/SecondaryButton";
+import { Head, Link, useForm } from "@inertiajs/react";
+import { TFilter, TExam, TGrade, TSemester } from "@/types/";
 import Pagination from "@/Components/Pagination";
+import DangerButton from "@/Components/DangerButton";
+import { LuArchiveRestore } from "react-icons/lu";
 
-export default function SubjectShow({ subject, exams, grades, semesters }: {
-    subject: TSubject,
+export default function ExamArchive({ exams, grades, semesters }: {
     exams: TExam[],
     grades: TGrade[],
     semesters: TSemester[]
@@ -24,7 +23,6 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
     const end = start + perPage;
     const [data, setData] = useState(exams);
     const [paginatedData, setPaginatedData] = useState(exams.slice(start, end));
-    const flash = usePage().props.flash as TFlash;
 
     useEffect(() => {
         setPaginatedData(data.slice(start,end));
@@ -51,23 +49,24 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
         }))
     }
 
+    const { submit } = useForm();
+    const handleSubmit = (e, exam: TExam) => {
+        e.preventDefault();
+        submit('put', route('subjects.exams.restore', {
+            id: exam.id
+        }));
+    };
+
     return  (
         <AuthenticatedLayout
             header={
                 <>
-                    <h2 className="font-bold text-xl mb-4">{subject.title}</h2>
-                    <p className="italic">{subject.description}</p>
+                    <h2 className="font-bold text-xl mb-4">Archived Exams</h2>
                 </>
             }
         >
-            <Head title={subject.title} />
+            <Head title="Archived Exams" />
             <section className="bg-white mt-4 py-4 px-2 rounded-lg space-y-4">
-                <div className="flex justify-between">
-                    <h3 className="text-xl font-bold">Exams</h3>
-                    <PrimaryButton>
-                        <Link href={route('subjects.exams.create', subject)}>Create an Assessment</Link>
-                    </PrimaryButton>
-                </div>
                 <div>
                     <form className="flex gap-2 items-center min-w-320px">
                         <p>Filter by: </p>
@@ -104,16 +103,14 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                         {
                             paginatedData.length > 0 ? paginatedData.map(exam => (
                                 <tr className="divide-x-2 divide-gray-300" key={exam.id}>
-                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">
-                                        <Link href={route('subjects.exams.show', [subject.id, exam.id])}>{exam.title}</Link>
-                                    </td>
+                                    <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{exam.title}</td>
                                     <td className="px-2 min-w-24">{exam.grade}</td>
                                     <td className="px-2 min-w-36">{exam.semester} ({exam.year})</td>
                                     <td className="px-2 min-w-36">{exam.file ? (<Link href={route('files',exam.file as string)} className="rounded-full flex gap-2 items-center bg-gray-200 px-4 w-fit">File <FaDownload /> </Link>): "No uploaded file"}</td>
                                     <td className="px-2 w-fit">
-                                        <SecondaryButton className="w-fit">
-                                            <Link href={route('subjects.exams.edit', [subject.id, exam.id])}><FaPen /></Link>
-                                        </SecondaryButton>
+                                        <DangerButton onClick={(e) => handleSubmit(e, exam)}>
+                                            <LuArchiveRestore className="text-lg" />
+                                        </DangerButton>
                                     </td>
                                 </tr>
                             )) :
@@ -124,17 +121,6 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                     </tbody>
                 </table>
                 <Pagination length={Math.ceil(data.length/perPage)} perPage={perPage} page={page} setPage={setPage} />
-            { flash && (flash.create || flash.update) && (
-                <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>{flash.create || flash.update}</p>
-                </div>
-            )}
-            { flash && flash.delete && (
-                <div className="bg-red-300 text-red-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>{flash.delete}</p>
-                </div>
-            )}
-
             </section>
         </AuthenticatedLayout>
     );

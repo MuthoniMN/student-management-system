@@ -8,6 +8,7 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ExamsController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\ArchiveController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -37,8 +38,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('grades', GradeController::class)
-    ->only(['index', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
+
+
+Route::put('/students/restore/', [StudentController::class, 'restore'])
+    ->middleware(['auth', 'verified'])->name('students.restore');
 
 Route::patch('/students/upgrade', [StudentController::class, 'upgrade'])
     ->middleware(['auth', 'verified'])
@@ -48,6 +52,7 @@ Route::delete('/students/delete', [StudentController::class, 'deleteMany'])
     ->middleware(['auth', 'verified'])
     ->name('students.delete');
 
+
 Route::resource('students', StudentController::class)
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
@@ -56,17 +61,41 @@ Route::resource('years', YearController::class)
     ->parameters([ 'years' => 'academicYear' ])
     ->middleware(['auth', 'verified']);
 
+Route::put('/semesters/restore/', [SemesterController::class, 'restore'])
+    ->middleware(['auth', 'verified'])->name('semesters.restore');
+
 Route::resource('semesters', SemesterController::class)
     ->middleware(['auth', 'verified']);
+
+Route::put('/subjects/restore/', [SubjectController::class, 'restore'])
+    ->middleware(['auth', 'verified'])->name('subjects.restore');
 
 Route::resource('subjects', SubjectController::class)
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
+Route::put('/subjects/{subject}/exams/restore/', [ExamsController::class, 'restore'])
+    ->middleware(['auth', 'verified'])->name('subject.exams.restore');
+
 Route::resource('subjects.exams', ExamsController::class)
     ->middleware(['auth', 'verified']);
 
+Route::put('/subjects/{subject}/exams/{exam}/results/restore/', [ResultController::class, 'restore'])
+    ->middleware(['auth', 'verified'])->name('subjects.exams.results.restore');
+
 Route::resource('subjects.exams.results', ResultController::class)
     ->middleware(['auth', 'verified']);
+
+Route::get('/archive', [ArchiveController::class, 'index'])->middleware(['auth', 'verified'])->name('archive');
+
+Route::get('/archive/semesters', [ArchiveController::class, 'semesterArchive'])->middleware(['auth', 'verified'])->name('archive.semesters');
+
+Route::get('/archive/students', [ArchiveController::class, 'studentArchive'])->middleware(['auth', 'verified'])->name('archive.students');
+
+Route::get('/archive/subjects', [ArchiveController::class, 'subjectArchive'])->middleware(['auth', 'verified'])->name('archive.subjects');
+
+Route::get('/archive/exams', [ArchiveController::class, 'examsArchive'])->middleware(['auth', 'verified'])->name('archive.exams');
+
+Route::get('/archive/results', [ArchiveController::class, 'resultsArchive'])->middleware(['auth', 'verified'])->name('archive.results');
 
 require __DIR__.'/auth.php';

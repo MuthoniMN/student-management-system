@@ -98,4 +98,15 @@ class SubjectController extends Controller
 
         return redirect(route('subjects.index'))->with('delete', 'Subject deleted!');
     }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Request $request)
+    {
+        $subject = Subject::withTrashed()->where('id', $request->input('id'))->first();
+        $subject->restore();
+
+        return redirect(route('subjects.index'))->with('update', 'Subject restored!');
+    }
 }

@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
-import { TGrade } from "@/Pages/Grade/List";
-import { TStudent } from "@/Pages/Student/List";
-import { TResult, getGrade } from "@/Components/ResultForm";
-import { TSemester } from "@/Components/SemesterForm";
-import { TYear } from "@/Components/YearForm";
-import { TFilter } from "@/Pages/Student/List";
+import { TGrade, TStudent, TResult, TSemester, TYear, TFilter, TSubject} from "@/types/";
 import Pagination from "@/Components/Pagination";
-import { TSubject } from "@/Components/SubjectForm";
 import { Link, useForm } from "@inertiajs/react";
 import SecondaryButton from "@/Components/SecondaryButton";
 import DangerButton from "@/Components/DangerButton";
 import { FaTrash, FaPenToSquare } from "react-icons/fa6";
+import { LuArchiveRestore } from "react-icons/lu";
+import { getGrade } from "@/Components/ResultForm";
 
-
-export default function ResultsTable({ results, grades, semesters, students, years, subjects, perPage=5 }:
+export default function ResultsTable({ results, grades, semesters, students, years, subjects, perPage=5, archive=false }:
     {
         results: TResult[],
         grades?: TGrade[],
@@ -21,8 +16,10 @@ export default function ResultsTable({ results, grades, semesters, students, yea
         students?: TStudent[],
         subjects?: TSubject[],
         years?: TYear[],
-        perPage?: number
+        perPage?: number,
+        archive?: boolean
     }){
+        console.log(subjects);
 
     const [filters, setFilters] = useState<TFilter>({
         type: '',
@@ -102,6 +99,13 @@ export default function ResultsTable({ results, grades, semesters, students, yea
     const handleSubmit = (e, result: TResult) => {
         e.preventDefault();
         submit('delete', route('subjects.exams.results.destroy', [result.subject_id, result.exam_id, result.id]));
+    };
+
+    const handleRestore = (e, result: TResult) => {
+        e.preventDefault();
+        submit('put', route('subjects.exams.results.restore',[result.subject_id, result.exam_id], {
+            id: result.id
+        }));
     };
 
     return (
@@ -186,7 +190,7 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                         {grades && <th className="px-2">Class</th>}
                         {semesters && <th className="px-2">Semester</th>}
                         {subjects && <th className="px-2">Subject</th>}
-                        <th className="px-2">Exam Type</th>
+                        <th className="px-2">Exam</th>
                         <th className="px-2">Score</th>
                         <th className="px-2">Grade</th>
                         <th className="w-fit"></th>
@@ -200,10 +204,13 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                             {grades && <td className="px-2 min-w-36">{result.class_grade}</td>}
                             {semesters && <td className="px-2 min-w-36">{result.semester} ({result.year})</td>}
                             {subjects && <td className="px-2 min-w-36">{result.subject}</td>}
-                                <td className="px-2 min-w-36">{result.type}</td>
+                                <td className="px-2 min-w-36">{result.exam_title}</td>
                                 <td className="px-2 min-w-36">{result.result}</td>
                                 <td className="px-2 min-w-36">{result.grade}</td>
-                                <td className="px-2 text-center w-fit">
+                                { !archive ?
+                                (
+                                    <>
+                                    <td className="px-2 text-center w-fit">
                                     <Link href={route('subjects.exams.results.edit', [result.subject_id, result.exam_id, result.id])}>
                                         <SecondaryButton>
                                             <FaPenToSquare />
@@ -215,6 +222,14 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                                         <FaTrash />
                                     </DangerButton>
                                 </td>
+                                </>
+                                ) :
+                                (<td className="p-2 text-center w-fit">
+                                    <DangerButton onClick={(e) => handleRestore(e, result)}>
+                                        <LuArchiveRestore className="text-lg" />
+                                    </DangerButton>
+                                </td>)
+                            }
                             </tr>
                         )) :
                         <tr className="py-2">

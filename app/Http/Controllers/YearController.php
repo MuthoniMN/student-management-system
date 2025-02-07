@@ -20,7 +20,7 @@ class YearController extends Controller
     public function index()
     {
         return Inertia::render('Year/List', [
-            'years' => AcademicYear::all(),
+            'years' => AcademicYear::select('*')->orderByDesc('start_date')->get(),
         ]);
     }
 
@@ -68,7 +68,7 @@ class YearController extends Controller
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
                 ->where('semesters.academic_year_id', $academicYear->id)
                 ->where('results.deleted_at', null)
-                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id')
+                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id', 'exams.title as exam_title')
                 ->get(),
 
         ]);

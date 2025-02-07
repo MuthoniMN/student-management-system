@@ -1,8 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from "@inertiajs/react";
 import SemesterForm from "@/Components/SemesterForm";
-import { TYear } from "@/Components/YearForm";
-import { TSemester } from "@/Components/SemesterForm";
+import { TYear, TSemester } from "@/types/";
 
 export default function EditSemester({ years, semester }: { years: TYear[], semester: TSemester }){
 

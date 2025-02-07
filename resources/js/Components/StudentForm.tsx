@@ -4,16 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import TextInput from '@/Components/TextInput';
-import { TGrade } from "@/Pages/Grade/List";
-import { TStudent } from "@/Pages/Student/List";
-
-type TParent = {
-    id: number,
-    name: string,
-    email: string,
-    phone_number: string,
-    address: string,
-}
+import { TStudent, TGrade, TParent } from "@/types/";
 
 export default function StudentForm({ parents, grades, student }: { parents: TParent[], grades: TGrade[], student?: TStudent }){
     const [exists, setExists] = useState(false);

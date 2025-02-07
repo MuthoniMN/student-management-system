@@ -1,25 +1,21 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { TStudent } from "@/Pages/Student/List";
-import { TGrade } from "@/Pages/Grade/List";
-import { TResult } from "@/Components/ResultForm";
-import { TSemester } from "@/Components/SemesterForm";
-import { TYear } from "@/Components/YearForm";
+import { TStudent, TGrade, TResult, TSemester, TYear, TSubject } from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
 import DangerButton from "@/Components/DangerButton";
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
 import ResultsTable from "@/Components/ResultsTable";
 
-export default function Show({ student, parent, grade, results, grades, semesters, years } : {
+export default function Show({ student, parent, grade, results, grades, semesters, years, subjects } : {
     student: TStudent,
     parent: any,
     grade: TGrade,
     results: TResult[],
     grades: TGrade[],
     semesters: TSemester[],
-    years: TYear[]
+    years: TYear[],
+    subjects: TSubject[],
 }){
-    console.log(results);
     const { submit, delete: destroy } = useForm();
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -65,7 +61,7 @@ export default function Show({ student, parent, grade, results, grades, semester
                         </div>
                     </div>
                 </div>
-                <ResultsTable results={results} grades={grades} semesters={semesters} years={years} perPage={10} />
+                <ResultsTable results={results} grades={grades} semesters={semesters} years={years} subjects={subjects} perPage={10} />
             </section>
         </AuthenticatedLayout>
     );

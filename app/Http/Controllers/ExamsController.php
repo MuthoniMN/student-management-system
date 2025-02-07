@@ -73,7 +73,7 @@ class ExamsController extends Controller
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
                 ->where('results.exam_id', $exam->id)
                 ->where('results.deleted_at', null)
-                ->select('results.*', 'students.name as student', 'students.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'academic_years.year', 'exams.type', 'exams.subject_id')
+                ->select('results.*', 'students.name as student', 'students.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'academic_years.year', 'exams.type', 'exams.subject_id', 'exams.title as exam_title')
                 ->get(),
         ]);
     }
@@ -117,6 +117,19 @@ class ExamsController extends Controller
      */
     public function destroy(Subject $subject, Exam $exam)
     {
-        //
+        $exam->delete();
+
+        return redirect(route('subjects.show', $subject))->with('delete', 'Exam successfully deleted!');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Request $request, Subject $subject)
+    {
+        $exam = Exam::withTrashed()->where('id', $request->input('id'))->first();
+        $exam->restore();
+
+        return redirect(route('subjects.show', $exam->subject))->with('update', 'Exam restored!');
     }
 }

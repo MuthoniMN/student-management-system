@@ -1,18 +1,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from "@inertiajs/react";
-import { TGrade } from "@/Pages/Grade/List";
 import StudentForm from "@/Components/StudentForm";
-import { TStudent } from "@/Pages/Student/List";
+import { TStudent, TGrade, TParent } from "@/types/";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
-
-type TParent = {
-    id: number,
-    name: string,
-    email: string,
-    phone_number: string,
-    address: string,
-}
 
 export default function Edit({ parents, grades, student }: { parents: TParent[], grades: TGrade[], student: TStudent }){
 

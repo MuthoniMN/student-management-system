@@ -14,8 +14,8 @@ class DeleteStudentsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'studentIds' => "required|array|min:1",
-            'studentIds.*' => "required|integer|distinct|min:3|exists:students,id",
+            'data.studentIds' => "required|array|min:1",
+            'data.studentIds.*' => "required|integer|distinct|min:3|exists:students,id",
         ];
     }
 }

@@ -3,15 +3,7 @@ import InputError from "@/Components/InputError";
 import TextInput from "@/Components/TextInput";
 import PrimaryButton from "@/Components/PrimaryButton";
 import { useForm } from "@inertiajs/react";
-
-export type TYear = {
-    id?: number,
-    year: string,
-    end_date: string,
-    start_date: string,
-    created_at?: string,
-    updated_at?: string
-}
+import { TYear } from "@/types/";
 
 export default function YearForm ( { year } : { year?: TYear } ){
     const { data, setData, post, patch, errors } = useForm({

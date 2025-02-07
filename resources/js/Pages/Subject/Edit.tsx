@@ -1,10 +1,9 @@
-import { Head, usePage } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import SubjectForm, { TSubject } from "@/Components/SubjectForm";
-import { TGrade } from "@/Pages/Grade/List";
+import SubjectForm from "@/Components/SubjectForm";
+import { TSubject }  from "@/types/";
 
-export default function EditSubject({ grades, subject } : { grades: TGrade[], subject: TSubject }){
-    console.log(subject);
+export default function EditSubject({ subject } : { subject: TSubject }){
     return (
         <AuthenticatedLayout
             header={
@@ -13,7 +12,7 @@ export default function EditSubject({ grades, subject } : { grades: TGrade[], su
         >
             <Head title={`Edit ${subject.title}`} />
             <section className="py-8 w-fit mx-auto">
-                <SubjectForm grades={grades} subject={subject} />
+                <SubjectForm subject={subject} />
             </section>
         </AuthenticatedLayout>
     );

@@ -1,15 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from "@inertiajs/react";
-import { TGrade } from "@/Pages/Grade/List";
+import { TGrade, TParent } from "@/types/";
 import StudentForm from "@/Components/StudentForm";
-
-type TParent = {
-    id: number,
-    name: string,
-    email: string,
-    phone_number: string,
-    address: string,
-}
 
 export default function Create({ parents, grades }: { parents: TParent[], grades: TGrade[] }){
 

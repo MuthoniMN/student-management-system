@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, usePage, router } from "@inertiajs/react";
-import PrimaryButton from "@/Components/PrimaryButton";
+import { Head, Link, router } from "@inertiajs/react";
 import DangerButton from "@/Components/DangerButton";
 import TextInput from "@/Components/TextInput";
 import Pagination from "@/Components/Pagination";
-import  { TStudent, TFilter, TFlash } from "@/types/";
+import { TStudent, TFilter, TParent, TGrade } from "@/types/";
 
-export default function List({ students, parents, grades }: { students: TStudent[], parents: any, grades: any}){
+export default function List({ students, parents, grades }: { students: TStudent[], parents: TParent[], grades: TGrade[]}){
     const [filters, setFilters] = useState<TFilter>({
         type: '',
         value: ''
     });
     const [selected, setSelected] = useState<number[]>([]);
-    const [update, setUpdate] = useState(false);
     // pagination
     const perPage = 10;
     const [page, setPage] = useState(1);
@@ -21,28 +19,16 @@ export default function List({ students, parents, grades }: { students: TStudent
     const end = start + perPage;
     const [data, setData] = useState(students);
     const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
-    const [gradeId, setGradeId] = useState('');
-    const flash = usePage().props.flash as TFlash;
-
-    const handleUpdate = (e) => {
-        e.preventDefault();
-        router.patch('students/upgrade', {
-            data: {
-                'studentIds': selected,
-                'grade_id': +gradeId
-            }
-        })
-    }
 
     const handleDelete = (e) => {
         e.preventDefault();
-        router.delete('students/delete', {
+        router.put(route('students.restore'), {
             data: { 'studentIds': selected }
         })
     }
 
     useEffect(() => {
-        setPaginatedData(data.slice(start,end));
+        setPaginatedData(students.slice(start,end));
     }, [page, data])
 
     const handleChange = (e) => {
@@ -86,7 +72,7 @@ export default function List({ students, parents, grades }: { students: TStudent
 
     const handleSearch = (e) => {
         const value = e.target.value;
-        const results = students.filter(student => student.name.toLowerCase().includes(value.toLowerCase()));
+        const results = students.filter(student => student.name.includes(value));
 
         setData(results);
     }
@@ -95,16 +81,11 @@ export default function List({ students, parents, grades }: { students: TStudent
         <AuthenticatedLayout
             header={
                 <div className="w-full flex justify-between items-center">
-                    <h2 className="text-xl font-bold">All Students</h2>
-                    <PrimaryButton>
-                        <Link href={route('students.create')}>
-                            Create Student
-                        </Link>
-                    </PrimaryButton>
+                    <h2 className="text-xl font-bold">Students Archive</h2>
                 </div>
             }
         >
-            <Head title="Student List" />
+            <Head title="Student Archive" />
             <section className="h-fit mx-auto p-6 my-4 bg-white rounded-lg overflow-scroll">
             <div className="py-4 flex w-full gap-6 justify-between flex-wrap">
                 <div className="w-full max-w-[480px]">
@@ -148,7 +129,7 @@ export default function List({ students, parents, grades }: { students: TStudent
                     </thead>
                     <tbody className="divide-y-2 divide-gray-300">
                         {
-                           paginatedData.length > 0 ? paginatedData.map(student => (
+                            paginatedData.map(student => (
                                 <tr className="divide-x-2 divide-gray-300" key={student.id}>
                                     <td className="p-2">
                                         <input type="checkbox" checked={(selected && (selected as number[]).includes(student.id)) || false} onChange={() => handleSelect(student.id)} />
@@ -160,43 +141,15 @@ export default function List({ students, parents, grades }: { students: TStudent
                                     <td className="px-2 min-w-24">{student.phone_number}</td>
                                     <td className="px-2 min-w-24">{student.address}</td>
                                 </tr>
-                            )) :
-                                <tr className="py-2 text-center">
-                                    <td colSpan={7}>No available students!</td>
-                            </tr>
+                            ))
                         }
                     </tbody>
                 </table>
                 <Pagination length={data.length} perPage={perPage} page={page} setPage={setPage} />
                 { selected.length >= 1 &&
                 <div className="flex gap-6">
-                    <PrimaryButton onClick={() => setUpdate(update => !update)}>Update Grade</PrimaryButton>
-                    <DangerButton onClick={handleDelete}>Delete</DangerButton>
+                    <DangerButton onClick={handleDelete}>Restore Student</DangerButton>
                 </div> }
-                { update &&
-                <div className="py-4">
-                    <form className="flex gap-4" onSubmit={handleUpdate}>
-                       <select name="grade_id" value={gradeId} onChange={(e) => setGradeId(e.target.value)}>
-                        <option>-- Please Select --</option>
-                    {
-                        grades.map(grade => (
-                            <option key={grade.id} value={grade.id}>{grade.name}</option>
-                        ))
-                        }
-                    </select>
-                    <PrimaryButton>Update</PrimaryButton>
-                </form>
-            </div> }
-            { flash && flash.update && (
-                <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>{flash.update}</p>
-                </div>
-            )}
-            { flash && flash.delete && (
-                <div className="bg-red-300 text-red-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>{flash.delete}</p>
-                </div>
-            )}
         </section>
     </AuthenticatedLayout>
 );

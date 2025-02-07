@@ -24,15 +24,19 @@ class GradeController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Grade/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(GradeRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $grade = Grade::create($validated);
+
+        return redirect(route('grades.index'));
     }
 
     /**

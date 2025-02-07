@@ -2,10 +2,7 @@ import { Head, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ExamForm from "@/Components/ExamForm";
 import SecondaryButton from "@/Components/SecondaryButton";
-import { TGrade } from "@/Pages/Grade/List";
-import { TSubject } from "@/Components/SubjectForm";
-import { TSemester } from "@/Components/SemesterForm";
-import { TExam } from "@/Components/ExamForm";
+import { TGrade, TSubject, TSemester, TExam } from "@/types/";
 import { FaAngleLeft } from "react-icons/fa6";
 
 export default function EditExam({ subject, semesters, grades, exam } : { grades: TGrade[], subject: TSubject, exam: TExam, semesters: TSemester[] }){

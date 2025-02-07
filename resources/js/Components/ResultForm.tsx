@@ -3,31 +3,8 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import { useForm } from "@inertiajs/react";
-import { TStudent } from "@/Pages/Student/List";
-import { TSubject } from "@/Components/SubjectForm";
-import { TExam } from "@/Components/ExamForm";
+import { TStudent, TSubject, TExam, TResult } from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
-
-export type TResult = {
-    'id': number,
-    'result': number,
-    'grade': string,
-    'exam_id': number,
-    'student_id': number,
-    'grade_id': number,
-    'semester_id': number,
-    'subject_id': number,
-    'exam': string,
-    'type': string,
-    'student': string,
-    'subject': string,
-    'class_grade': string,
-    'semester': string,
-    'year': string,
-    'date': string,
-    'created_at'?: string,
-    'updated_at'?: string
-}
 
 export const getGrade = (num: number) => {
     if(num > 80){

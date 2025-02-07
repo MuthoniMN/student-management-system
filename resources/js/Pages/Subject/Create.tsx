@@ -1,9 +1,8 @@
 import { Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import SubjectForm from "@/Components/SubjectForm";
-import { TGrade } from "@/Pages/Grade/List";
 
-export default function CreateSubject({ grades } : { grades: TGrade[] }){
+export default function CreateSubject(){
     return (
         <AuthenticatedLayout
             header={
@@ -12,7 +11,7 @@ export default function CreateSubject({ grades } : { grades: TGrade[] }){
         >
             <Head title="Create Academic Year" />
             <section className="py-8 w-fit mx-auto">
-                <SubjectForm grades={grades} />
+                <SubjectForm />
             </section>
         </AuthenticatedLayout>
     );

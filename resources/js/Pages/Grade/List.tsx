@@ -4,15 +4,7 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import { FaAngleDown, FaAngleUp, FaPenToSquare, FaTrash } from "react-icons/fa6";
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
-
-export type TGrade = {
-    id: number,
-    name: string,
-    description: string,
-    created_at: Date|null,
-    updated_at: Date|null,
-    students_count: number
-};
+import { TGrade } from "@/types/";
 
 export default function GradeList({ grades }: {
     grades: TGrade[]
@@ -36,7 +28,12 @@ export default function GradeList({ grades }: {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold text-gray-800">Available Grades</h2>
+                <div className="w-full flex justify-between">
+                    <h2 className="text-xl font-semibold text-gray-800">Available Grades</h2>
+                    <Link href={route('grades.create')}>
+                        <PrimaryButton>Add Grade</PrimaryButton>
+                    </Link>
+                </div>
             }
         >
             <Head title="Grades" />

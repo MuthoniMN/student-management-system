@@ -12,7 +12,7 @@ export default function AuthenticatedLayout({ header, children }) {
         useState(false);
 
     return (
-        <div className="h-screen bg-gray-100 overflow-y-hidden">
+        <div className="bg-gray-100">
             <nav className="border-b border-gray-100 bg-white">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
@@ -153,9 +153,9 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            <section className="w-full h-fit flex gap-2">
+            <section className="w-full flex gap-2">
                 <Sidebar />
-                    <section className="basis-full overflow-scroll">
+                    <section className="basis-full h-screen overflow-scroll">
                     {header && (
                         <header className="bg-white shadow">
                             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -164,7 +164,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         </header>
                     )}
 
-                    <main className="h-[100px]">{children}</main>
+                    <main>{children}</main>
                 </section>
             </section>
         </div>

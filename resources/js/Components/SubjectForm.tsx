@@ -3,15 +3,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import TextInput from '@/Components/TextInput';
-import { TGrade } from "@/Pages/Grade/List";
-
-export type TSubject = {
-    id?: number,
-    title: string,
-    description: string,
-    created_at?: string,
-    updated_at?: string
-}
+import { TSubject } from "@/types/";
 
 export default function SubjectForm({ subject }: { subject?: TSubject }){
 

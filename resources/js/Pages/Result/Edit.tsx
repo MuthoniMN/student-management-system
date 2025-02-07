@@ -1,9 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { TExam } from "@/Components/ExamForm";
-import ResultForm, { TResult } from "@/Components/ResultForm";
-import { TStudent } from "@/Pages/Student/List";
-import { TSubject } from "@/Components/SubjectForm";
+import { TExam, TStudent, TSubject, TResult } from "@/types/";
+import ResultForm from "@/Components/ResultForm";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
 

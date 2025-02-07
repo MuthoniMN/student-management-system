@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from "@inertiajs/react";
 import SemesterForm from "@/Components/SemesterForm";
-import { TYear } from "@/Components/YearForm";
+import { TYear } from "@/types/";
 
 export default function Create({ years }: { years: TYear[]}){
 

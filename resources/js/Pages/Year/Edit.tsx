@@ -1,11 +1,12 @@
 import { Head, usePage, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import YearForm, { TYear } from "@/Components/YearForm";
+import YearForm from "@/Components/YearForm";
+import { TYear, TFlash } from "@/types/";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
 
 export default function EditYear({ year } : { year: TYear }){
-    const { flash } = usePage().props;
+    const flash  = usePage().props.flash as TFlash;
     return (
         <AuthenticatedLayout
             header={

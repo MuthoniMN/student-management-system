@@ -3,13 +3,13 @@ import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
-import { TYear } from "@/Components/YearForm";
+import { TYear, TFlash } from "@/types/";
 
-export default function GradeList({ years }: {
+export default function YearList({ years }: {
     years: TYear[]
 }) {
     const { submit, delete: destroy } = useForm();
-    const { flash } = usePage().props;
+    const flash = usePage().props.flash as TFlash;
 
     const handleSubmit = (e, year: TYear) => {
         e.preventDefault();

@@ -1,10 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage } from "@inertiajs/react";
-import { TStudent } from "@/Pages/Student/List";
-import { TGrade } from "@/Pages/Grade/List";
-import { TSemester } from "@/Components/SemesterForm";
-import { TSubject } from "@/Components/SubjectForm";
-import { TResult } from "@/Components/ResultForm";
+import { TStudent, TGrade, TSemester, TSubject, TResult, TFlash } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
 
 export default function SemesterShow({ students, semester, subjects, grades, results }:
@@ -15,7 +11,7 @@ export default function SemesterShow({ students, semester, subjects, grades, res
         grades: TGrade[],
         results: TResult[]
 }){
-    const { flash } = usePage().props;
+    const flash = usePage().props.flash as TFlash;
     return  (
         <AuthenticatedLayout
             header={

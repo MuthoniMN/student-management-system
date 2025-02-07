@@ -109,4 +109,14 @@ class ResultController extends Controller
 
         return back()->with('delete', "Results deleted successfully!");
     }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Subject $subject, Exam $exam, Result $result)
+    {
+        $result->restore();
+
+        return redirect(route('subjects.exams.show', [$subject, $exam]))->with('update', 'Result restored!');
+    }
 }
