@@ -127,7 +127,7 @@ class ExamsController extends Controller
      */
     public function restore(Request $request, Subject $subject)
     {
-        $exam = Exam::withTrashed()->where('id', $request->input('id'))->first();
+        $exam = Exam::onlyTrashed()->where('id', $request->input('id'))->first();
         $exam->restore();
 
         return redirect(route('subjects.show', $exam->subject))->with('update', 'Exam restored!');

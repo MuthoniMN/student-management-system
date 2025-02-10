@@ -41,7 +41,7 @@ class ResultSeeder extends Seeder
                 $today = date_create(now());
                 $diff = date_diff($today, $exam_date);
                 $diff = explode(' ', $diff->format('%R %y'));
-                $grade = ($diff[0] == '-' ? $student->grade_id - ((int)$diff[1] + 1) : $student->grade_id + (int)$diff[1]);
+                $grade = ($diff[0] == '-' ? $student->grade_id - ((int)$today->format('y') - (int)$exam_date->format('y')) : $student->grade_id + (int)$diff[1]);
                 if($grade === $exam->grade_id){
                     $score = rand(30, 100);
                     $results[] = [

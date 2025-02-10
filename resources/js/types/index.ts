@@ -75,6 +75,7 @@ export type TExam = {
     'exam_date': string,
     'grade': string,
     'semester': string,
+    'subject': string,
     'year': string,
     'created_at'?: string,
     'updated_at'?: string

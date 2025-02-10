@@ -90,9 +90,19 @@ class StudentController extends Controller
             'student' => $student,
             'grade' => $student->grade,
             'parent' => $student->parent,
-            'grades' => Grade::all(),
+            'grades' => DB::table('results')
+                ->join('exams', 'results.exam_id', 'exams.id')
+                ->join('grades', 'exams.grade_id', 'grades.id')
+                ->select('grades.*')
+                ->where('results.student_id', $student->id)
+                ->distinct()
+                ->get(),
             'subjects' => Subject::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
+            'semesters' => DB::table('semesters')
+                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
+                ->where('semesters.deleted_at', null)
+                ->select('semesters.*', 'academic_years.year as year')
+                ->get(),
             'years' => AcademicYear::all(),
             'results' => DB::table('results')
                 ->join('students', 'results.student_id', '=', 'students.id')

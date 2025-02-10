@@ -59,8 +59,9 @@ class ArchiveController extends Controller
             'exams' => DB::table('exams')
                 ->join('grades', 'exams.grade_id', '=', 'grades.id')
                 ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
+                ->join('subjects', 'exams.subject_id', '=', 'subjects.id')
                 ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year as year')
+                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year as year', 'subjects.title as subject')
                 ->whereNot('exams.deleted_at', null)
                 ->get(),
             'grades' => Grade::all(),

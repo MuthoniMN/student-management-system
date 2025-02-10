@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { FaPen, FaDownload } from "react-icons/fa6";
+import { FaPen, FaDownload, FaTrash, FaAngleLeft } from "react-icons/fa6";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage, router } from "@inertiajs/react";
 import { TSubject, TFilter, TExam, TGrade, TSemester, TFlash } from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
+import DangerButton from "@/Components/DangerButton";
 import Pagination from "@/Components/Pagination";
 
 export default function SubjectShow({ subject, exams, grades, semesters }: {
@@ -23,7 +24,7 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
     const start = (page - 1) * perPage;
     const end = start + perPage;
     const [data, setData] = useState(exams);
-    const [paginatedData, setPaginatedData] = useState(exams.slice(start, end));
+    const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
     const flash = usePage().props.flash as TFlash;
 
     useEffect(() => {
@@ -51,13 +52,22 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
         }))
     }
 
+    const handleDelete = (e, exam: TExam) => {
+        router.delete(route('subjects.exams.destroy', [subject.id, exam.id]));
+    }
+
     return  (
         <AuthenticatedLayout
             header={
-                <>
-                    <h2 className="font-bold text-xl mb-4">{subject.title}</h2>
-                    <p className="italic">{subject.description}</p>
-                </>
+                <div className="flex gap-4 items-center">
+                    <Link href={route('subjects.index')}>
+                        <SecondaryButton> <FaAngleLeft /> </SecondaryButton>
+                    </Link>
+                    <div>
+                        <h2 className="font-bold text-xl mb-2">{subject.title}</h2>
+                        <p className="italic">{subject.description}</p>
+                    </div>
+                </div>
             }
         >
             <Head title={subject.title} />
@@ -98,6 +108,7 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                             <th className="px-2">Semester</th>
                             <th className="px-2">Document</th>
                             <th className="w-fit"></th>
+                            <th className="w-fit"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y-2 divide-gray-300">
@@ -114,6 +125,11 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                                         <SecondaryButton className="w-fit">
                                             <Link href={route('subjects.exams.edit', [subject.id, exam.id])}><FaPen /></Link>
                                         </SecondaryButton>
+                                    </td>
+                                    <td className="px-2 w-fit">
+                                        <DangerButton className="w-fit" onClick={(e) => handleDelete(e, exam)}>
+                                            <FaTrash />
+                                        </DangerButton>
                                     </td>
                                 </tr>
                             )) :

@@ -5,6 +5,8 @@ import DangerButton from "@/Components/DangerButton";
 import TextInput from "@/Components/TextInput";
 import Pagination from "@/Components/Pagination";
 import { TStudent, TFilter, TParent, TGrade } from "@/types/";
+import SecondaryButton from "@/Components/SecondaryButton";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function List({ students, parents, grades }: { students: TStudent[], parents: TParent[], grades: TGrade[]}){
     const [filters, setFilters] = useState<TFilter>({
@@ -80,7 +82,12 @@ export default function List({ students, parents, grades }: { students: TStudent
     return (
         <AuthenticatedLayout
             header={
-                <div className="w-full flex justify-between items-center">
+                <div className="w-full flex gap-4 items-center">
+                    <Link href={route('archive')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
                     <h2 className="text-xl font-bold">Students Archive</h2>
                 </div>
             }

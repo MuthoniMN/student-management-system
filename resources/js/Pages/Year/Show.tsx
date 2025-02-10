@@ -1,7 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import { TStudent, TGrade, TSemester, TSubject, TResult, TYear, TFlash } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
+import SecondaryButton from "@/Components/SecondaryButton";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function YearShow({ students, year, semesters, subjects, grades, results }:
         {
@@ -16,9 +18,14 @@ export default function YearShow({ students, year, semesters, subjects, grades, 
     return  (
         <AuthenticatedLayout
             header={
-                <>
-                    <h2 className="font-bold text-xl mb-4">{year.year} ({year.start_date} - {year.end_date})</h2>
-                </>
+                <div className="flex gap-4 items-center">
+                    <Link href={route('years.index')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
+                    <h2 className="font-bold text-xl">{year.year} ({year.start_date} - {year.end_date})</h2>
+                </div>
             }
         >
             <Head title={`${year.year} Academic Year`} />

@@ -1,8 +1,10 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
+import SecondaryButton from "@/Components/SecondaryButton";
 import { TExam, TSubject, TResult, TStudent, TFlash } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function ExamShow({ students, exam, subject, results }:
         {
@@ -15,9 +17,14 @@ export default function ExamShow({ students, exam, subject, results }:
     return  (
         <AuthenticatedLayout
             header={
-                <>
-                    <h2 className="font-bold text-xl mb-4">{subject.title} {exam.title} - {exam.exam_date}</h2>
-                </>
+                <div className="flex gap-4 items-center">
+                    <SecondaryButton>
+                        <Link href={route('subjects.show', subject.id)}>
+                            <FaAngleLeft />
+                        </Link>
+                    </SecondaryButton>
+                    <h2 className="font-bold text-xl">{subject.title} {exam.title} - {exam.exam_date}</h2>
+                </div>
             }
         >
             <Head title={exam.title} />

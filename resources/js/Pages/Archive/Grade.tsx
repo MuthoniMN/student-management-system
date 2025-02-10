@@ -1,8 +1,8 @@
 import { useState } from "react";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from "@inertiajs/react";
-import { FaAngleDown, FaAngleUp, FaPenToSquare, FaTrash } from "react-icons/fa6";
-import PrimaryButton from '@/Components/PrimaryButton';
+import { FaAngleDown, FaAngleUp, FaAngleLeft } from "react-icons/fa6";
+import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { TGrade } from "@/types/";
 import { LuArchiveRestore } from "react-icons/lu";
@@ -29,7 +29,12 @@ export default function GradeList({ grades }: {
     return (
         <AuthenticatedLayout
             header={
-                <div className="w-full flex justify-between">
+                <div className="w-full flex gap-4 items-center">
+                    <Link href={route('archive')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
                     <h2 className="text-xl font-semibold text-gray-800">Archived Grades</h2>
                 </div>
             }
@@ -49,7 +54,7 @@ export default function GradeList({ grades }: {
                                 <p>{grade.description}</p>
                                 <div className="w-full flex gap-4 items-center justify-end py-2">
                                 <DangerButton onClick={(e) => handleSubmit(e, grade)}>
-                                    <LuArchiveRestore />
+                                    <LuArchiveRestore className="text-lg" />
                                 </DangerButton>
                                 </div>
                             </div>

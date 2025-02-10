@@ -119,6 +119,7 @@ export default function List({ students, parents, grades }: { students: TStudent
                             <option value="parent">Parent</option>
                         </select>
                         <select name="value" value={filters.value} onChange={handleChange}>
+                            <option value="">--</option>
                             {
                         filters.type === 'grade' ?
                             grades.map(grade => (

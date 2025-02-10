@@ -58,6 +58,7 @@ class SubjectController extends Controller
                 ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year as year')
                 ->where('exams.subject_id', $subject->id)
                 ->where('exams.deleted_at', null)
+                ->orderBy('exams.created_at', 'asc')
                 ->get(),
             'grades' => Grade::all(),
             'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->where('semesters.deleted_at', null)->get(),

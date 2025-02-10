@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { FaDownload } from "react-icons/fa6";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, router } from "@inertiajs/react";
 import { TFilter, TExam, TGrade, TSemester } from "@/types/";
 import Pagination from "@/Components/Pagination";
 import DangerButton from "@/Components/DangerButton";
+import SecondaryButton from "@/Components/SecondaryButton";
 import { LuArchiveRestore } from "react-icons/lu";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function ExamArchive({ exams, grades, semesters }: {
     exams: TExam[],
@@ -52,17 +54,22 @@ export default function ExamArchive({ exams, grades, semesters }: {
     const { submit } = useForm();
     const handleSubmit = (e, exam: TExam) => {
         e.preventDefault();
-        submit('put', route('subjects.exams.restore', {
+        router.put(route('subjects.exams.restore', exam.subject_id), {
             id: exam.id
-        }));
+        });
     };
 
     return  (
         <AuthenticatedLayout
             header={
-                <>
-                    <h2 className="font-bold text-xl mb-4">Archived Exams</h2>
-                </>
+                <div className="w-full flex gap-4 items-center">
+                    <Link href={route('archive')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
+                    <h2 className="font-bold text-xl">Archived Exams</h2>
+                </div>
             }
         >
             <Head title="Archived Exams" />
@@ -94,6 +101,7 @@ export default function ExamArchive({ exams, grades, semesters }: {
                         <tr className="divide-x-2 divide-gray-300 text-left">
                             <th className="px-2">Title</th>
                             <th className="px-2">Grade</th>
+                            <th className="px-2">Subject</th>
                             <th className="px-2">Semester</th>
                             <th className="px-2">Document</th>
                             <th className="w-fit"></th>
@@ -105,6 +113,7 @@ export default function ExamArchive({ exams, grades, semesters }: {
                                 <tr className="divide-x-2 divide-gray-300" key={exam.id}>
                                     <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{exam.title}</td>
                                     <td className="px-2 min-w-24">{exam.grade}</td>
+                                    <td className="px-2 min-w-24">{exam.subject}</td>
                                     <td className="px-2 min-w-36">{exam.semester} ({exam.year})</td>
                                     <td className="px-2 min-w-36">{exam.file ? (<Link href={route('files',exam.file as string)} className="rounded-full flex gap-2 items-center bg-gray-200 px-4 w-fit">File <FaDownload /> </Link>): "No uploaded file"}</td>
                                     <td className="px-2 w-fit">

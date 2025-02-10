@@ -73,7 +73,7 @@ Route::resource('subjects', SubjectController::class)
     ->middleware(['auth', 'verified']);
 
 Route::put('/subjects/{subject}/exams/restore/', [ExamsController::class, 'restore'])
-    ->middleware(['auth', 'verified'])->name('subject.exams.restore');
+    ->middleware(['auth', 'verified'])->name('subjects.exams.restore');
 
 Route::resource('subjects.exams', ExamsController::class)
     ->middleware(['auth', 'verified']);

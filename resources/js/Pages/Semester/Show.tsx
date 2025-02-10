@@ -1,7 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, usePage, Link } from "@inertiajs/react";
 import { TStudent, TGrade, TSemester, TSubject, TResult, TFlash } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
+import SecondaryButton from "@/Components/SecondaryButton";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function SemesterShow({ students, semester, subjects, grades, results }:
         {
@@ -15,9 +17,14 @@ export default function SemesterShow({ students, semester, subjects, grades, res
     return  (
         <AuthenticatedLayout
             header={
-                <>
-                    <h2 className="font-bold text-xl mb-4">{semester.title} ({semester.start_date} - {semester.end_date})</h2>
-                </>
+                <div className="flex gap-2 items-center">
+                    <Link href={route('semesters.show', semester.id)}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
+                    <h2 className="font-bold text-xl">{semester.title} ({semester.start_date} - {semester.end_date})</h2>
+                </div>
             }
         >
             <Head title={semester.title} />

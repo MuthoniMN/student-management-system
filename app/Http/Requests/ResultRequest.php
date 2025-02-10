@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\ResultGradeValidation;
+use App\Models\Result;
 
 class ResultRequest extends FormRequest
 {
@@ -21,7 +22,15 @@ class ResultRequest extends FormRequest
                 'required',
                 'integer',
                 'exists:students,id',
-                new ResultGradeValidation($this->route('exam')->id, $this->input('student_id'))
+                new ResultGradeValidation($this->route('exam')->id, $this->input('student_id')),
+                function ($attribute, $value, $fail){
+                    $student = $this->input('student_id');
+                    $exam = $this->route('exam');
+                    $saved = Result::where('student_id', $student)->where('exam_id', $exam->id)->get();
+                    if(count($saved) > 0){
+                        $fail('This student already has results for this exam');
+                    }
+                }
             ]
         ];
     }

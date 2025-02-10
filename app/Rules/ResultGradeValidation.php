@@ -26,7 +26,7 @@ class ResultGradeValidation implements ValidationRule
         $today = date_create(now());
         $diff = date_diff($today, $exam_date);
         $diff = explode(' ', $diff->format('%R %y'));
-        $grade = ($diff[0] == '-' ? $this->student->grade_id - ((int)$diff[1] + 1) : $this->student->grade_id + (int)$diff[1]);
+        $grade = ($diff[0] == '-' ? $this->student->grade_id - ((int)$today->format('y') - (int)$exam_date->format('y')) : $this->student->grade_id + (int)$diff[1]);
         if($this->exam->grade_id != $grade){
             $fail('The student isn\'t currently enrolled in this exam\'s grade');
         }

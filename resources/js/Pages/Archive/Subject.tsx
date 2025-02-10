@@ -5,6 +5,8 @@ import DangerButton from "@/Components/DangerButton";
 import Pagination from "@/Components/Pagination";
 import { TSubject } from "@/types/";
 import { LuArchiveRestore } from "react-icons/lu";
+import SecondaryButton from "@/Components/SecondaryButton";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function SubjectArchive({ subjects }:  { subjects?: TSubject[] }){
     const perPage = 9;
@@ -26,7 +28,12 @@ export default function SubjectArchive({ subjects }:  { subjects?: TSubject[] })
 
     return (
         <AuthenticatedLayout header={
-                <div className="w-full flex justify-between items-center">
+                <div className="w-full flex gap-4 items-center">
+                    <Link href={route('archive')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
                     <h2 className="text-xl font-bold">Archived Subjects</h2>
                 </div>
 

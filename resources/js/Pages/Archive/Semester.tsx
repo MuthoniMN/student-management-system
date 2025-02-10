@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { TSemester, TYear } from "@/types/";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, Link } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
 import DangerButton from "@/Components/DangerButton";
 import { LuArchiveRestore } from "react-icons/lu";
+import SecondaryButton from "@/Components/SecondaryButton";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function SemesterArchive({ semesters, years }: { semesters: TSemester[], years: TYear[] }){
     const perPage = 10;
@@ -38,7 +40,12 @@ export default function SemesterArchive({ semesters, years }: { semesters: TSeme
 
     return (
         <AuthenticatedLayout header={
-                <div className="w-full flex justify-between items-center">
+                <div className="w-full flex gap-4 items-center">
+                    <Link href={route('archive')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
                     <h2 className="text-xl font-bold">All Archived Semesters</h2>
                 </div>
 

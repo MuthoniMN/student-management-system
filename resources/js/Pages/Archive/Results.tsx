@@ -1,7 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { TStudent, TGrade, TSemester, TSubject, TResult } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
+import SecondaryButton from "@/Components/SecondaryButton";
+import { FaAngleLeft } from "react-icons/fa6";
 
 export default function ArchivedResults({ students, semesters, subjects, grades, results }:
         {
@@ -14,9 +16,14 @@ export default function ArchivedResults({ students, semesters, subjects, grades,
     return  (
         <AuthenticatedLayout
             header={
-                <>
-                    <h2 className="font-bold text-xl mb-4">Archived Results</h2>
-                </>
+                <div className="flex gap-4 items-center">
+                    <Link href={route('archive')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
+                    <h2 className="font-bold text-xl">Archived Results</h2>
+                </div>
             }
         >
             <Head title="Archived Results" />

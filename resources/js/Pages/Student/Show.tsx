@@ -3,8 +3,9 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import { TStudent, TGrade, TResult, TSemester, TYear, TSubject } from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
 import DangerButton from "@/Components/DangerButton";
-import { FaPenToSquare, FaTrash } from "react-icons/fa6";
+import { FaPenToSquare, FaTrash, FaAngleLeft } from "react-icons/fa6";
 import ResultsTable from "@/Components/ResultsTable";
+import SecondaryButton from "@/Components/SecondaryButton";
 
 export default function Show({ student, parent, grade, results, grades, semesters, years, subjects } : {
     student: TStudent,
@@ -26,7 +27,14 @@ export default function Show({ student, parent, grade, results, grades, semester
         <AuthenticatedLayout
             header={
                 <div className="flex justify-between w-full items-center">
-                    <h1 className="text-xl font-bold">{student.name}'s Profile</h1>
+                    <div className="flex gap-4 items-center">
+                    <Link href={route('students.index')}>
+                        <SecondaryButton>
+                            <FaAngleLeft />
+                        </SecondaryButton>
+                    </Link>
+                        <h1 className="text-xl font-bold">{student.name}'s Profile</h1>
+                    </div>
                     <div className="flex gap-4">
                         <Link href={route('students.edit', student)}>
                             <PrimaryButton>
