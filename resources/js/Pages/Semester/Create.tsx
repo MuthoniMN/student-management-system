@@ -11,7 +11,7 @@ export default function Create({ years }: { years: TYear[]}){
         <AuthenticatedLayout
             header={
                 <div className="flex gap-4 items-center">
-                    <Link href={route('years.index')}>
+                    <Link href={route('semesters.index')}>
                         <SecondaryButton>
                             <FaAngleLeft />
                         </SecondaryButton>

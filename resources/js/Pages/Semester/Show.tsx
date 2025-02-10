@@ -18,7 +18,7 @@ export default function SemesterShow({ students, semester, subjects, grades, res
         <AuthenticatedLayout
             header={
                 <div className="flex gap-2 items-center">
-                    <Link href={route('semesters.show', semester.id)}>
+                    <Link href={route('semesters.index')}>
                         <SecondaryButton>
                             <FaAngleLeft />
                         </SecondaryButton>

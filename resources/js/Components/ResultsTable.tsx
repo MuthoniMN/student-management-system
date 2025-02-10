@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { TGrade, TStudent, TResult, TSemester, TYear, TFilter, TSubject} from "@/types/";
 import Pagination from "@/Components/Pagination";
-import { Link, useForm } from "@inertiajs/react";
+import { Link, useForm, router } from "@inertiajs/react";
 import SecondaryButton from "@/Components/SecondaryButton";
 import DangerButton from "@/Components/DangerButton";
 import { FaTrash, FaPenToSquare } from "react-icons/fa6";
@@ -102,9 +102,9 @@ export default function ResultsTable({ results, grades, semesters, students, yea
 
     const handleRestore = (e, result: TResult) => {
         e.preventDefault();
-        submit('put', route('subjects.exams.results.restore',[result.subject_id, result.exam_id], {
+        router.put(route('subjects.exams.results.restore',[result.subject_id, result.exam_id]), {
             id: result.id
-        }));
+        });
     };
 
     return (

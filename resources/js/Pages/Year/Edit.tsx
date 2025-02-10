@@ -11,7 +11,7 @@ export default function EditYear({ year } : { year: TYear }){
         <AuthenticatedLayout
             header={
                 <div className="flex gap-6">
-                    <Link href={route('years.index', year.id)}>
+                    <Link href={route('years.index')}>
                         <SecondaryButton>
                             <FaAngleLeft />
                         </SecondaryButton>

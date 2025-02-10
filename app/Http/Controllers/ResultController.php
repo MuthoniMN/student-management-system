@@ -113,8 +113,9 @@ class ResultController extends Controller
     /**
      * Restore the specified resource from storage.
      */
-    public function restore(Subject $subject, Exam $exam, Result $result)
+    public function restore(Request $request, Subject $subject, Exam $exam)
     {
+        $result = Result::onlyTrashed()->where('id', $request->input('id'))->first();
         $result->restore();
 
         return redirect(route('subjects.exams.show', [$subject, $exam]))->with('update', 'Result restored!');

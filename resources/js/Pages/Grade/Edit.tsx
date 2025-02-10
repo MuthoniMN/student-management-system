@@ -31,7 +31,7 @@ export default function EditGrade({ grade }: { grade: TGrade }) {
     return (
         <AuthenticatedLayout header={
                 <div className="flex gap-6">
-                    <Link href={route('grades.index', grade.id)}>
+                    <Link href={route('grades.index')}>
                         <SecondaryButton>
                             <FaAngleLeft />
                         </SecondaryButton>

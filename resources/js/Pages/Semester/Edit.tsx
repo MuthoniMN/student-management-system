@@ -11,7 +11,7 @@ export default function EditSemester({ years, semester }: { years: TYear[], seme
         <AuthenticatedLayout
             header={
                 <div className="flex gap-4 items-center">
-                    <Link href={route('years.index')}>
+                    <Link href={route('semesters.index')}>
                         <SecondaryButton>
                             <FaAngleLeft />
                         </SecondaryButton>

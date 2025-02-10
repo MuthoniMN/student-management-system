@@ -51,7 +51,6 @@ export default function ExamArchive({ exams, grades, semesters }: {
         }))
     }
 
-    const { submit } = useForm();
     const handleSubmit = (e, exam: TExam) => {
         e.preventDefault();
         router.put(route('subjects.exams.restore', exam.subject_id), {

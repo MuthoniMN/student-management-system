@@ -38,6 +38,11 @@ class SemesterRequest extends FormRequest
                 'max:255',
                 function($attribute, $value, $fail){
                     $year = $this->input('academic_year_id');
+                    $semester = $this->route('semester');
+
+                    if($semester && $semester->title == $value){
+                        return;
+                    }
 
                     $saved = Semester::where('title', $value)->where('academic_year_id', $year)->get();
 

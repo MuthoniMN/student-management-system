@@ -14,7 +14,7 @@ export default function SemesterArchive({ semesters, years }: { semesters: TSeme
     const start = (page - 1) * perPage;
     const end = start + perPage;
     const [data, setData] = useState(semesters);
-    const [paginatedData, setPaginatedData] = useState(semesters.slice(start, end));
+    const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
     const [filters, setFilters] = useState('');
 
     const { submit, delete: destroy } = useForm();
