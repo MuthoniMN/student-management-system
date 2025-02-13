@@ -231,6 +231,6 @@ class PDFController extends Controller
             'totals' => $totals
         ]);
 
-        return $pdf->download("$student->name Results for $year->year");
+        return $pdf->download("$student->name Results for $academicYear->year");
     }
 }
