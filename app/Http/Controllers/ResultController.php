@@ -6,6 +6,8 @@ use App\Models\Result;
 use App\Models\Subject;
 use App\Models\Exam;
 use App\Models\Student;
+use App\Models\Grade;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\ResultRequest;
@@ -52,6 +54,25 @@ class ResultController extends Controller
         $result = $exam->results()->create($validated);
 
         return redirect(route('subjects.exams.show', [$subject, $exam]))->with('create', "Results added successfully!");
+    }
+
+    public function createMultiple(){
+        return Inertia::render('Result/CreateMultiple', [
+            'semesters' => Semester::with('year')->get(),
+            'subjects' => Subject::all(),
+            'students' => Student::all(),
+            'grades' => Grade::all(),
+            'exams' => Exam::all()
+        ]);
+    }
+
+    public function storeMultiple(Request $request){
+        $results = $request->input('results');
+        $exam = Exam::find($results[0]['exam_id']);
+
+        DB::table('results')->insert($results);
+
+        return redirect(route('subjects.exams.show', [$exam->subject->id, $exam->id]));
     }
 
     /**

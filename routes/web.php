@@ -9,6 +9,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ExamsController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\PDFController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,7 +39,6 @@ Route::put('/grades/restore/', [GradeController::class, 'restore'])
 Route::resource('grades', GradeController::class)
     ->middleware(['auth', 'verified']);
 
-
 Route::put('/students/restore/', [StudentController::class, 'restore'])
     ->middleware(['auth', 'verified'])->name('students.restore');
 
@@ -50,14 +50,41 @@ Route::delete('/students/delete', [StudentController::class, 'deleteMany'])
     ->middleware(['auth', 'verified'])
     ->name('students.delete');
 
+Route::get('/students/{student}/semesters/{semester}', [StudentController::class, 'resultsAggregate'])
+    ->middleware(['auth', 'verified'])
+    ->name('students.results');
+
+Route::get('/students/{student}/years/{academicYear}', [StudentController::class, 'yearlyResults'])
+    ->middleware(['auth', 'verified'])
+    ->name('students.yearly-results');
+
+Route::get('/students/{student}/years/{academicYear}/print', [PDFController::class, 'studentYearlyResults'])
+    ->middleware(['auth', 'verified'])
+    ->name('students.yearly-results.print');
+
+Route::get('/students/{student}/semesters/{semester}/print', [PDFController::class, 'studentResults'])
+    ->middleware(['auth', 'verified'])
+    ->name('students.results.print');
 
 Route::resource('students', StudentController::class)
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
+Route::get('/years/{academicYear}/grades/{grade}/', [YearController::class, 'yearResults'])
+    ->middleware(['auth', 'verified'])->name('years.results');
+
+Route::get('/years/{academicYear}/grades/{grade}/print', [PDFController::class, 'gradeYearResults'])
+    ->middleware(['auth', 'verified'])->name('years.results.print');
+
 Route::resource('years', YearController::class)
     ->parameters([ 'years' => 'academicYear' ])
     ->middleware(['auth', 'verified']);
+
+Route::get('/semesters/{semester}/grades/{grade}/', [SemesterController::class, 'semesterResults'])
+    ->middleware(['auth', 'verified'])->name('semesters.results');
+
+Route::get('/semesters/{semester}/grades/{grade}/print', [PDFController::class, 'gradeSemesterResults'])
+    ->middleware(['auth', 'verified'])->name('semesters.results.print');
 
 Route::put('/semesters/restore/', [SemesterController::class, 'restore'])
     ->middleware(['auth', 'verified'])->name('semesters.restore');
@@ -97,5 +124,9 @@ Route::get('/archive/exams', [ArchiveController::class, 'examsArchive'])->middle
 Route::get('/archive/results', [ArchiveController::class, 'resultsArchive'])->middleware(['auth', 'verified'])->name('archive.results');
 
 Route::get('/archive/grades', [ArchiveController::class, 'gradeArchive'])->middleware(['auth', 'verified'])->name('archive.grades');
+
+Route::get('/results', [ResultController::class, 'createMultiple'])->middleware(['auth', 'verified'])->name('results.create');
+
+Route::post('/results', [ResultController::class, 'storeMultiple'])->middleware(['auth', 'verified'])->name('results.store');
 
 require __DIR__.'/auth.php';
