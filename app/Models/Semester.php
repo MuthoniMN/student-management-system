@@ -19,7 +19,7 @@ class Semester extends Model
     ];
 
     public function year(): BelongsTo {
-        return $this->belongsTo(AcademicYear::class);
+        return $this->belongsTo(AcademicYear::class, 'academic_year_id');
     }
 
     public function exams(): HasMany {
