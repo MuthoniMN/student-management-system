@@ -1,21 +1,17 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { TStudent, TGrade, TResult, TSemester, TYear, TSubject } from "@/types/";
+import { TStudent, TGrade, TSemester, TYear } from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
 import DangerButton from "@/Components/DangerButton";
 import { FaPenToSquare, FaTrash, FaAngleLeft } from "react-icons/fa6";
-import ResultsTable from "@/Components/ResultsTable";
 import SecondaryButton from "@/Components/SecondaryButton";
 
-export default function Show({ student, parent, grade, results, grades, semesters, years, subjects } : {
+export default function Show({ student, parent, grade, semesters, years } : {
     student: TStudent,
     parent: any,
     grade: TGrade,
-    results: TResult[],
-    grades: TGrade[],
     semesters: TSemester[],
-    years: TYear[],
-    subjects: TSubject[],
+    years: TYear[]
 }){
     const { submit, delete: destroy } = useForm();
     const handleSubmit = (e) => {
@@ -69,7 +65,39 @@ export default function Show({ student, parent, grade, results, grades, semester
                         </div>
                     </div>
                 </div>
-                <ResultsTable results={results} grades={grades} semesters={semesters} years={years} subjects={subjects} perPage={10} />
+            </section>
+
+            <section className="space-y-6 p-4">
+                <div className="space-y-4">
+                    <h3 className="font-bold text-lg">Semester Reports</h3>
+                    <section className="flex flex-wrap gap-2 justify-between">
+                        {
+                            semesters.map(sem => (
+                                <div className="w-full md:w-1/4 hover:shadow-md p-4 flex flex-col items-end border-[1px] border-gray-200 space-y-2">
+                                    <h3 className="text-lg font-bold w-full">{sem.title} - {sem.name}</h3>
+                                    <Link href={route('students.results', [student.id, sem.id])}>
+                                        <PrimaryButton>View Results</PrimaryButton>
+                                    </Link>
+                                </div>
+                            ))
+                        }
+                    </section>
+                </div>
+                <div className="space-y-4">
+                    <h3 className="font-bold text-lg">Yearly Reports</h3>
+                    <section className="flex flex-wrap gap-2 justify-between">
+                        {
+                            years.map(sem => (
+                                <div className="w-full md:w-1/4 hover:shadow-md p-4 flex flex-col items-end border-[1px] border-gray-200 space-y-2" key={sem.id}>
+                                    <h3 className="text-lg font-bold w-full">{sem.year} - {sem.grade}</h3>
+                                    <Link href={route('students.yearly-results', [student.id, sem.id])}>
+                                        <PrimaryButton>View Results</PrimaryButton>
+                                    </Link>
+                                </div>
+                            ))
+                        }
+                        </section>
+                    </div>
             </section>
         </AuthenticatedLayout>
     );

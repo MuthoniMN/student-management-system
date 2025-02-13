@@ -3,6 +3,7 @@ import { Head, usePage, Link } from "@inertiajs/react";
 import { TStudent, TGrade, TSemester, TSubject, TResult, TFlash } from "@/types/";
 import ResultsTable from "@/Components/ResultsTable";
 import SecondaryButton from "@/Components/SecondaryButton";
+import PrimaryButton from "@/Components/PrimaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
 
 export default function SemesterShow({ students, semester, subjects, grades, results }:
@@ -32,17 +33,18 @@ export default function SemesterShow({ students, semester, subjects, grades, res
                 <div className="flex justify-between">
                     <h3 className="text-xl font-bold">Results</h3>
                 </div>
-                <ResultsTable results={results} perPage={7} students={students} subjects={subjects} grades={grades} />
-             { flash && (flash.create || flash.update) && (
-                <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>{flash.create || flash.update}</p>
-                </div>
-            )}
-            { flash && flash.delete && (
-                <div className="bg-red-300 text-red-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
-                    <p>{flash.delete}</p>
-                </div>
-            )}
+                <section className="flex flex-wrap gap-2 px-4 justify-between">
+                {
+                    grades.map(grade => (
+                        <div className="w-full md:w-1/4 hover:shadow-md p-4 flex flex-col items-end border-[1px] border-gray-200 space-y-2">
+                            <h3 className="text-lg font-bold">{grade.name}</h3>
+                            <Link href={route('semesters.results', [semester.id, grade.id])}>
+                                <PrimaryButton>View Results</PrimaryButton>
+                            </Link>
+                        </div>
+                    ))
+                }
+            </section>
             </section>
         </AuthenticatedLayout>
     );

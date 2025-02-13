@@ -45,7 +45,7 @@ export default function Index({ subjects }:  { subjects: TSubject[] }){
                 {
                     paginatedData.length > 0 ?
                         data.map(subject =>(
-                            <Link href={route('subjects.show', subject)} key={subject.id} className="w-full md:w-[29%] h-fit min-h-36 border-[1px] border-gray-300 hover:shadow-md px-4 py-2 space-y-2">
+                            <Link href={route('subjects.show', subject)} key={subject.id} className="w-full md:w-[45%] lg:w-[29%] h-fit min-h-36 border-[1px] border-gray-300 hover:shadow-md px-4 py-2 space-y-2">
                                 <h3 className="text-lg font-bold">{subject.title}</h3>
                                 <p>{subject.description}</p>
 

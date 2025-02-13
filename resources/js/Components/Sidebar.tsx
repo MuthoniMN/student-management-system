@@ -78,6 +78,9 @@ export default function Sidebar(){
                                <li>
                                     <Link href={route('subjects.create')} className={`${route().current() === 'subjects.create' && 'text-white underline'} hover:underline`}>Create a New Subject</Link>
                                 </li>
+                               <li>
+                                    <Link href={route('results.create')} className={`${route().current() === 'results.create' && 'text-white underline'} hover:underline`}>Create Results</Link>
+                                </li>
                             </ul>
                         </nav>
                     </div>
