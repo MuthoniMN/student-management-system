@@ -166,3 +166,8 @@ export type TRank = {
     'Semester 1': number,
     'Semester 2': number,
 }
+
+export type TYearSummary = {
+    total_marks: number,
+    rank: number
+}

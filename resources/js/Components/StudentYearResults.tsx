@@ -1,6 +1,6 @@
-import { TYearResult, TStudent, TSubResult, TRank } from "@/types/";
+import { TYearResult, TStudent, TSubResult, TRank, TYearSummary } from "@/types/";
 
-export default function StudentYearResults({ results, student, ranks }: { results: TYearResult , student: TStudent, ranks: TRank }){
+export default function StudentYearResults({ results, student, ranks, yearResults }: { results: TYearResult , student: TStudent, ranks: TRank, yearResults: TYearSummary }){
     const sem1_total = Object.keys(results).reduce((acc, curr) => {
         const val = results[curr];
 
@@ -70,13 +70,13 @@ export default function StudentYearResults({ results, student, ranks }: { result
                         <td className="font-bold px-4 py-2 w-1/3">Totals</td>
                         <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{sem1_total}</td>
                         <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{sem2_total}</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{avg_total}</td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{yearResults.total_marks}</td>
                     </tr>
                     <tr className="bg-gray-700 text-white divide-x-[2px] divide-gray-500 flex w-full">
                         <td className="font-bold px-4 py-2 w-1/3">Rank</td>
                         <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{ranks['Semester 1']}</td>
                         <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{ranks['Semester 2']}</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}></td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{yearResults.rank}</td>
                     </tr>
                 </tfoot>
                 </table>

@@ -1,12 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from "@inertiajs/react";
-import { TYearResult, TYear, TStudent, TRank } from "@/types/";
+import { TYearResult, TYear, TStudent, TRank, TYearSummary } from "@/types/";
 import StudentYearResults from "@/Components/StudentYearResults";
 import { FaAngleLeft } from "react-icons/fa6";
 import SecondaryButton from "@/Components/SecondaryButton";
 import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function YearlyResults({ results, student, year, ranks }: { results: TYearResult, year: TYear, student: TStudent, ranks: TRank }){
+export default function YearlyResults({ results, student, year, ranks, yearResults }: { results: TYearResult, year: TYear, student: TStudent, ranks: TRank, yearResults: TYearSummary }){
+    console.log(yearResults);
     const print = () => {
         window.open(route('students.yearly-results.print', [student.id, year.id]));
     }
@@ -28,7 +29,7 @@ export default function YearlyResults({ results, student, year, ranks }: { resul
         >
             <Head title={`Student Results for ${year.year}`} />
             <section>
-                <StudentYearResults student={student} results={results} ranks={ranks} />
+                <StudentYearResults student={student} results={results} ranks={ranks} yearResults={yearResults} />
             </section>
         </AuthenticatedLayout>
     );

@@ -297,6 +297,7 @@ class StudentController extends Controller
         $results = [];
         $compiled = [];
         $ranks=[];
+        $grade= $student->grade;
         foreach ($semesters as $semester) {
             $results[$semester->title] = $this->getSemesterResults($student, $semester);
         }
@@ -320,8 +321,39 @@ class StudentController extends Controller
             $sub = [ ...$sub, 'average' => $avg, 'grade' => $avg_grade];
             $compiled[$key] = $sub;
         }
+
+        $yearResults = DB::table('subject_averages')
+                ->join('grades as g', 'subject_averages.grade_id', '=', 'g.id')
+                ->select(
+                    'subject_averages.student_id as id',
+                    DB::raw('SUM(subject_averages.subject_avg) as total_marks'),
+                    DB::raw('RANK() OVER (PARTITION BY g.id ORDER BY SUM(subject_averages.subject_avg) DESC) as rank')
+                )
+                ->groupBy('subject_averages.student_id', 'subject_averages.studentId', 'subject_averages.student_name', 'g.id')
+                ->orderByDesc('total_marks')
+                ->fromSub(function ($query) use ($academicYear, $grade) {
+                    $query->from('students as s')
+                        ->join('results as r', 's.id', '=', 'r.student_id')
+                        ->join('exams as e', 'r.exam_id', '=', 'e.id')
+                        ->join('subjects as sub', 'e.subject_id', '=', 'sub.id')
+                        ->join('semesters as sem', 'e.semester_id', '=', 'sem.id')
+                        ->join('academic_years as year', 'sem.academic_year_id', '=', 'year.id')
+                        ->select(
+                            's.id as student_id',
+                            's.studentId as studentId',
+                            's.name as student_name',
+                            'e.grade_id as grade_id',
+                            DB::raw('ROUND(AVG(r.result)) as subject_avg')
+                        )
+                        ->where('year.id', $academicYear->id)
+                        ->where('e.grade_id', $grade->id)
+                        ->groupBy('s.id', 's.studentId', 's.name', 'sub.id', 'e.grade_id');
+                }, 'subject_averages')
+                ->get();
+
         return Inertia::render('Student/YearlyResults', [
             'results' => $compiled,
+            'yearResults' => $yearResults->where('id', $student->id)->first(),
             'ranks' => $ranks,
             'student' => $student,
             'year' => $academicYear
