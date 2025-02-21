@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
@@ -27,5 +28,9 @@ class Student extends Model
 
     public function results(): HasMany {
         return $this->hasMany(Result::class);
+    }
+
+    public function exam_results(){
+        return $this->hasManyThrough(Exam::class, Result::class, 'student_id', 'id', 'id', 'exam_id');
     }
 }

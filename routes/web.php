@@ -125,8 +125,12 @@ Route::get('/archive/results', [ArchiveController::class, 'resultsArchive'])->mi
 
 Route::get('/archive/grades', [ArchiveController::class, 'gradeArchive'])->middleware(['auth', 'verified'])->name('archive.grades');
 
-Route::get('/results', [ResultController::class, 'createMultiple'])->middleware(['auth', 'verified'])->name('results.create');
+Route::get('/results', [ResultController::class, 'index'])->middleware(['auth', 'verified'])->name('results.index');
+
+Route::get('/results/create', [ResultController::class, 'createMultiple'])->middleware(['auth', 'verified'])->name('results.create');
 
 Route::post('/results', [ResultController::class, 'storeMultiple'])->middleware(['auth', 'verified'])->name('results.store');
+
+Route::get('/exams/results', [ResultController::class, 'getExams'])->middleware(['auth', 'verified'])->name('results.byExam');
 
 require __DIR__.'/auth.php';

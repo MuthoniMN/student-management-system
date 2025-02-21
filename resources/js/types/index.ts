@@ -132,42 +132,23 @@ export type TStudentResult = {
 }
 
 export type TSemesterResult = {
-    student_id: number,
-    studentId: string,
-    student_name: string,
-    grade_id: number,
-    grade_name: string,
-    total_marks: number,
-    rank: number
-}
+    [semester: TSemesterKey]: {
+        'total': number,
+        'exams': TSubResult
+    }
+};
+
+export type TSubjectName = 'CRE' | 'Geography' | 'Mathematics' | 'English' | 'Kiswahili' | 'History' | 'Science' | 'Computer';
 
 export type TSubResult = {
-    'Semester 1': number,
-    'Semester 1_grade': string,
-    'Semester 2': number,
-    'Semester 2_grade': string,
-    'average': number,
-    'grade': string,
-    'subject': string
-}
+    [subject in TSubjectName]: number
+};
 
-export type TYearResult = {
-    'CRE': TSubResult,
-    'Geography': TSubResult,
-    'Mathematics': TSubResult,
-    'English': TSubResult,
-    'Kiswahili': TSubResult,
-    'History': TSubResult,
-    'Science': TSubResult,
-    'Computer': TSubResult,
-}
+export type TSemesterKey = string | number;
 
-export type TRank = {
-    'Semester 1': number,
-    'Semester 2': number,
-}
-
-export type TYearSummary = {
-    total_marks: number,
-    rank: number
+export type TResultsSummary = {
+    id: number,
+    name: string,
+    grade: string,
+    semesters: TSemesterResult
 }

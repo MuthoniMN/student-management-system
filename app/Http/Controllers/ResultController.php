@@ -8,19 +8,77 @@ use App\Models\Exam;
 use App\Models\Student;
 use App\Models\Grade;
 use App\Models\Semester;
+use App\Models\AcademicYear;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\ResultRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ResultController extends Controller
 {
+    private function getExamResults(){
+        $results = Result::with(['student:id,studentId,name', 'exam:id,title,subject_id,semester_id,grade_id', 'exam.subject:id,title', 'exam.semester:id,title,academic_year_id', 'exam.semester.year:id,year'])
+            ->select('id', 'result', 'grade', 'exam_id', 'student_id')
+            ->get()
+            ->map(function($result) {
+                $result->subject = $result->exam->subject->title;
+                return $result;
+            })
+            ->groupBy([
+            fn($res) => $res->student->studentId,
+            fn($res) => $res->exam->semester->year->year,
+            fn($res) => $res->exam->grade->name,
+            fn($res) => $res->exam->semester->title,
+            fn($res) => $res->exam->title,
+            ])->map(function ($res, $id) {
+                $student = Student::where('studentId', '=', $id)->first();
+                return [
+                        'id' => $student->studentId,
+                        'name' => $student->name,
+                        'years' => $res->map(function($yearResults, $year) {
+                            return $yearResults->map(function($gradeResults, $grade) {
+                                    return  $gradeResults->map(function($semesterResults) {
+                                        // Compute Totals Per Exam Title
+                                        $examData = $semesterResults->map(function ($examResults) {
+                                            // Calculate student totals per exam
+                                            $examTotals = $examResults->sum('result');
+                                            return [
+                                                'total' => $examTotals,
+                                                'results' => $examResults->pluck('result', 'subject'),
+                                            ];
+                                        });
+
+                                    return $examData;
+                                        });
+                                });
+                        }),
+                    ];
+            });
+
+        return $results;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        try{
+            $examResults = $this->getExamResults();
+
+            return Inertia::render('Result/Index', [
+                'exam_results' => $examResults,
+                'semesters' => Semester::with('year')->get(),
+                'years' => AcademicYear::all(),
+                'students' => Student::all(),
+                'grades' => Grade::all(),
+            ]);
+        } catch(\Throwable $th){
+            print_r($th->getMessage());
+            print_r($th->getTraceAsString());
+            die();
+        }
     }
 
     /**
