@@ -1,28 +1,8 @@
-import { TYearResult, TStudent, TSubResult, TRank, TYearSummary } from "@/types/";
+import { TYearResult, TStudent, TRank } from "@/types/";
+import SubjectResultRow from "@/Components/SubjectResultsRow";
 
-export default function StudentYearResults({ results, student, ranks, yearResults }: { results: TYearResult , student: TStudent, ranks: TRank, yearResults: TYearSummary }){
-    console.log(results);
-    const sem1_total = Object.keys(results).reduce((acc, curr) => {
-        const val = results[curr];
-
-        acc += Number(val['Semester 1']);
-
-        return acc;
-    }, 0);
-    const sem2_total = Object.keys(results).reduce((acc, curr) => {
-        const val = results[curr];
-
-        acc += Number(val['Semester 2']);
-
-        return acc;
-    }, 0);
-    const avg_total = Object.keys(results).reduce((acc, curr) => {
-        const val = results[curr];
-
-        acc += Number(val.average);
-
-        return acc;
-    }, 0);
+export default function StudentYearResults({ yearResults, ranks, student }: {  student: TStudent, yearResults: TYearResult, ranks: TRank }){
+    console.log(ranks);
     return (
         <section className="p-4 space-y-6 max-w-[750px] mx-auto">
             <div className="flex w-full justify-between items-center">
@@ -50,35 +30,28 @@ export default function StudentYearResults({ results, student, ranks, yearResult
                         </tr>
                     </thead>
                 <tbody className="divide-y-[2px] divide-gray-500 w-full">
-                {
-                    Object.keys(results).map(key => {
-                        const subj = results[key] as TSubResult;
-                        return (
-                        <tr className="divide-x-[2px] divide-gray-500 flexw-full" key={key}>
-                            <td className="font-bold px-4 py-2 w-1/3">{subj.subject}</td>
-                            <td className="py-2 px-4 text-center w-[79.5px]">{subj['Semester 1']}</td>
-                            <td className="py-2 px-4 text-center w-[79.5px]">{subj['Semester 1_grade']}</td>
-                            <td className="py-2 px-4 text-center w-[79.5px]">{subj['Semester 2']}</td>
-                            <td className="py-2 px-4 text-center w-[79.5px]">{subj['Semester 2_grade']}</td>
-                            <td className="py-2 px-4 text-center w-[79.5px]">{subj.average}</td>
-                            <td className="py-2 px-4 text-center w-[79.5px]">{subj.grade}</td>
-                        </tr>
-                    )})
-                }
+                    <SubjectResultRow title="Mathematics" results={yearResults} />
+                    <SubjectResultRow title="English" results={yearResults} />
+                    <SubjectResultRow title="Kiswahili" results={yearResults} />
+                    <SubjectResultRow title="Science" results={yearResults} />
+                    <SubjectResultRow title="Computer" results={yearResults} />
+                    <SubjectResultRow title="History" results={yearResults} />
+                    <SubjectResultRow title="Geography" results={yearResults} />
+                    <SubjectResultRow title="CRE" results={yearResults} />
                 </tbody>
                 <tfoot className="divide-y-[2px] divide-gray-500">
                     <tr className="bg-gray-700 text-white divide-x-[2px] divide-gray-500 flex w-full">
                         <td className="font-bold px-4 py-2 w-1/3">Totals</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{sem1_total}</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{sem2_total}</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{avg_total}</td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{yearResults.exams['Semester 1'].total}</td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{yearResults.exams['Semester 2'].total}</td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{yearResults.total}</td>
                     </tr>
-                    {/* <tr className="bg-gray-700 text-white divide-x-[2px] divide-gray-500 flex w-full">
+                    <tr className="bg-gray-700 text-white divide-x-[2px] divide-gray-500 flex w-full">
                         <td className="font-bold px-4 py-2 w-1/3">Rank</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{ranks['Semester 1']}</td>
-                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{ranks['Semester 2']}</td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{ranks['Semester 1'].rank}</td>
+                        <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{ranks['Semester 2'].rank}</td>
                         <td className="font-bold px-4 py-2 w-[156px] text-center" colSpan={2}>{yearResults.rank}</td>
-                    </tr> */}
+                    </tr>
                 </tfoot>
                 </table>
             </div>

@@ -82,7 +82,7 @@ export default function Sidebar(){
                         </nav>
                     </div>
                     <div className="space-y-4 p-2">
-                        <h3 className={`flex justify-between items-center ${current === 3 ? 'text-white font-bold' : 'text-gray-200'}`} onClick={() => handleClick(4)}>
+                        <h3 className={`flex justify-between items-center ${current === 4 ? 'text-white font-bold' : 'text-gray-200'}`} onClick={() => handleClick(4)}>
                         Results
                         {current === 4 ? (<FaAngleUp />) : (<FaAngleDown />)}
                         </h3>

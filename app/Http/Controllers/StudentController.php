@@ -210,6 +210,7 @@ class StudentController extends Controller
         $diff = date_diff($today, $date);
         $diff = explode(' ', $diff->format('%R %y'));
         $grade = ($diff[0] == '-' ? $student->grade_id - ((int)$today->format('y') - (int)$date->format('y')) : $student->grade_id + (int)$diff[1]);
+
         $results = Result::whereHas('exam', function($query) use($semester, $grade){
             $query
                 ->where('semester_id', '=', $semester->id)
@@ -250,13 +251,46 @@ class StudentController extends Controller
               ];
           })->toArray();
 
+        $ranks = Result::whereHas('exam', function($query) use($semester, $grade){
+            $query
+                ->where('semester_id', '=', $semester->id)
+                ->where('grade_id', '=', $grade);
+        })->whereHas('student')->with('student', 'exam', 'exam.subject')->get()
+            ->map(function($result) {
+                $result->subject = $result->exam->subject->title;
+                $result->name = $result->student->name;
+                $result->studentId = $result->student->studentId;
+
+                return $result;
+            })
+          ->groupBy('student_id', 'results.id')
+          ->map(function($result) {
+              return $result
+                  ->groupBy(fn($q) => $q->subject)
+                  ->map(function($subj, $key) {
+                      return [
+                      'id' => $subj->first()->studentId,
+                      'name' => $subj->first()->name,
+                      'average' => round($subj->avg('result')),
+                      'subject' => $key
+                  ];});
+          })->map(function($res) {
+            return [
+                  'total' => round($res->sum('average')),
+                  'id' => $res->first()['id'],
+            ];
+          })->sortByDesc('total')->values()
+                                  ->map(fn($res, $index) => [ 'rank' => $index + 1, 'id' => $res['id'] ]);
+        $rank = $ranks->search(fn($r, $key) => $r['id'] == $student->studentId);
+
         return [
             'id' => $student->id,
             'studentId' => $student->studentId,
             'name' => $student->name,
             'results' => [
                 'subjects' => current($results)['subjects'],
-                'total'=> current($results)['total']
+                'total'=> current($results)['total'],
+                'rank' => $ranks[$rank]['rank']
             ],
         ];
 
@@ -273,65 +307,76 @@ class StudentController extends Controller
     public function yearlyResults(Student $student, AcademicYear $academicYear){
         $semesters = $academicYear->semesters()->get();
         $results = [];
-        $compiled = [];
         $ranks=[];
         $grade= $student->grade;
-        foreach ($semesters as $semester) {
-            $results[$semester->title] = $this->getSemesterResults($student, $semester);
-        }
 
-        foreach ($results as $key => $sem) {
-            foreach ($sem['results']['subjects'] as $result) {
-                $saved = array_key_exists($result['subject_name'], $compiled) ? $compiled[$result['subject_name']] : [];
-                $compiled[$result['subject_name']] = [
-                    ...$saved,
-                    $key => $result['average_marks'],
-                    "{$key}_grade" => $result['grade'],
-                    'subject' => $result['subject_name']
-                ];
-            }
-        }
-
-        foreach ($compiled as $key => $sub) {
-            $avg = round(($sub['Semester 1'] + $sub['Semester 2']) / 2);
-            $avg_grade = $this->getGrade($avg);
-            $sub = [ ...$sub, 'average' => $avg, 'grade' => $avg_grade];
-            $compiled[$key] = $sub;
-        }
+        $ranks = Result::whereHas('exam', function ($query) use ($academicYear, $grade, $student) {
+                $query->where('grade_id', '=', $grade->id)
+                      ->whereHas('semester', function ($q) use ($academicYear) {
+                          $q->where('academic_year_id', '=', $academicYear->id);
+                      });
+            })->whereHas('student')->with('student', 'exam', 'exam.subject', 'exam.semester')
+              ->get()
+              ->map(function ($result) use ($student) {
+                  return [
+                      'studentId' => $result->student->studentId,
+                      'name' => $result->student->name,
+                      'semester' => $result->exam->semester->title,
+                      'subject' => $result->exam->subject->title,
+                      'result' => $result->result,
+                  ];
+              })
+              ->groupBy('semester')
+              ->map(function ($semesterResults, $semester) use ($student) {
+                  return $semesterResults->groupBy('studentId')->map(function ($studentResults, $studentId) {
+                      return [
+                          'studentId' => $studentId,
+                          'name' => $studentResults->first()['name'],
+                          'total' => round(($studentResults->sum('result'))/3),
+                      ];
+                  })->sortByDesc('total') // Sort students by total score per semester
+                    ->values()
+                    ->map(function ($res, $index) use ($student) {
+                            return [
+                                'rank' => $index + 1, // Assign rank based on position
+                                'id' => $res['studentId'],
+                                'total' => $res['total'],
+                            ];
+                    })->filter(fn($res) => $res['id'] === $student->studentId)->collapse();
+              });
 
         $yearResults = Result::whereHas('exam', function ($query) use ($grade, $academicYear) {
                 $query->where('grade_id', '=', $grade->id)
                       ->whereHas('semester', function ($q) use ($academicYear) {
                           $q->where('academic_year_id', '=', $academicYear->id);
                       });
-            })
+            })->whereHas('student')
             ->with(['student:id,name,studentId', 'exam:id,title,subject_id,semester_id', 'exam.subject:id,title', 'exam.semester:id,title'])
-            ->where('student_id', '=', $student->id)
             ->get()
             ->map(function ($result) {
                 return [
                     'exam'      => $result->exam->title,
                     'subject'   => $result->exam->subject->title,
                     'semester'   => $result->exam->semester->title,
+                    'student'   => $result->student->studentId,
                     'result'    => $result->result
                 ];
             })
-            ->groupBy(['studentId', 'semester', 'exam'])
+            ->groupBy(['student', 'semester', 'exam'])
             ->map(function ($studentExams) {
-                return $studentExams->map(function ($examResults, $examTitle) {
+                return $studentExams->map(function ($examResults, $examTitle) use($studentExams) {
                     $subjects = [];
                     $examResults->groupBy('subject')->map(function($result) use (&$subjects) {
                         $result->map(function($res) use (&$subjects) {
                             $res->map(function($res) use (&$subjects){
                                 if(count($subjects) == 8) return;
                                 $subjects[$res['subject']] = $res['result'];
-
-
                             });
                         });
                     });
 
                     return [
+                        'id'       => $studentExams->first()->first()->first()['student'],
                         'total'    => array_sum($subjects),
                         'subjects' => $subjects,
                         'exam'     => $examTitle,
@@ -340,25 +385,27 @@ class StudentController extends Controller
             })
             ->map(function ($studentResults) use (&$subjectTotals) {
                 $totals = [];
-                $subjectAverages = $studentResults->map(function($results) use(&$totals){ collect($results['subjects'])->map(function($val, $key) use(&$totals){
+                $subjectAverages = collect($studentResults)->map(function($results) use(&$totals){
+                    collect($results['subjects'])->map(function($val, $key) use(&$totals){
                     array_key_exists($key, $totals) ? $totals[$key] += $val : $totals[$key] = $val;
                 });
                 });
                 $averages = collect($totals)->map(fn($t) => round($t/2));
 
                 return [
+                    'id'              => $studentResults->first()['id'],
                     'exams'            => $studentResults,
                     'subject_averages'=> $averages,
                     'total'           => round($studentResults->avg('total'))
                 ];
-            })
-            ->sortByDesc('total')
-            ->values()
-            ->toArray();
+            })->sortByDesc('total')
+              ->values()
+              ->map(fn($res, $index) => [ 'rank' => $index + 1, ...$res ])
+              ->filter(fn($res) => $res['id'] === $student->studentId)->collapse();
 
         return Inertia::render('Student/YearlyResults', [
-            'results' => $compiled,
             'yearResults' => $yearResults,
+            'ranks' => $ranks,
             'student' => $student,
             'year' => $academicYear
         ]);

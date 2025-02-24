@@ -25,6 +25,7 @@ export default function StudentsResults({ results }: { results: TStudentResult }
                 <h3 className="text-lg font-bold">Results Summary:</h3>
                 <div className="w-full flex justify-between">
                     <p>Total: {results.results.total}</p>
+                    <p>Rank: {results.results.rank}</p>
                 </div>
             </div>
         </section>
