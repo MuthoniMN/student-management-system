@@ -84,7 +84,7 @@ export default function SemesterList({ semesters, years }: { semesters: TSemeste
                                     <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">
                                     <Link href={route('semesters.show', semester)}>{semester.title}</Link>
                                     </td>
-                                    <td className="px-2 min-w-36">{semester.year}</td>
+                                    <td className="px-2 min-w-36">{(semester.year as TYear).year}</td>
                                     <td className="px-2 min-w-24">{semester.start_date}</td>
                                     <td className="px-2 min-w-36">{semester.end_date}</td>
                                     <td className="px-2 text-center w-fit">

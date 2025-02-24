@@ -5,16 +5,11 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { FaAngleLeft } from "react-icons/fa6";
 
-export default function YearShow({ students, year, semesters, subjects, grades, results }:
+export default function YearShow({ year, grades }:
         {
-        students: TStudent[],
-        subjects: TSubject[],
-        semesters: TSemester[],
         year: TYear,
         grades: TGrade[],
-        results: TResult[]
 }){
-    const flash = usePage().props.flash as TFlash;
     return  (
         <AuthenticatedLayout
             header={

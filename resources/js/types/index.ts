@@ -12,7 +12,8 @@ export type TStudent = {
     address: string,
     email: string,
     phone_number: string,
-    grade: string,
+    grade: string | TGrade,
+    parent: TParent,
     created_at: Date,
     updated_at: Date,
     parent_name?: string
@@ -73,10 +74,9 @@ export type TExam = {
     'subject_id': number,
     'semester_id': number,
     'exam_date': string,
-    'grade': string,
-    'semester': string,
-    'subject': string,
-    'year': string,
+    'grade': TGrade,
+    'semester': TSemester,
+    'subject': TSubject,
     'created_at'?: string,
     'updated_at'?: string
 }
@@ -85,19 +85,12 @@ export type TResult = {
     'id'?: number,
     'result': number,
     'grade': string,
-    'exam_id': number,
-    'exam_title'?: string,
     'student_id': number,
     'grade_id'?: number,
     'semester_id'?: number,
     'subject_id'?: number,
-    'exam'?: string,
-    'type'?: string,
-    'student'?: string,
-    'subject'?: string,
-    'class_grade'?: string,
-    'semester'?: string,
-    'year'?: string,
+    'exam'?: TExam,
+    'student'?: TStudent,
     'date'?: string,
     'created_at'?: string,
     'updated_at'?: string
@@ -143,6 +136,12 @@ export type TSubjectName = 'CRE' | 'Geography' | 'Mathematics' | 'English' | 'Ki
 export type TSubResult = {
     [subject in TSubjectName]: number
 };
+
+export type TRankResult = {
+    id: string,
+    name: string,
+    total: number
+}
 
 export type TSemesterKey = string | number;
 

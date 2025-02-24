@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>{{ $name }} - Report</title>
+    <title>{{ $results['name'] }} - Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,13 +38,12 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ $name }}'s Report</h1>
-        <p>Student ID: {{ $studentId }}</p>
+        <h1>{{ $results['name'] }}'s Report</h1>
+        <p>Student ID: {{ $results['studentId'] }}</p>
     </div>
 
     <div class="results">
-        <p>Total Marks: {{ $total_marks }}</p>
-        <p>Rank: {{ $position }}</p>
+        <p>Total Marks: {{ current($results['results'])['total'] }}</p>
     </div>
 
     <table>
@@ -56,7 +55,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($subjects as $result)
+            @foreach (current($results['results'])['subjects'] as $result)
                 <tr>
                     <td>{{ $result['subject_name'] }}</td>
                     <td>{{ $result['average_marks'] }}</td>

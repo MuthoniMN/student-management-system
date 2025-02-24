@@ -70,11 +70,11 @@ export default function Show({ student, parent, grade, semesters, years } : {
             <section className="space-y-6 p-4">
                 <div className="space-y-4">
                     <h3 className="font-bold text-lg">Semester Reports</h3>
-                    <section className="flex flex-wrap gap-2 justify-between">
+                    <section className="flex flex-wrap gap-4">
                         {
                             semesters.map(sem => (
                                 <div className="w-full md:w-1/4 hover:shadow-md p-4 flex flex-col items-end border-[1px] border-gray-200 space-y-2">
-                                    <h3 className="text-lg font-bold w-full">{sem.title} - {sem.name}</h3>
+                                    <h3 className="text-lg font-bold w-full">{sem.title} - {(sem.year as TYear).year}</h3>
                                     <Link href={route('students.results', [student.id, sem.id])}>
                                         <PrimaryButton>View Results</PrimaryButton>
                                     </Link>
@@ -85,11 +85,11 @@ export default function Show({ student, parent, grade, semesters, years } : {
                 </div>
                 <div className="space-y-4">
                     <h3 className="font-bold text-lg">Yearly Reports</h3>
-                    <section className="flex flex-wrap gap-2 justify-between">
+                    <section className="flex flex-wrap gap-4">
                         {
                             years.map(sem => (
                                 <div className="w-full md:w-1/4 hover:shadow-md p-4 flex flex-col items-end border-[1px] border-gray-200 space-y-2" key={sem.id}>
-                                    <h3 className="text-lg font-bold w-full">{sem.year} - {sem.grade}</h3>
+                                    <h3 className="text-lg font-bold w-full">{sem.year}</h3>
                                     <Link href={route('students.yearly-results', [student.id, sem.id])}>
                                         <PrimaryButton>View Results</PrimaryButton>
                                     </Link>

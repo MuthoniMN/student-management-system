@@ -30,7 +30,7 @@ class ExamsController extends Controller
     {
         return Inertia::render('Exam/Create',[
            'subject' => $subject,
-           'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
+           'semesters' => Semester::with('year')->get(),
             'grades' => Grade::all()
         ]);
     }
@@ -63,18 +63,9 @@ class ExamsController extends Controller
             'exam' => $exam,
             'subject' => $subject,
             'grades' => Grade::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
+            'semesters' => Semester::with('year')->get(),
             'students' => Student::all(),
-            'results' => DB::table('results')
-                ->join('students', 'results.student_id', '=', 'students.id')
-                ->join('grades', 'students.grade_id', '=', 'grades.id')
-                ->join('exams', 'results.exam_id', '=', 'exams.id')
-                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
-                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->where('results.exam_id', $exam->id)
-                ->where('results.deleted_at', null)
-                ->select('results.*', 'students.name as student', 'students.grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'academic_years.year', 'exams.type', 'exams.subject_id', 'exams.title as exam_title')
-                ->get(),
+            'results' => Result::with(['exam', 'student', 'exam.grade', 'exam.subject', 'exam.semester', 'exam.semester.year'])->whereHas('exam_id', '=', $exam->id)->get(),
         ]);
     }
 
@@ -86,7 +77,7 @@ class ExamsController extends Controller
         return Inertia::render('Exam/Edit',[
             'exam' => $exam,
             'subject' => $subject,
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->where('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year as year')->get(),
+            'semesters' => Semester::with('year')->get(),
             'grades' => Grade::all()
         ]);
     }

@@ -8,6 +8,7 @@ use App\Models\Grade;
 use App\Models\AcademicYear;
 use App\Models\Subject;
 use App\Models\Semester;
+use App\Models\Result;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StudentRequest;
@@ -23,15 +24,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = DB::table('students')
-                ->join('grades', 'students.grade_id', 'grades.id')
-                ->join('parents', 'students.parent_id', 'parents.id')
-                ->select('students.*', 'grades.name as grade', 'parents.email', 'parents.phone_number', 'parents.address')
-                ->where('students.deleted_at', null)
-                ->get();
-
         return Inertia::render('Student/List', [
-            "students" => $students,
+            "students" => Student::with(['grade', 'parent'])->get(),
             "grades" => Grade::all(),
             "parents" => ParentData::all()
         ]);
@@ -91,23 +85,12 @@ class StudentController extends Controller
             'student' => $student,
             'grade' => $student->grade,
             'parent' => $student->parent,
-            'semesters' => DB::table('results')
-                ->join('exams', 'results.exam_id', 'exams.id')
-                ->join('grades', 'exams.grade_id', 'grades.id')
-                ->join('semesters', 'exams.semester_id', 'semesters.id')
-                ->select('semesters.id', 'semesters.title', 'grades.name')
-                ->where('results.student_id', $student->id)
-                ->distinct()
-                ->get(),
-            'years' => DB::table('results')
-                ->join('exams', 'results.exam_id', 'exams.id')
-                ->join('grades', 'exams.grade_id', 'grades.id')
-                ->join('semesters', 'exams.semester_id', 'semesters.id')
-                ->join('academic_years', 'semesters.academic_year_id', 'academic_years.id')
-                ->select('academic_years.*', 'grades.name as grade')
-                ->where('results.student_id', $student->id)
-                ->distinct()
-                ->get(),
+            'semesters' => Semester::whereHas('exams.results', function($q) use ($student) {
+                $q->where('student_id', '=', $student->id);
+            })->with('year')->get(),
+            'years' => AcademicYear::whereHas('semesters.exams.results', function($q) use ($student) {
+                $q->where('student_id', '=', $student->id);
+            })->get(),
          ]);
     }
 
@@ -227,59 +210,54 @@ class StudentController extends Controller
         $diff = date_diff($today, $date);
         $diff = explode(' ', $diff->format('%R %y'));
         $grade = ($diff[0] == '-' ? $student->grade_id - ((int)$today->format('y') - (int)$date->format('y')) : $student->grade_id + (int)$diff[1]);
-        $results = DB::table('students as s')
-            ->join('results as r', 's.id', '=', 'r.student_id')
-            ->join('exams as e', 'r.exam_id', '=', 'e.id')
-            ->join('subjects as sub', 'e.subject_id', '=', 'sub.id')
-            ->select(
-                's.id as id',
-                's.studentId as student_id',
-                's.name as student_name',
-                'sub.title as subject_name',
-                'e.semester_id',
-                's.grade_id',
-                DB::raw('SUM(r.result) as total_marks'),
-                DB::raw('ROUND(AVG(r.result)) as average_marks'),
-                DB::raw('RANK() OVER (PARTITION BY sub.id ORDER BY SUM(r.result) DESC) as rank')
-            )
-            ->where('e.semester_id', $semester->id)
-            ->where('e.grade_id', $grade)
-            ->groupBy('s.id', 's.name', 'sub.title', 'sub.id', 'e.semester_id', 's.grade_id')
-            ->orderBy('total_marks')
-            ->get();
+        $results = Result::whereHas('exam', function($query) use($semester, $grade){
+            $query
+                ->where('semester_id', '=', $semester->id)
+                ->where('grade_id', '=', $grade);
+        })->where('student_id', '=', $student->id)
+            ->with('student', 'exam', 'exam.subject')->get()
+            ->map(function($result) {
+                $result->subject = $result->exam->subject->title;
+                $result->name = $result->student->name;
+                $result->studentId = $result->student->studentId;
 
-        $totalResults = $results->where('id', $student->id)->sum('average_marks');
-        $position = 1;
-        $res = [];
-        $subjects = [];
-
-        foreach ($results as $key) {
-            if($key->id != $student->id && !array_key_exists($key->id, $res)){
-                $studentResults = round($results->where('id', $key->id)->sum('average_marks'));
-                $res[$key->id] = $studentResults;
-                if($studentResults > $totalResults){
-                    $position += 1;
-                }
-            }
-        }
-
-
-
-        foreach ($results->where('id', $student->id) as $key) {
-            $subjects[] = [
-                'subject_name' => $key->subject_name,
-                'average_marks' => $key->average_marks,
-                'grade' => $this->getGrade($key->average_marks)
-            ];
-        }
+                return $result;
+            })
+          ->groupBy('student_id', 'results.id')
+          ->map(function($result) {
+              return $result
+                  ->groupBy(fn($q) => $q->subject)
+                  ->map(function($subj, $key) {
+                      return [
+                      'id' => $subj->first()->studentId,
+                      'name' => $subj->first()->name,
+                      'average' => round($subj->avg('result')),
+                      'subject' => $key
+                  ];});
+          })->map(function($res) {
+                return [
+                  'id' => $res->first()['id'],
+                  'name' => $res->first()['name'],
+                  'subjects' => $res->reduce(function($c, $val){
+                      $c[] = [
+                          'subject_name' => $val['subject'],
+                          'average_marks' => $val['average'],
+                          'grade' => $this->getGrade($val['average']),
+                      ];
+                      return $c;
+                  }, []),
+                  'total' => round($res->sum('average'))
+              ];
+          })->toArray();
 
         return [
             'id' => $student->id,
             'studentId' => $student->studentId,
             'name' => $student->name,
-            'total_marks' => $totalResults,
-            'subjects' => $subjects,
-            'position' => $position
+            'results' => [
+                'subjects' => current($results)['subjects'],
+                'total'=> current($results)['total']
+            ],
         ];
 
     }
@@ -303,7 +281,7 @@ class StudentController extends Controller
         }
 
         foreach ($results as $key => $sem) {
-            foreach ($sem['subjects'] as $result) {
+            foreach ($sem['results']['subjects'] as $result) {
                 $saved = array_key_exists($result['subject_name'], $compiled) ? $compiled[$result['subject_name']] : [];
                 $compiled[$result['subject_name']] = [
                     ...$saved,
@@ -312,7 +290,6 @@ class StudentController extends Controller
                     'subject' => $result['subject_name']
                 ];
             }
-            $ranks[$key] = $sem['position'];
         }
 
         foreach ($compiled as $key => $sub) {
@@ -322,39 +299,66 @@ class StudentController extends Controller
             $compiled[$key] = $sub;
         }
 
-        $yearResults = DB::table('subject_averages')
-                ->join('grades as g', 'subject_averages.grade_id', '=', 'g.id')
-                ->select(
-                    'subject_averages.student_id as id',
-                    DB::raw('SUM(subject_averages.subject_avg) as total_marks'),
-                    DB::raw('RANK() OVER (PARTITION BY g.id ORDER BY SUM(subject_averages.subject_avg) DESC) as rank')
-                )
-                ->groupBy('subject_averages.student_id', 'subject_averages.studentId', 'subject_averages.student_name', 'g.id')
-                ->orderByDesc('total_marks')
-                ->fromSub(function ($query) use ($academicYear, $grade) {
-                    $query->from('students as s')
-                        ->join('results as r', 's.id', '=', 'r.student_id')
-                        ->join('exams as e', 'r.exam_id', '=', 'e.id')
-                        ->join('subjects as sub', 'e.subject_id', '=', 'sub.id')
-                        ->join('semesters as sem', 'e.semester_id', '=', 'sem.id')
-                        ->join('academic_years as year', 'sem.academic_year_id', '=', 'year.id')
-                        ->select(
-                            's.id as student_id',
-                            's.studentId as studentId',
-                            's.name as student_name',
-                            'e.grade_id as grade_id',
-                            DB::raw('ROUND(AVG(r.result)) as subject_avg')
-                        )
-                        ->where('year.id', $academicYear->id)
-                        ->where('e.grade_id', $grade->id)
-                        ->groupBy('s.id', 's.studentId', 's.name', 'sub.id', 'e.grade_id');
-                }, 'subject_averages')
-                ->get();
+        $yearResults = Result::whereHas('exam', function ($query) use ($grade, $academicYear) {
+                $query->where('grade_id', '=', $grade->id)
+                      ->whereHas('semester', function ($q) use ($academicYear) {
+                          $q->where('academic_year_id', '=', $academicYear->id);
+                      });
+            })
+            ->with(['student:id,name,studentId', 'exam:id,title,subject_id,semester_id', 'exam.subject:id,title', 'exam.semester:id,title'])
+            ->where('student_id', '=', $student->id)
+            ->get()
+            ->map(function ($result) {
+                return [
+                    'exam'      => $result->exam->title,
+                    'subject'   => $result->exam->subject->title,
+                    'semester'   => $result->exam->semester->title,
+                    'result'    => $result->result
+                ];
+            })
+            ->groupBy(['studentId', 'semester', 'exam'])
+            ->map(function ($studentExams) {
+                return $studentExams->map(function ($examResults, $examTitle) {
+                    $subjects = [];
+                    $examResults->groupBy('subject')->map(function($result) use (&$subjects) {
+                        $result->map(function($res) use (&$subjects) {
+                            $res->map(function($res) use (&$subjects){
+                                if(count($subjects) == 8) return;
+                                $subjects[$res['subject']] = $res['result'];
+
+
+                            });
+                        });
+                    });
+
+                    return [
+                        'total'    => array_sum($subjects),
+                        'subjects' => $subjects,
+                        'exam'     => $examTitle,
+                    ];
+                });
+            })
+            ->map(function ($studentResults) use (&$subjectTotals) {
+                $totals = [];
+                $subjectAverages = $studentResults->map(function($results) use(&$totals){ collect($results['subjects'])->map(function($val, $key) use(&$totals){
+                    array_key_exists($key, $totals) ? $totals[$key] += $val : $totals[$key] = $val;
+                });
+                });
+                $averages = collect($totals)->map(fn($t) => round($t/2));
+
+                return [
+                    'exams'            => $studentResults,
+                    'subject_averages'=> $averages,
+                    'total'           => round($studentResults->avg('total'))
+                ];
+            })
+            ->sortByDesc('total')
+            ->values()
+            ->toArray();
 
         return Inertia::render('Student/YearlyResults', [
             'results' => $compiled,
-            'yearResults' => $yearResults->where('id', $student->id)->first(),
-            'ranks' => $ranks,
+            'yearResults' => $yearResults,
             'student' => $student,
             'year' => $academicYear
         ]);

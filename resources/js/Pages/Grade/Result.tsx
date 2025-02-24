@@ -34,7 +34,7 @@ export default function DisplayResults({ results, semester, grade, year }: { res
         >
             <Head title="Grade Results" />
             <section>
-                <RankTable results={results} />
+                <RankTable results={Object.values(results)} />
             </section>
         </AuthenticatedLayout>
     );

@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage, router } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import DangerButton from "@/Components/DangerButton";
 import TextInput from "@/Components/TextInput";
 import Pagination from "@/Components/Pagination";
-import  { TStudent, TFilter, TFlash } from "@/types/";
+import  { TStudent, TFilter, TFlash, TParent, TGrade } from "@/types/";
 
-export default function List({ students, parents, grades }: { students: TStudent[], parents: any, grades: any}){
+export default function List({ students, parents, grades }: { students: TStudent[], parents: TParent[], grades: TGrade[]}){
     const [filters, setFilters] = useState<TFilter>({
         type: '',
         value: ''
@@ -24,7 +24,7 @@ export default function List({ students, parents, grades }: { students: TStudent
     const [gradeId, setGradeId] = useState('');
     const flash = usePage().props.flash as TFlash;
 
-    const handleUpdate = (e) => {
+    const handleUpdate = (e: FormEvent) => {
         e.preventDefault();
         router.patch('students/upgrade', {
             data: {
@@ -34,7 +34,7 @@ export default function List({ students, parents, grades }: { students: TStudent
         })
     }
 
-    const handleDelete = (e) => {
+    const handleDelete = (e: FormEvent) => {
         e.preventDefault();
         router.delete('students/delete', {
             data: { 'studentIds': selected }
@@ -45,7 +45,7 @@ export default function List({ students, parents, grades }: { students: TStudent
         setPaginatedData(data.slice(start,end));
     }, [page, data])
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const key = e.target.name;
         const value = e.target.value;
 
@@ -75,8 +75,8 @@ export default function List({ students, parents, grades }: { students: TStudent
 
     useEffect(() => {
         if(filters.type && filters.value){
-            filters.type == "grade" ? setData(students.filter(student => student.grade_id == +filters.value)) :
-            filters.type == 'parent' ? setData(students.filter(student => student.parent_id == +filters.value)) : setData(students);
+            filters.type == "grade" ? setData(students.filter(student => (student.grade as TGrade).id == +filters.value)) :
+            filters.type == 'parent' ? setData(students.filter(student => student.parent.id == +filters.value)) : setData(students);
         }else{
             setData(students);
         }
@@ -84,7 +84,7 @@ export default function List({ students, parents, grades }: { students: TStudent
     }, [filters]);
 
 
-    const handleSearch = (e) => {
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const results = students.filter(student => student.name.toLowerCase().includes(value.toLowerCase()));
 
@@ -156,10 +156,10 @@ export default function List({ students, parents, grades }: { students: TStudent
                                     </td>
                                     <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out"><Link href={route('students.show', student.id)}>{student.studentId}</Link></td>
                                     <td className="px-2 min-w-36">{student.name}</td>
-                                    <td className="px-2 min-w-24">{student.grade}</td>
-                                    <td className="px-2 min-w-36">{student.email}</td>
-                                    <td className="px-2 min-w-24">{student.phone_number}</td>
-                                    <td className="px-2 min-w-24">{student.address}</td>
+                                    <td className="px-2 min-w-24">{(student.grade as TGrade).name}</td>
+                                    <td className="px-2 min-w-36">{student.parent.email}</td>
+                                    <td className="px-2 min-w-24">{student.parent.phone_number}</td>
+                                    <td className="px-2 min-w-24">{student.parent.address}</td>
                                 </tr>
                             )) :
                                 <tr className="py-2 text-center">

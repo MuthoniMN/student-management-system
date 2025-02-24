@@ -169,7 +169,9 @@ export default function ResultsTable({ exam_results, grades, semesters, students
                                 </tr>
                         )}) :
                         <tr className="py-2">
-                            <td className="text-center" colSpan={15}>No Results to Display</td>
+                            <td className="text-center" colSpan={15}>
+                                {(type.length <= 0 || grade.length <= 0 || year.length <= 0 || semester.length <= 0) ? "Filter to view results" : 'No Results to Display'}
+                            </td>
                         </tr>
                     }
                 </tbody>

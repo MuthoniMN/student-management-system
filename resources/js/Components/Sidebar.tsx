@@ -78,12 +78,27 @@ export default function Sidebar(){
                                <li>
                                     <Link href={route('subjects.create')} className={`${route().current() === 'subjects.create' && 'text-white underline'} hover:underline`}>Create a New Subject</Link>
                                 </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div className="space-y-4 p-2">
+                        <h3 className={`flex justify-between items-center ${current === 3 ? 'text-white font-bold' : 'text-gray-200'}`} onClick={() => handleClick(4)}>
+                        Results
+                        {current === 4 ? (<FaAngleUp />) : (<FaAngleDown />)}
+                        </h3>
+                        <nav className={`${current === 4 ? 'block' : 'hidden'}`}>
+                            <ul className="space-y-4">
+                               <li>
+                                    <Link href={route('results.index')} className={`${route().current() === 'results.create' && 'text-white underline'} hover:underline`}>View Results</Link>
+                                </li>
+
                                <li>
                                     <Link href={route('results.create')} className={`${route().current() === 'results.create' && 'text-white underline'} hover:underline`}>Create Results</Link>
                                 </li>
                             </ul>
                         </nav>
                     </div>
+
                 </div>
                 <SecondaryButton>
                     <Link href={route('archive')} className="flex gap-4">Archive <RiArchiveStackFill className="text-lg" /></Link>

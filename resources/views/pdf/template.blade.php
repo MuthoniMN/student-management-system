@@ -43,12 +43,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($results as $student)
+            @foreach ($results as $key => $student)
                 <tr>
-                    <td>{{ $student->rank }}</td>
-                    <td>{{ $student->studentId }}</td>
-                    <td>{{ $student->student_name }}</td>
-                    <td>{{ $student->total_marks }}</td>
+                    <td>{{ $key + 1 }}</td>
+                    <td>{{ $student['id'] }}</td>
+                    <td>{{ $student['name'] }}</td>
+                    <td>{{ $student['total'] }}</td>
                 </tr>
             @endforeach
         </tbody>

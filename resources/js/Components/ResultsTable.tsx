@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import { TGrade, TStudent, TResult, TSemester, TYear, TFilter, TSubject} from "@/types/";
 import Pagination from "@/Components/Pagination";
 import { Link, useForm, router } from "@inertiajs/react";
@@ -7,6 +7,8 @@ import DangerButton from "@/Components/DangerButton";
 import { FaTrash, FaPenToSquare } from "react-icons/fa6";
 import { LuArchiveRestore } from "react-icons/lu";
 import { getGrade } from "@/Components/ResultForm";
+
+type FilterFunction = (res: TResult) => boolean
 
 export default function ResultsTable({ results, grades, semesters, students, years, subjects, perPage=5, archive=false }:
     {
@@ -44,28 +46,28 @@ export default function ResultsTable({ results, grades, semesters, students, yea
         const { type: filterType, value: filterValue } = filters;
 
         // Base filter conditions
-        const baseFilters = [];
-        if (type) baseFilters.push(result => result.type === type);
+        const baseFilters = [] as FilterFunction[];
+        if (type) baseFilters.push(result => result.exam?.type === type);
         if (grade) baseFilters.push(result => result.grade === grade);
-        if (subject) baseFilters.push(result => result.subject_id === +subject);
+        if (subject) baseFilters.push(result => result.exam?.subject.id === +subject);
 
         // Additional filter conditions based on filterType
         if (filterType && filterValue) {
             switch (filterType) {
                 case 'student':
-                    baseFilters.push(result => result.student_id === +filterValue);
+                    baseFilters.push(result => result.student?.id === +filterValue);
                     break;
                 case 'grade':
-                    baseFilters.push(result => result.grade_id === +filterValue);
+                    baseFilters.push(result => result.exam?.grade.id === +filterValue);
                     break;
                 case 'semester':
-                    baseFilters.push(result => result.semester_id === +filterValue);
+                    baseFilters.push(result => result.exam?.semester.id === +filterValue);
                     break;
                 case 'year':
-                    baseFilters.push(result => result.year === filterValue);
+                    baseFilters.push(result => `${(result.exam?.semester.year as TYear).id}` == filterValue);
                     break;
                 case 'subject':
-                    baseFilters.push(result => result.subject_id === +filterValue);
+                    baseFilters.push(result => result.exam?.subject.id === +filterValue);
                     break;
                 default:
                     break;
@@ -84,7 +86,7 @@ export default function ResultsTable({ results, grades, semesters, students, yea
         filterResults(results, filters, type, grade, subject);
     }, [filters, type, grade, subject]);
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const key = e.target.name;
         const value = e.target.value;
 
@@ -95,14 +97,14 @@ export default function ResultsTable({ results, grades, semesters, students, yea
     }
 
     const { submit, delete: destroy } = useForm();
-    const handleSubmit = (e, result: TResult) => {
+    const handleSubmit = (e: FormEvent, result: TResult) => {
         e.preventDefault();
-        submit('delete', route('subjects.exams.results.destroy', [result.subject_id, result.exam_id, result.id]));
+        submit('delete', route('subjects.exams.results.destroy', [result.subject_id, result.exam?.id, result.id]));
     };
 
-    const handleRestore = (e, result: TResult) => {
+    const handleRestore = (e: FormEvent, result: TResult) => {
         e.preventDefault();
-        router.put(route('subjects.exams.results.restore',[result.subject_id, result.exam_id]), {
+        router.put(route('subjects.exams.results.restore',[result.subject_id, result.exam?.id]), {
             id: result.id
         });
     };
@@ -160,7 +162,7 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                         <>
                             <option value="">--</option>
                             {semesters && semesters.map(semester => (
-                                    <option key={semester.id} value={semester.id}>{semester.title} - {semester.year}</option>
+                                    <option key={semester.id} value={semester.id}>{semester.title} - {(semester.year as TYear).year}</option>
                     ))}</> : filters.type === 'student' ?
                         <>
                         <option value="">--</option>
@@ -199,18 +201,18 @@ export default function ResultsTable({ results, grades, semesters, students, yea
                     {
                         paginatedData.length > 0 ? paginatedData.map(result => (
                             <tr className="divide-x-2 divide-gray-300" key={result.id}>
-                            {students &&<td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{result.student}</td>}
-                            {grades && <td className="px-2 min-w-36">{result.class_grade}</td>}
-                            {semesters && <td className="px-2 min-w-36">{result.semester} ({result.year})</td>}
-                            {subjects && <td className="px-2 min-w-36">{result.subject}</td>}
-                                <td className="px-2 min-w-36">{result.exam_title}</td>
+                            {students &&<td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{result.student?.name}</td>}
+                            {grades && <td className="px-2 min-w-36">{result.exam?.grade.name}</td>}
+                            {semesters && <td className="px-2 min-w-36">{result.exam?.semester.title} ({(result.exam?.semester?.year as TYear).year})</td>}
+                            {subjects && <td className="px-2 min-w-36">{result.exam?.subject.title}</td>}
+                                <td className="px-2 min-w-36">{result.exam?.title}</td>
                                 <td className="px-2 min-w-36">{result.result}</td>
                                 <td className="px-2 min-w-36">{result.grade}</td>
                                 { !archive ?
                                 (
                                     <>
                                     <td className="px-2 text-center w-fit">
-                                    <Link href={route('subjects.exams.results.edit', [result.subject_id, result.exam_id, result.id])}>
+                                    <Link href={route('subjects.exams.results.edit', [result.exam?.subject.id, result.exam?.id, result.id])}>
                                         <SecondaryButton>
                                             <FaPenToSquare />
                                         </SecondaryButton>
@@ -240,21 +242,21 @@ export default function ResultsTable({ results, grades, semesters, students, yea
             <div className="px-2 space-y-2">
                 <h3 className="text-lg font-bold">Exam Results: </h3>
                 <div className="italic flex w-full justify-between">
-                {!students && (<p>Total Marks: {data.filter(res => res.type == 'exam').length > 0 ? Math.floor(data.filter(res => res.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr)) : 0}</p>)}
-                    <p>Average: {data.filter(res => res.type == 'exam').length > 0 ? Math.floor(data.filter(res => res.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr) / data.filter(res => res.type == 'exam').length) : 0}</p>
-                    <p>Average Grade: {getGrade(data.filter(res => res.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.filter(res => res.type == 'exam').length)}</p>
-                    <p>Last Mark: {data.filter(res => res.type == 'exam').length > 0 ? Math.min(...data.filter(res => res.type == 'exam').map(res => res.result)) : 0}</p>
-                    <p>Top Mark: {data.filter(res => res.type == 'exam').length > 0 ? Math.max(...data.filter(res => res.type == 'exam').map(res => res.result)) : 0}</p>
+                {!students && (<p>Total Marks: {data.filter(res => res.exam?.type == 'exam').length > 0 ? Math.floor(data.filter(res => res.exam?.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr)) : 0}</p>)}
+                    <p>Average: {data.filter(res => res.exam?.type == 'exam').length > 0 ? Math.floor(data.filter(res => res.exam?.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr) / data.filter(res => res.exam?.type == 'exam').length) : 0}</p>
+                    <p>Average Grade: {getGrade(data.filter(res => res.exam?.type == 'exam').map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.filter(res => res.exam?.type == 'exam').length)}</p>
+                    <p>Last Mark: {data.filter(res => res.exam?.type == 'exam').length > 0 ? Math.min(...data.filter(res => res.exam?.type == 'exam').map(res => res.result)) : 0}</p>
+                    <p>Top Mark: {data.filter(res => res.exam?.type == 'exam').length > 0 ? Math.max(...data.filter(res => res.exam?.type == 'exam').map(res => res.result)) : 0}</p>
                     {students && (<p>Total Students: {students.length}</p>)}
                 </div>
             </div>
             <div className="px-2 space-y-2">
                 <h3 className="text-lg font-bold">CAT Results: </h3>
                 <div className="italic flex w-full justify-between">
-                    <p>Average: {data.filter(res => res.type == 'CAT').length > 0 ? Math.floor(data.filter(res => res.type == 'CAT').map(res => res.result).reduce((acc, curr) => acc + curr) / data.filter(res => res.type == 'CAT').length) : 0}</p>
-                    <p>Average Grade: {getGrade(data.filter(res => res.type == 'CAT').map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.filter(res => res.type == 'CAT').length)}</p>
-                    <p>Last Mark: {data.filter(res => res.type == 'CAT').length > 0 ? Math.min(...data.filter(res => res.type == 'CAT').map(res => res.result)) : 0}</p>
-                    <p>Top Mark: {data.filter(res => res.type == 'CAT').length > 0 ? Math.max(...data.filter(res => res.type == 'CAT').map(res => res.result)) : 0}</p>
+                    <p>Average: {data.filter(res => res.exam?.type == 'CAT').length > 0 ? Math.floor(data.filter(res => res.exam?.type == 'CAT').map(res => res.result).reduce((acc, curr) => acc + curr) / data.filter(res => res.exam?.type == 'CAT').length) : 0}</p>
+                    <p>Average Grade: {getGrade(data.filter(res => res.exam?.type == 'CAT').map(res => res.result).reduce((acc, curr) => acc + curr, 0) / data.filter(res => res.exam?.type == 'CAT').length)}</p>
+                    <p>Last Mark: {data.filter(res => res.exam?.type == 'CAT').length > 0 ? Math.min(...data.filter(res => res.exam?.type == 'CAT').map(res => res.result)) : 0}</p>
+                    <p>Top Mark: {data.filter(res => res.exam?.type == 'CAT').length > 0 ? Math.max(...data.filter(res => res.exam?.type == 'CAT').map(res => res.result)) : 0}</p>
                     {students && (<p>Total Students: {students.length}</p>)}
                 </div>
             </div>

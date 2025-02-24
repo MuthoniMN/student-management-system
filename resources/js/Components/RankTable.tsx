@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Pagination from "@/Components/Pagination";
-import { TSemesterResult } from "@/types/";
+import { TRankResult } from "@/types/";
 
-export default function RankTable({ results } : { results: TSemesterResult[] }){
+export default function RankTable({ results } : { results: TRankResult[] }){
     const [page, setPage] = useState(1);
-    const [data, setData] = useState(results);
+    const [data, setData] = useState(results.sort((a,b) => b.total - a.total));
     const perPage = 10;
     const start = (page - 1) * perPage;
     const end = start + perPage;
@@ -13,6 +13,8 @@ export default function RankTable({ results } : { results: TSemesterResult[] }){
     useEffect(() => {
             setPaginatedData(data.slice(start,end));
     }, [page, data]);
+
+    console.log(data);
 
     return (
         <section className="p-4">
@@ -27,12 +29,12 @@ export default function RankTable({ results } : { results: TSemesterResult[] }){
                 </thead>
                 <tbody className="divide-y-[2px] divide-gray-300">
                     {
-                        paginatedData.length > 0 ? paginatedData.map(res => (
-                            <tr className="divide-x-[2px] divide-gray-300 py-[2px]" key={res.student_id}>
-                                <td className="px-2">{res.rank}</td>
-                                <td className="px-2">{res.studentId}</td>
-                                <td className="px-2">{res.student_name}</td>
-                                <td className="px-2">{res.total_marks}</td>
+                        paginatedData.length > 0 ? paginatedData.map((res, id) => (
+                            <tr className="divide-x-[2px] divide-gray-300 py-[2px]" key={res.id}>
+                                <td className="px-2">{id + 1}</td>
+                                <td className="px-2">{res.id}</td>
+                                <td className="px-2">{res.name}</td>
+                                <td className="px-2">{res.total}</td>
                             </tr>
                         )) : <tr className="text-center">
                             <td colSpan={4}>No Results Available</td>

@@ -12,6 +12,7 @@ use App\Models\Subject;
 use App\Models\Exam;
 use App\Models\Result;
 use App\Models\Grade;
+use App\Models\Semester;
 
 class ArchiveController extends Controller
 {
@@ -22,17 +23,12 @@ class ArchiveController extends Controller
     public function semesterArchive(){
         return Inertia::render('Archive/Semester', [
             'years' => AcademicYear::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', 'academic_years.id')->whereNot('semesters.deleted_at', null)->select('semesters.*', 'academic_years.year')->get(),
+            'semesters' => Semester::onlyTrashed()->get(),
         ]);
     }
 
     public function studentArchive(){
-        $students = DB::table('students')
-                ->join('grades', 'students.grade_id', 'grades.id')
-                ->join('parents', 'students.parent_id', 'parents.id')
-                ->select('students.*', 'grades.name as grade', 'parents.email', 'parents.phone_number', 'parents.address')
-                ->whereNot('students.deleted_at', null)
-                ->get();
+        $students = Student::onlyTrashed()->with(['parent', 'grade'])->get();
 
         return Inertia::render('Archive/Student', [
             "students" => $students,
@@ -56,38 +52,19 @@ class ArchiveController extends Controller
 
     public function examsArchive(){
         return Inertia::render('Archive/Exam', [
-            'exams' => DB::table('exams')
-                ->join('grades', 'exams.grade_id', '=', 'grades.id')
-                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
-                ->join('subjects', 'exams.subject_id', '=', 'subjects.id')
-                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year as year', 'subjects.title as subject')
-                ->whereNot('exams.deleted_at', null)
-                ->get(),
+            'exams' => Exam::onlyTrashed()->get(),
             'grades' => Grade::all(),
-            'semesters' => DB::table('semesters')->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')->select('semesters.*', 'academic_years.year as year')->where('semesters.deleted_at', null)->get(),
+            'semesters' => Semester::with('year')->get(),
         ]);
     }
 
     public function resultsArchive(){
         return Inertia::render('Archive/Results', [
             'grades' => Grade::all(),
-            'semesters' => DB::table('semesters')
-                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->select('semesters.*', 'academic_years.year as year')
-                ->get(),
+            'semesters' => Semester::all(),
             'subjects' => Subject::all(),
             'students' => Student::all(),
-            'results' => DB::table('results')
-                ->join('students', 'results.student_id', '=', 'students.id')
-                ->join('exams', 'results.exam_id', '=', 'exams.id')
-                ->join('grades', 'exams.grade_id', '=', 'grades.id')
-                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
-                ->join('subjects', 'exams.subject_id', '=', 'subjects.id')
-                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->whereNot('results.deleted_at', null)
-                ->select('results.*', 'students.name as student', 'grades.id as grade_id', 'grades.name as class_grade', 'semesters.title as semester', 'semesters.id as semester_id', 'academic_years.year', 'subjects.id as subject_id', 'subjects.title as subject', 'exams.type', 'exams.subject_id', 'exams.title as exam_title')
-                ->get(),
+            'results' => Result::onlyTrashed(['exam', 'student', 'exam.grade', 'exam.subject', 'exam.semester', 'exam.semester.year'])->get(),
         ]);
 
     }

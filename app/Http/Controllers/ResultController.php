@@ -18,7 +18,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class ResultController extends Controller
 {
     private function getExamResults(){
-        $results = Result::with(['student:id,studentId,name', 'exam:id,title,subject_id,semester_id,grade_id', 'exam.subject:id,title', 'exam.semester:id,title,academic_year_id', 'exam.semester.year:id,year'])
+        $results = Result::whereHas('student')->with(['student:id,studentId,name', 'exam:id,title,subject_id,semester_id,grade_id', 'exam.subject:id,title', 'exam.semester:id,title,academic_year_id', 'exam.semester.year:id,year'])
             ->select('id', 'result', 'grade', 'exam_id', 'student_id')
             ->get()
             ->map(function($result) {
@@ -26,7 +26,7 @@ class ResultController extends Controller
                 return $result;
             })
             ->groupBy([
-            fn($res) => $res->student->studentId,
+            function($res){ return $res->student->studentId; },
             fn($res) => $res->exam->semester->year->year,
             fn($res) => $res->exam->grade->name,
             fn($res) => $res->exam->semester->title,
@@ -88,17 +88,7 @@ class ResultController extends Controller
     {
         return Inertia::render('Result/Create', [
             'subject' => $subject,
-            'exam' => DB::table('exams')
-                ->join('grades', 'exams.grade_id', '=', 'grades.id')
-                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
-                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year')
-                ->where('exams.id', $exam->id)->where('exams.deleted_at', null)->first(),
-            'students' => DB::table('students')
-                ->join('grades', 'students.grade_id', '=', 'grades.id')
-                ->select('students.*', 'grades.name as grade')
-                ->where('students.deleted_at', null)
-                ->get()
+            'exam' => Exam::with('subject', 'grade')->where('subject.id', '=', $subject->id)->get()
         ]);
     }
 
@@ -148,18 +138,7 @@ class ResultController extends Controller
     {
          return Inertia::render('Result/Edit', [
             'subject' => $subject,
-            'exam' => DB::table('exams')
-                ->join('grades', 'exams.grade_id', '=', 'grades.id')
-                ->join('semesters', 'exams.semester_id', '=', 'semesters.id')
-                ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id')
-                ->select('exams.*', 'grades.name as grade', 'semesters.title as semester', 'academic_years.year')
-                ->where('exams.id', $exam->id)->where('exams.deleted_at', null)->first(),
-            'result' => $result,
-            'students' => DB::table('students')
-                ->join('grades', 'students.grade_id', '=', 'grades.id')
-                ->select('students.*', 'grades.name as grade')
-                ->where('students.deleted_at', null)
-                ->get()
+            'exam' => Exam::with('subject', 'grade')->where('subject.id', '=', $subject->id)->get()
         ]);
     }
 

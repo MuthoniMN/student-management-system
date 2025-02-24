@@ -1,8 +1,9 @@
+import { FormEvent, ChangeEvent } from "react";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import { useForm, router } from "@inertiajs/react";
-import { TSemester, TSubject, TGrade, TExam} from "@/types/";
+import { TSemester, TSubject, TGrade, TExam, TYear} from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function ExamForm({ exam, semesters, grades, subject }: { exam?: TExam, semesters: TSemester[], grades: TGrade[], subject: TSubject }){
@@ -10,13 +11,13 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
         'title': (exam && exam.title) || '',
         'type': (exam && exam.type) || '',
         'file': (exam && exam.file) || null,
-        'grade_id': (exam && exam.grade_id) || 0,
-        'semester_id': (exam && exam.semester_id) || 0,
+        'grade_id': (exam && exam.grade.id) || 0,
+        'semester_id': (exam && exam.semester.id) || 0,
         'exam_date': (exam && exam.exam_date) || null
     });
     console.log(semesters);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
         if(!exam){
@@ -33,7 +34,7 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
         );
     }
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const key = e.target.name;
         const value = e.target.value;
 
@@ -62,7 +63,7 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
             </div>
             <div className="space-y-2 w-full">
                 <InputLabel htmlFor="file" value="Document: " />
-                <TextInput name="file" id="file" type="file" className="w-full" onChange={(e) => setData({ ...data, file: e.target.files[0] })} />
+                <TextInput name="file" id="file" type="file" className="w-full" onChange={(e: ChangeEvent<HTMLInputElement>) => setData({ ...data, file: (e.target.files as FileList)[0] })} />
                 {progress && <progress value={progress.percentage} max="100" className="bg-gray-200">{progress.percentage}%</progress>}
                 {errors.file && <InputError message={errors.file} />}
             </div>
@@ -89,7 +90,7 @@ export default function ExamForm({ exam, semesters, grades, subject }: { exam?: 
                     <option value="null">-- Please Select --</option>
                     {
                         semesters.map(semester => (
-                            <option key={semester.id} value={semester.id}>{semester.title} - {semester.year}</option>
+                            <option key={semester.id} value={semester.id}>{semester.title} - {(semester.year as TYear).year}</option>
                         ))
                     }
                 </select>
