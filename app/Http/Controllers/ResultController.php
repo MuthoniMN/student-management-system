@@ -18,42 +18,81 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class ResultController extends Controller
 {
     private function getExamResults(){
-        $results = Result::whereHas('student')->with(['student:id,studentId,name', 'exam:id,title,subject_id,semester_id,grade_id', 'exam.subject:id,title', 'exam.semester:id,title,academic_year_id', 'exam.semester.year:id,year'])
-            ->select('id', 'result', 'grade', 'exam_id', 'student_id')
+        $results = Result::whereHas('student')
+            ->with([
+                'student:id,name,studentId',
+                'exam:id,title,subject_id,semester_id,grade_id',
+                'exam.subject:id,title',
+                'exam.semester:id,title,academic_year_id'
+            ])
             ->get()
-            ->map(function($result) {
-                $result->subject = $result->exam->subject->title;
-                return $result;
-            })
-            ->groupBy([
-            function($res){ return $res->student->studentId; },
-            fn($res) => $res->exam->semester->year->year,
-            fn($res) => $res->exam->grade->name,
-            fn($res) => $res->exam->semester->title,
-            fn($res) => $res->exam->title,
-            ])->map(function ($res, $id) {
-                $student = Student::where('studentId', '=', $id)->first();
+            ->map(function ($result) {
                 return [
-                        'id' => $student->studentId,
-                        'name' => $student->name,
-                        'years' => $res->map(function($yearResults, $year) {
-                            return $yearResults->map(function($gradeResults, $grade) {
-                                    return  $gradeResults->map(function($semesterResults) {
-                                        // Compute Totals Per Exam Title
-                                        $examData = $semesterResults->map(function ($examResults) {
-                                            // Calculate student totals per exam
-                                            $examTotals = $examResults->sum('result');
-                                            return [
-                                                'total' => $examTotals,
-                                                'results' => $examResults->pluck('result', 'subject'),
-                                            ];
-                                        });
-
-                                    return $examData;
-                                        });
+                    'exam'      => $result->exam->title,
+                    'subject'   => $result->exam->subject->title,
+                    'grade'   => $result->exam->grade->name,
+                    'year'   => $result->exam->semester->year->year,
+                    'semester'   => $result->exam->semester->title,
+                    'student'   => $result->student->studentId,
+                    'name'   => $result->student->name,
+                    'result'    => $result->result
+                ];
+            })
+            ->groupBy(['student', 'year', 'grade','semester', 'exam'])
+            ->map(function ($studentExams) {
+                return [
+                    'id'   => $studentExams->first()->first()->first()->first()->first()['student'],
+                    'name' => $studentExams->first()->first()->first()->first()->first()['name'],
+                    'years' => $studentExams->map(fn($gradeResults) =>
+                    $gradeResults->reduce(function ($carry, $semResults, $year) use($studentExams) {
+                        $semCalculatedResults = $semResults->map(function($sem, $title){
+                            $examSummary = $sem->map(function($result, $key) {
+                                $subjects = [];
+                                $result->map(function($res) use (&$subjects) {
+                                        if(count($subjects) == 8) return;
+                                        $subjects[$res['subject']] = $res['result'];
+                                    });
+                                    return [
+                                        'subjects' => $subjects,
+                                        'total' => array_sum($subjects),
+                                    ];
                                 });
-                        }),
-                    ];
+
+                            $semTotal = round($examSummary->avg('total'));
+                            $totals = [];
+                            collect($examSummary)->map(function ($exam) use(&$totals) {
+                                collect($exam['subjects'])->map(function($val, $key) use(&$totals){
+                                    array_key_exists($key, $totals) ? $totals[$key] += $val : $totals[$key] = $val;
+                                });
+                            });
+                            $averages = collect($totals)->map(fn($t) => round($t/3));
+
+                            return [
+                                'total' => $semTotal,
+                                'subject_averages' => $averages,
+                                ...$examSummary
+                            ];
+                        });
+
+                        $yearTotal = $semCalculatedResults->avg('total');
+                        $totals = [];
+                        collect($semCalculatedResults)->map(function ($exam) use(&$totals) {
+                            collect($exam['subject_averages'])->map(function($val, $key) use(&$totals){
+                                array_key_exists($key, $totals) ? $totals[$key] += $val : $totals[$key] = $val;
+                            });
+                        });
+
+                        $yearAverages = collect($totals)->map(fn($t) => round($t/2));
+
+                        $carry[$year] = [
+                            'total'    => $yearTotal,
+                            'subject_averages' => $yearAverages,
+                            ...$semCalculatedResults
+                        ];
+
+                        return $carry;
+                    })),
+                ];
             });
 
         return $results;
@@ -69,9 +108,7 @@ class ResultController extends Controller
 
             return Inertia::render('Result/Index', [
                 'exam_results' => $examResults,
-                'semesters' => Semester::with('year')->get(),
                 'years' => AcademicYear::all(),
-                'students' => Student::all(),
                 'grades' => Grade::all(),
             ]);
         } catch(\Throwable $th){

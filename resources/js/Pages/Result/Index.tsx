@@ -1,13 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 import ResultsSummaryTable from "@/Components/ResultsSummaryTable";
-import { TGrade, TStudent, TResultsSummary, TSemester, TYear } from "@/types/";
-import SecondaryButton from "@/Components/SecondaryButton";
-import { FaAngleLeft } from "react-icons/fa6";
+import { TGrade, TStudent, TResultSummary, TSemester, TYear } from "@/types/";
 
-export default function Results({ exam_results, grades, semesters, students, years }:
+export default function Results({ exam_results, grades, years }:
     {
-        exam_results: TResultsSummary[],
+        exam_results: TResultSummary[],
         grades?: TGrade[],
         semesters?: TSemester[],
         students?: TStudent[],
@@ -17,18 +15,13 @@ export default function Results({ exam_results, grades, semesters, students, yea
         <AuthenticatedLayout
             header={
                 <div className="flex gap-4 items-center">
-                    <Link href={route('semesters.index')}>
-                        <SecondaryButton>
-                            <FaAngleLeft />
-                        </SecondaryButton>
-                    </Link>
                     <h2 className="font-bold text-xl">Results</h2>
                 </div>
             }
         >
             <Head title="Results" />
             <section className="w-full mx-auto p-6">
-                <ResultsSummaryTable exam_results={Object.values(exam_results)} grades={grades} semesters={semesters} years={years} students={students} perPage={10} />
+                <ResultsSummaryTable exam_results={Object.values(exam_results)} grades={grades} years={years} perPage={10} />
             </section>
         </AuthenticatedLayout>
     );

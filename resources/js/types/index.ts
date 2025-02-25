@@ -132,7 +132,7 @@ export type TSemesterResult = {
     [semester: TSemesterKey]: {
         'total': number,
         'exams': TSubResult
-        'subjects': TSubResult
+        'subjects': TSubResult,
     }
 };
 
@@ -172,4 +172,27 @@ export type TRankIndividual = {
 
 export type TRank = {
     [semester: TSemesterKey]: TRankIndividual
+}
+
+export type TGradeSemester = {
+    [exam: string] : {
+        total: number,
+        results: TSubResult,
+        id: number
+    }
+}
+
+export type TGradeYear = {
+    [grade: string]: TGradeSemester,
+}
+
+export type TYearSummary = {
+    [year: string]: TGradeYear
+}
+
+export type TResultSummary = {
+    id: string,
+    student_id: number,
+    name: string,
+    years: TYearSummary
 }

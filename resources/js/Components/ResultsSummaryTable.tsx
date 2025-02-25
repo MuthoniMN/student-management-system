@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { TGrade, TStudent, TResultsSummary, TSemester, TYear, TFilter } from "@/types/";
+import { TGrade, TResultSummary, TYear } from "@/types/";
 import Pagination from "@/Components/Pagination";
+import ResultsSummaryRow from "@/Components/ResultsSummaryRow";
 
-export default function ResultsTable({ exam_results, grades, semesters, students, years, perPage=5 }:
+export default function ResultsTable({ exam_results, grades, years, perPage=5 }:
     {
-        exam_results: any,
+        exam_results: TResultSummary[],
         grades?: TGrade[],
-        semesters?: TSemester[],
-        students?: TStudent[],
         years?: TYear[],
         perPage?: number,
     }){
@@ -20,7 +19,7 @@ export default function ResultsTable({ exam_results, grades, semesters, students
     const [page, setPage] = useState(1);
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<TResultSummary[]>([]);
     const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
 
     useEffect(() => {
@@ -30,48 +29,28 @@ export default function ResultsTable({ exam_results, grades, semesters, students
 
     // filtering data
     useEffect(() => {
-        if(type.length > 0 && grade.length > 0 && year.length > 0 && semester.length > 0){
-            console.log('up');
-            console.log(type, grade, year, semester);
-            const filtered = exam_results.filter(res =>  res.years.hasOwnProperty(year) && res.years[year].hasOwnProperty(grade) && res.years[year][grade].hasOwnProperty(semester)
-            );
-            console.log(filtered);
-            setData(filtered.sort((a, b) => b.years[year][grade][semester][type].total - a.years[year][grade][semester][type].total));
-        }
-    }, [year]);
+        let filtered = exam_results.filter(res =>  res.years.hasOwnProperty(year));
 
-    useEffect(() => {
-        if(type.length > 0 && grade.length > 0 && year.length > 0 && semester.length > 0){
-            console.log('up');
-            console.log(type, grade, year, semester);
-            const filtered = exam_results.filter(res =>  res.years.hasOwnProperty(year) && res.years[year].hasOwnProperty(grade) && res.years[year][grade].hasOwnProperty(semester)
-            );
-            console.log(filtered);
-            setData(filtered.sort((a, b) => b.years[year][grade][semester][type].total - a.years[year][grade][semester][type].total));
+        if(grade.length > 0) {
+            filtered = filtered.filter(res => res.years[year].hasOwnProperty(grade));
         }
-    }, [grade]);
 
-    useEffect(() => {
-        if(type.length > 0 && grade.length > 0 && year.length > 0 && semester.length > 0){
-            console.log('up');
-            console.log(type, grade, year, semester);
-            const filtered = exam_results.filter(res =>  res.years.hasOwnProperty(year) && res.years[year].hasOwnProperty(grade) && res.years[year][grade].hasOwnProperty(semester)
-            );
-            console.log(filtered);
-            setData(filtered.sort((a, b) => b.years[year][grade][semester][type].total - a.years[year][grade][semester][type].total));
+        if(grade.length > 0 && semester.length > 0) {
+            filtered = filtered.filter(res => res.years[year][grade].hasOwnProperty(semester));
         }
-    }, [semester]);
 
-    useEffect(() => {
-        if(type.length > 0 && grade.length > 0 && year.length > 0 && semester.length > 0){
-            console.log('up');
-            console.log(type, grade, year, semester);
-            const filtered = exam_results.filter(res =>  res.years.hasOwnProperty(year) && res.years[year].hasOwnProperty(grade) && res.years[year][grade].hasOwnProperty(semester)
-            );
-            console.log(filtered);
-            setData(filtered.sort((a, b) => b.years[year][grade][semester][type].total - a.years[year][grade][semester][type].total));
-        }
-    }, [semester, type]);
+        if(grade.length > 0) setData(filtered.sort(function (a, b) {
+            if(semester.length > 0 && type.length > 0){
+                return b.years[year][grade][semester][type].total - a.years[year][grade][semester][type].total
+            }
+            if(semester.length > 0){
+                return b.years[year][grade][semester].total - a.years[year][grade][semester].total
+            }
+
+            return b.years[year][grade].total - a.years[year][grade].total
+        }));
+
+    }, [year, semester, grade]);
 
     return (
         <section className="space-y-4">
@@ -141,32 +120,9 @@ export default function ResultsTable({ exam_results, grades, semesters, students
                 </thead>
                 <tbody className="divide-y-2 divide-gray-300">
                     {
-                        (year.length > 0 && semester.length > 0 && grade.length > 0 && type.length > 0 && data.length > 0) ? paginatedData.map((result, index) => {
+                        (year.length > 0 && grade.length > 0 && data.length > 0) ? paginatedData.map((result, index) => {
                             return result.years[year] && result.years[year][grade] && (
-                            <tr className="divide-x-2 divide-gray-300" key={`${index}`}>
-                                <td className="px-2 text-center">{index + 1}</td>
-                                <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">{result.name}</td>
-                                <td className="px-2 min-w-36">{grade}</td>
-                                <td className="px-2">{year}</td>
-                                <td className="px-2 min-w-36">{semester || '-'}</td>
-                                <td className="px-2">{                                    result.years[year][grade][semester][type].results['Mathematics']}</td>
-                                <td className="px-2">{
-                                   result.years[year][grade][semester][type].results['English']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].results['Kiswahili']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].results['Science']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].results['History']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].results['Geography']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].results['Computer']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].results['CRE']}</td>
-                                <td className="px-2">{
-                                    result.years[year][grade][semester][type].total}</td>
-                                </tr>
+                            <ResultsSummaryRow index={index} year={year} grade={grade} semester={semester} type={type} result={result} />
                         )}) :
                         <tr className="py-2">
                             <td className="text-center" colSpan={15}>

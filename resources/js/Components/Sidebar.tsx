@@ -89,7 +89,7 @@ export default function Sidebar(){
                         <nav className={`${current === 4 ? 'block' : 'hidden'}`}>
                             <ul className="space-y-4">
                                <li>
-                                    <Link href={route('results.index')} className={`${route().current() === 'results.create' && 'text-white underline'} hover:underline`}>View Results</Link>
+                                    <Link href={route('results.index')} className={`${route().current() === 'results.index' && 'text-white underline'} hover:underline`}>View Results</Link>
                                 </li>
 
                                <li>
