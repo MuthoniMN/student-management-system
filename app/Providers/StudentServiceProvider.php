@@ -19,7 +19,6 @@ class StudentServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
-        $this->app->bind(ParentRepositoryInterface::class, ParentRepository::class);
 
         $this->app->bind(StudentService::class, function ($app) {
             return new StudentService(
