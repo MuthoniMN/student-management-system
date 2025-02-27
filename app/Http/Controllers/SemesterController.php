@@ -12,18 +12,22 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\SemesterRequest;
 use Illuminate\Support\Facades\DB;
+use App\Services\SemesterService;
 
 class SemesterController extends Controller
 {
+    public function __construct(
+        protected SemesterService $semesterService
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('Semester/List', [
-            'years' => AcademicYear::all(),
-            'semesters' => Semester::with('year')->orderByDesc('start_date')->get(),
-        ]);
+        $dependencies = $this->semesterService->index();
+
+        return Inertia::render('Semester/List', $dependencies);
     }
 
     /**
@@ -31,9 +35,9 @@ class SemesterController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Semester/Create', [
-            'years' => AcademicYear::all(),
-        ]);
+        $dependencies = $this->semesterService->create();
+
+        return Inertia::render('Semester/Create', $dependencies);
     }
 
     /**
@@ -43,7 +47,7 @@ class SemesterController extends Controller
     {
         $validated = $request->validated();
 
-        $semester = Semester::create($validated);
+        $semester = $this->semesterService->store($validated);
 
         return redirect(route('semesters.index'));
     }
@@ -53,12 +57,9 @@ class SemesterController extends Controller
      */
     public function show(Semester $semester)
     {
-        return Inertia::render('Semester/Show', [
-            'semester' => $semester,
-            'grades' => Grade::whereHas('exams', function($query) use ($semester){
-                $query->where('semester_id', '=', $semester->id);
-            })->get(),
-        ]);
+        $dependencies = $this->semesterService->show($semester);
+
+        return Inertia::render('Semester/Show', $dependencies);
     }
 
     /**
@@ -66,10 +67,9 @@ class SemesterController extends Controller
      */
     public function edit(Semester $semester)
     {
-        return Inertia::render('Semester/Edit', [
-            'semester' => $semester,
-            'years' => AcademicYear::all(),
-        ]);
+        $dependencies = $this->semesterService->edit($semester);
+
+        return Inertia::render('Semester/Edit', $dependencies);
     }
 
     /**
@@ -79,11 +79,7 @@ class SemesterController extends Controller
     {
         $validated = $request->validated();
 
-        $semester->fill($validated);
-
-        if($semester->isDirty()){
-            $semester->save();
-        }
+        $semester = $this->semesterService->update($semester, $validated);
 
         return redirect(route('semesters.index'))->with('update', 'Semester updated!');
     }
@@ -110,46 +106,9 @@ class SemesterController extends Controller
     }
 
     public function semesterResults(Semester $semester, Grade $grade){
-        $results = Result::whereHas('exam', function($query) use($semester, $grade){
-            $query
-                ->where('semester_id', '=', $semester->id)
-                ->where('grade_id', '=', $grade->id);
-        })->with('student', 'exam', 'exam.subject')->get()
-            ->map(function($result) {
-                $result->subject = $result->exam->subject->title;
-                $result->name = $result->student->name;
-                $result->studentId = $result->student->studentId;
+        $dependencies = $this->semesterService->semesterResults($semester, $grade);
 
-                return $result;
-            })
-          ->groupBy('student_id', 'results.id')
-          ->map(function($result) {
-              return $result
-                  ->groupBy(fn($q) => $q->subject)
-                  ->map(function($subj, $key) {
-                      return [
-                      'id' => $subj->first()->studentId,
-                      'name' => $subj->first()->name,
-                      'average' => round($subj->avg('result')),
-                      'subject' => $key
-                  ];});
-          })->map(function($res) {
-                return [
-                  'id' => $res->first()['id'],
-                  'name' => $res->first()['name'],
-                  'subject' => $res->reduce(function($c, $val){
-                      $c[$val['subject']] = $val['average'];
-                      return $c;
-                  }, []),
-                  'total' => round($res->sum('average'))
-              ];
-          })->toArray();
-
-        return Inertia::render('Grade/Result', [
-            'results' => $results,
-            'semester' => $semester,
-            'grade' => $grade
-        ]);
+        return Inertia::render('Grade/Result', $dependencies);
 
     }
 }
