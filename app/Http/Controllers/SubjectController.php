@@ -10,18 +10,21 @@ use Inertia\Inertia;
 use App\Http\Requests\SubjectRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use App\Services\SubjectService;
 
 class SubjectController extends Controller
 {
+    public function __construct(
+        protected SubjectService $subjectService,
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('Subject/Index', [
-            'grades' => Grade::all(),
-            'subjects' => Subject::all()
-        ]);
+        $dependencies = $this->subjectService->index();
+        return Inertia::render('Subject/Index', $dependencies);
     }
 
     /**
@@ -39,7 +42,7 @@ class SubjectController extends Controller
     {
         $validated = $request->validated();
 
-        $subject = Subject::create($validated);
+        $subject = $this->subjectService->create($validated);
 
         return redirect(route('subjects.index'));
     }
@@ -49,17 +52,9 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
-        return Inertia::render('Subject/Show', [
-            'subject' => $subject,
-            'exams' => Exam::with([
-                'semester', 'grade',
-                'subject' => function($q) use ($subject){
-                    $q->where('id', '=', $subject->id);
-            }])->orderBy('exams.created_at', 'asc')
-                ->get(),
-            'grades' => Grade::all(),
-            'semesters' => Semester::with('year')->get(),
-        ]);
+        $dependencies = $this->subjectService->show($subject);
+
+        return Inertia::render('Subject/Show', $dependencies);
     }
 
     /**
@@ -78,11 +73,7 @@ class SubjectController extends Controller
     public function update(SubjectRequest $request, Subject $subject)
     {
         $validated = $request->validated();
-        $subject->fill($validated);
-
-        if($subject->isDirty()){
-            $subject->save();
-        }
+        $subject = $this->subjectService->update($subject, $validated);
 
         return redirect(route('subjects.index'))->with('update', 'Subject updated!');
     }
@@ -92,7 +83,7 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
-        $subject->delete();
+        $this->subjectService->delete($subject);
 
         return redirect(route('subjects.index'))->with('delete', 'Subject deleted!');
     }
@@ -102,8 +93,7 @@ class SubjectController extends Controller
      */
     public function restore(Request $request)
     {
-        $subject = Subject::withTrashed()->where('id', $request->input('id'))->first();
-        $subject->restore();
+        $subject = $this->subjectService->restore($request->input('id'));
 
         return redirect(route('subjects.index'))->with('update', 'Subject restored!');
     }
