@@ -27,6 +27,8 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
     const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
     const flash = usePage().props.flash as TFlash;
 
+    console.log(exams);
+
     useEffect(() => {
         setPaginatedData(data.slice(start,end));
     }, [page, data]);
@@ -118,8 +120,8 @@ export default function SubjectShow({ subject, exams, grades, semesters }: {
                                     <td className="px-2 min-w-24 hover:underline transition-all duration-300 ease-in-out">
                                         <Link href={route('subjects.exams.show', [subject.id, exam.id])}>{exam.title}</Link>
                                     </td>
-                                    <td className="px-2 min-w-24">{exam.grade}</td>
-                                    <td className="px-2 min-w-36">{exam.semester} ({exam.year})</td>
+                                    <td className="px-2 min-w-24">{exam.grade.name}</td>
+                                    <td className="px-2 min-w-36">{exam.semester.title} ({exam.semester.year.year})</td>
                                     <td className="px-2 min-w-36">{exam.file ? (<Link href={route('files',exam.file as string)} className="rounded-full flex gap-2 items-center bg-gray-200 px-4 w-fit">File <FaDownload /> </Link>): "No uploaded file"}</td>
                                     <td className="px-2 w-fit">
                                         <SecondaryButton className="w-fit">
