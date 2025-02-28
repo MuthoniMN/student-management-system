@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\AcademicYear;
 use App\Models\Grade;
+use App\Models\Student;
 use App\Interfaces\YearRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -84,10 +85,17 @@ class YearRepository implements YearRepositoryInterface
      * */
     public function restore(int $id): AcademicYear
     {
-        $year = AcademicYear::where('id', '=', $id)->first();
+        $year = AcademicYear::onlyTrashed()->where('id', '=', $id)->first();
         $year->restore();
 
         return $year;
     }
 
+    public function getStudentYears(Student $student){
+        $years = AcademicYear::whereHas('semesters.exams.results', function($q) use ($student) {
+                $q->where('student_id', '=', $student->id);
+            })->get();
+
+        return $years;
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Semester;
 use App\Models\Grade;
+use App\Models\Student;
 use App\Interfaces\SemesterRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -90,4 +91,12 @@ class SemesterRepository implements SemesterRepositoryInterface
         return $sem;
     }
 
+
+    public function getStudentSemesters(Student $student){
+        $semesters = Semester::whereHas('exams.results', function($q) use ($student) {
+                $q->where('student_id', '=', $student->id);
+            })->with('year')->get();
+
+        return $semesters;
+    }
 }

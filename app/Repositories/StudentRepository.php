@@ -27,7 +27,7 @@ class StudentRepository implements StudentRepositoryInterface
      * */
     public function get(Student $student): Student
     {
-        return Student::with(['parent', 'grade'])->where('id', '=', $student->id)->get();
+        return Student::with(['parent', 'grade'])->where('id', '=', $student->id)->first();
     }
 
     /**
@@ -37,7 +37,7 @@ class StudentRepository implements StudentRepositoryInterface
      * */
     public function findById(int $id): Student
     {
-        return Student::with(['parent', 'grade'])->where('id', '=', $id)->get();
+        return Student::with(['parent', 'grade'])->where('id', '=', $id)->first();
     }
 
     /**

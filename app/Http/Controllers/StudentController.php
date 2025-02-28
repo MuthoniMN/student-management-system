@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\StudentService;
 use App\Models\AcademicYear;
 use App\Models\Semester;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StudentRequest;
@@ -53,17 +54,9 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        return Inertia::render('Student/Show', [
-            'student' => $student,
-            'grade' => $student->grade,
-            'parent' => $student->parent,
-            'semesters' => Semester::whereHas('exams.results', function($q) use ($student) {
-                $q->where('student_id', '=', $student->id);
-            })->with('year')->get(),
-            'years' => AcademicYear::whereHas('semesters.exams.results', function($q) use ($student) {
-                $q->where('student_id', '=', $student->id);
-            })->get(),
-         ]);
+        $dependencies = $this->studentService->getStudent($student);
+
+        return Inertia::render('Student/Show', $dependencies);
     }
 
     /**
@@ -141,7 +134,7 @@ class StudentController extends Controller
     }
 
     public function yearlyResults(Student $student, AcademicYear $academicYear){
-        $dependencies = $this->studentService->getYearResults();
+        $dependencies = $this->studentService->getYearResults($student, $academicYear);
 
         return Inertia::render('Student/YearlyResults', $dependencies);
     }
