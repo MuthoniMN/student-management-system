@@ -43,7 +43,7 @@ class ParentRepository implements ParentRepositoryInterface
      * */
     public function findById(int $id): ParentData
     {
-        return ParentData::where('id', '=', $id)->get();
+        return ParentData::where('id', '=', $id)->first();
     }
 
     /**
@@ -53,7 +53,7 @@ class ParentRepository implements ParentRepositoryInterface
      * */
     public function get(ParentData $parent): ParentData
     {
-        return ParentData::where('id', '=', $parent->id)->get();
+        return ParentData::where('id', '=', $parent->id)->first();
     }
 
     /**

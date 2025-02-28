@@ -3,10 +3,14 @@
 namespace App\Services;
 
 use App\Models\Student;
+use App\Models\Semester;
+use App\Models\AcademicYear;
 use App\Interfaces\StudentRepositoryInterface;
 use App\Interfaces\ResultRepositoryInterface;
 use App\Interfaces\GradeRepositoryInterface;
 use App\Interfaces\ParentRepositoryInterface;
+use App\Interfaces\SemesterRepositoryInterface;
+use App\Interfaces\YearRepositoryInterface;
 
 class StudentService
 {
@@ -15,6 +19,8 @@ class StudentService
         protected ResultRepositoryInterface $resultRepository,
         protected GradeRepositoryInterface $gradeRepository,
         protected ParentRepositoryInterface $parentRepository,
+        protected SemesterRepositoryInterface $semesterRepository,
+        protected YearRepositoryInterface $yearRepository,
     ){}
 
     /**
@@ -77,8 +83,8 @@ class StudentService
             'student' => $this->studentRepository->get($student),
             'grade' => $this->gradeRepository->get($student->grade),
             'parent' => $this->parentRepository->get($student->parent),
-            'semesters' => [],
-            'years' => []
+            'semesters' => $this->semesterRepository->getStudentSemesters($student),
+            'years' => $this->yearRepository->getStudentYears($student)
         ];
     }
 

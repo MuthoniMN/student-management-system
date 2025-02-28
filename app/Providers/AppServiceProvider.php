@@ -11,6 +11,14 @@ use App\Interfaces\GradeRepositoryInterface;
 use App\Repositories\GradeRepository;
 use App\Interfaces\ParentRepositoryInterface;
 use App\Repositories\ParentRepository;
+use App\Interfaces\SemesterRepositoryInterface;
+use App\Repositories\SemesterRepository;
+use App\Interfaces\YearRepositoryInterface;
+use App\Repositories\YearRepository;
+use App\Interfaces\SubjectRepositoryInterface;
+use App\Repositories\SubjectRepository;
+use App\Interfaces\ExamRepositoryInterface;
+use App\Repositories\ExamRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ResultRepositoryInterface::class, ResultRepository::class);
         $this->app->bind(GradeRepositoryInterface::class, GradeRepository::class);
         $this->app->bind(ParentRepositoryInterface::class, ParentRepository::class);
+        $this->app->bind(YearRepositoryInterface::class, YearRepository::class);
+        $this->app->bind(SemesterRepositoryInterface::class, SemesterRepository::class);
+        $this->app->bind(SubjectRepositoryInterface::class, SubjectRepository::class);
+        $this->app->bind(ExamRepositoryInterface::class, ExamRepository::class);
     }
 
     /**

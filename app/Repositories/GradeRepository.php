@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\GradeRepositoryInterface;
 use App\Models\Grade;
+use App\Models\AcademicYear;
 use Illuminate\Database\Eloquent\Collection;
 
 class GradeRepository implements GradeRepositoryInterface
@@ -89,4 +90,17 @@ class GradeRepository implements GradeRepositoryInterface
 
         return $grade;
     }
+
+    /**
+     * @desc get available in a particular academic year
+     * @param AcademicYear $academicYear
+     * @return Collection
+     * */
+    public function getYearGrades(AcademicYear $academicYear): Collection
+    {
+        return Grade::whereHas('exams.semester', function($query) use ($academicYear){
+                $query->where('academic_year_id', '=', $academicYear->id);
+            })->get();
+    }
+
 }
