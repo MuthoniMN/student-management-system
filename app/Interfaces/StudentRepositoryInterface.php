@@ -17,4 +17,5 @@ interface StudentRepositoryInterface
     public function deleteMany(array $attributes);
     public function restore(int $id);
     public function restoreMany(array $attributes);
+    public function archive();
 }

@@ -141,4 +141,8 @@ class StudentRepository implements StudentRepositoryInterface
         return $students;
     }
 
+    public function archive(): Collection
+    {
+        return  Student::onlyTrashed()->with(['parent', 'grade'])->get();
+    }
 }

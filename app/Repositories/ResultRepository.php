@@ -646,4 +646,9 @@ class ResultRepository implements ResultRepositoryInterface
         return $result;
     }
 
+    public function archive(): Collection
+    {
+        return Result::onlyTrashed()->with(['exam', 'student', 'exam.grade', 'exam.subject', 'exam.semester', 'exam.semester.year'])->get();
+    }
+
 }

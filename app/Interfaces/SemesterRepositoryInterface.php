@@ -15,4 +15,5 @@ interface SemesterRepositoryInterface
     public function getStudentSemesters(Student $student);
     public function delete(Semester $semester);
     public function restore(int $id);
+    public function archive();
 }

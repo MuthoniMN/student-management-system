@@ -14,4 +14,5 @@ interface GradeRepositoryInterface
     public function delete(Grade $grade);
     public function restore(int $id);
     public function getYearGrades(AcademicYear $academicYear);
+    public function archive();
 }

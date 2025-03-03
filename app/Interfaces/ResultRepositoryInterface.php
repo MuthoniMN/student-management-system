@@ -28,4 +28,5 @@ interface ResultRepositoryInterface
     public function update(Result $result, array $attributes);
     public function delete(Result $result);
     public function restore(int $id);
+    public function archive();
 }

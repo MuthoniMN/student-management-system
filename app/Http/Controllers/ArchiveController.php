@@ -13,59 +13,52 @@ use App\Models\Exam;
 use App\Models\Result;
 use App\Models\Grade;
 use App\Models\Semester;
+use App\Services\ArchiveService;
 
 class ArchiveController extends Controller
 {
+    public function __construct(
+        protected ArchiveService $archiveService
+    ) {}
+
     public function index(){
         return Inertia::render('Archive/Index');
     }
 
     public function semesterArchive(){
-        return Inertia::render('Archive/Semester', [
-            'years' => AcademicYear::all(),
-            'semesters' => Semester::onlyTrashed()->get(),
-        ]);
+        $dependencies = $this->archiveService->semester();
+
+        return Inertia::render('Archive/Semester', $dependencies);
     }
 
     public function studentArchive(){
-        $students = Student::onlyTrashed()->with(['parent', 'grade'])->get();
+        $dependencies = $this->archiveService->student();
 
-        return Inertia::render('Archive/Student', [
-            "students" => $students,
-            "grades" => Grade::all(),
-            "parents" => ParentData::all()
-        ]);
+        return Inertia::render('Archive/Student', $dependencies);
     }
 
     public function subjectArchive(){
-        return Inertia::render('Archive/Subject', [
-            'grades' => Grade::all(),
-            'subjects' => Subject::onlyTrashed()->get()
-        ]);
+        $dependencies = $this->archiveService->subject();
+
+        return Inertia::render('Archive/Subject', $dependencies);
     }
 
     public function gradeArchive(){
-        return Inertia::render('Archive/Grade', [
-            'grades' => Grade::onlyTrashed('students')->get(),
-        ]);
+        $dependencies = $this->archiveService->grade();
+
+        return Inertia::render('Archive/Grade', $dependencies);
     }
 
     public function examsArchive(){
-        return Inertia::render('Archive/Exam', [
-            'exams' => Exam::onlyTrashed()->get(),
-            'grades' => Grade::all(),
-            'semesters' => Semester::with('year')->get(),
-        ]);
+        $dependencies = $this->archiveService->exam();
+
+        return Inertia::render('Archive/Exam', $dependencies);
     }
 
     public function resultsArchive(){
-        return Inertia::render('Archive/Results', [
-            'grades' => Grade::all(),
-            'semesters' => Semester::all(),
-            'subjects' => Subject::all(),
-            'students' => Student::all(),
-            'results' => Result::onlyTrashed(['exam', 'student', 'exam.grade', 'exam.subject', 'exam.semester', 'exam.semester.year'])->get(),
-        ]);
+        $dependencies = $this->archiveService->result();
+
+        return Inertia::render('Archive/Results', $dependencies);
 
     }
 }

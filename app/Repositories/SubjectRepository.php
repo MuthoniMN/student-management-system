@@ -86,4 +86,8 @@ class SubjectRepository implements SubjectRepositoryInterface
         return $subject;
     }
 
+    public function archive(): Collection
+    {
+        return Subject::onlyTrashed()->get();
+    }
 }

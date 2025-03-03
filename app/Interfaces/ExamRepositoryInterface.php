@@ -15,4 +15,5 @@ interface ExamRepositoryInterface
     public function update(Exam $exam, array $attributes);
     public function delete(Exam $exam);
     public function restore(int $id);
+    public function archive();
 }

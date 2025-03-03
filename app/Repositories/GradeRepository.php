@@ -103,4 +103,8 @@ class GradeRepository implements GradeRepositoryInterface
             })->get();
     }
 
+    public function archive(): Collection
+    {
+        return Grade::onlyTrashed()->with('students')->get();
+    }
 }

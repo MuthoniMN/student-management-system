@@ -99,4 +99,9 @@ class SemesterRepository implements SemesterRepositoryInterface
 
         return $semesters;
     }
+
+    public function archive(): Collection
+    {
+        return Semester::onlyTrashed()->get();
+    }
 }

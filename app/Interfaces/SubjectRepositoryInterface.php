@@ -13,4 +13,5 @@ interface SubjectRepositoryInterface
     public function update(Subject $subject, array $attributes);
     public function delete(Subject $subject);
     public function restore(int $id);
+    public function archive();
 }

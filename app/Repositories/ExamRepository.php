@@ -58,4 +58,10 @@ class ExamRepository implements ExamRepositoryInterface
 
         return $exam;
     }
+
+    public function archive(){
+        $exams = Exam::onlyTrashed()->get();
+
+        return $exams;
+    }
 }
