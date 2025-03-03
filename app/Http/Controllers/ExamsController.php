@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ExamRequest;
 use App\Http\Requests\ExamUpdateRequest;
+use App\Services\ExamService;
 
 class ExamsController extends Controller
 {
+    public function __construct(
+        protected ExamService $examService
+    ) {}
     /**
      * Display a listing of the resource.
      */
@@ -28,11 +32,8 @@ class ExamsController extends Controller
      */
     public function create(Subject $subject)
     {
-        return Inertia::render('Exam/Create',[
-           'subject' => $subject,
-           'semesters' => Semester::with('year')->get(),
-            'grades' => Grade::all()
-        ]);
+        $dependencies = $this->examService->create($subject);
+        return Inertia::render('Exam/Create', $dependencies);
     }
 
     /**
@@ -42,14 +43,7 @@ class ExamsController extends Controller
     {
         $validated = $request->validated();
 
-        $exam = $subject->exams()->create($validated);
-
-        if($request->file('file')){
-            $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
-
-            $exam->file = $path;
-            $exam->save();
-        }
+        $exam = $this->examService->store($subject, $validated, $request->file('file'));
 
         return redirect(route('subjects.show', $subject))->with('create', 'Exam successfully created!');
     }
@@ -59,14 +53,9 @@ class ExamsController extends Controller
      */
     public function show(Subject $subject, Exam $exam)
     {
-        return Inertia::render('Exam/Show', [
-            'exam' => $exam,
-            'subject' => $subject,
-            'grades' => Grade::all(),
-            'semesters' => Semester::with('year')->get(),
-            'students' => Student::all(),
-            'results' => Result::with(['exam', 'student', 'exam.grade', 'exam.subject', 'exam.semester', 'exam.semester.year'])->whereHas('exam_id', '=', $exam->id)->get(),
-        ]);
+        $dependencies = $this->examService->show($subject, $exam);
+
+        return Inertia::render('Exam/Show', $dependencies);
     }
 
     /**
@@ -74,12 +63,8 @@ class ExamsController extends Controller
      */
     public function edit(Subject $subject, Exam $exam)
     {
-        return Inertia::render('Exam/Edit',[
-            'exam' => $exam,
-            'subject' => $subject,
-            'semesters' => Semester::with('year')->get(),
-            'grades' => Grade::all()
-        ]);
+        $dependencies = $this->examService->edit($subject, $exam);
+        return Inertia::render('Exam/Edit', $dependencies);
     }
 
     /**
@@ -89,16 +74,7 @@ class ExamsController extends Controller
     {
         $validated = $request->validated();
 
-        $exam->fill($validated);
-
-        if($request->file('file')){
-            $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
-            $exam->file = $path;
-        }
-
-        if($exam->isDirty()){
-            $exam->save();
-        }
+        $exam = $this->examService->update($subject, $validated, $request->file('file'));
 
         return redirect(route('subjects.show', $subject))->with('update', 'Exam successfully updated!');
     }
@@ -108,7 +84,7 @@ class ExamsController extends Controller
      */
     public function destroy(Subject $subject, Exam $exam)
     {
-        $exam->delete();
+        $this->examService->delete();
 
         return redirect(route('subjects.show', $subject))->with('delete', 'Exam successfully deleted!');
     }
@@ -118,8 +94,7 @@ class ExamsController extends Controller
      */
     public function restore(Request $request, Subject $subject)
     {
-        $exam = Exam::onlyTrashed()->where('id', $request->input('id'))->first();
-        $exam->restore();
+        $exam = $this->examService->restore($request->input('id'));
 
         return redirect(route('subjects.show', $exam->subject))->with('update', 'Exam restored!');
     }
