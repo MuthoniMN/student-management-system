@@ -31,11 +31,11 @@ class ExamRepository implements ExamRepositoryInterface
     }
 
     public function findById(int $id){
-        return Exam::where('id', '=', $id)->get();
+        return Exam::with('subject', 'grade', 'semester', 'semester.year')->where('id', '=', $id)->first();
     }
 
     public function find(Exam $exam){
-        return Exam::where('id', '=', $exam->id)->first();
+        return Exam::with('subject', 'grade', 'semester', 'semester.year')->where('id', '=', $exam->id)->first();
     }
 
     public function update(Exam $exam, array $attributes){

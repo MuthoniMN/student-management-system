@@ -15,7 +15,7 @@ export default function EditResult({ students, exam, subject, result } : { exam:
                             <FaAngleLeft />
                         </Link>
                     </SecondaryButton>
-                    <h1 className="text-xl font-bold">Edit {result.student} Results for {subject.title} {exam.title}</h1>
+                    <h1 className="text-xl font-bold">Edit {(result.student as TStudent).name} Results for {subject.title} {exam.title}</h1>
                 </div>
             }
         >

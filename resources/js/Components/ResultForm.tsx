@@ -3,7 +3,7 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import { useForm } from "@inertiajs/react";
-import { TStudent, TSubject, TExam, TResult } from "@/types/";
+import { TStudent, TSubject, TExam, TResult, TGrade } from "@/types/";
 import PrimaryButton from "@/Components/PrimaryButton";
 
 export const getGrade = (num: number) => {
@@ -78,7 +78,7 @@ export default function ExamForm({ subject, exam, students, result }: { result?:
                     <option value="null">-- Please Select --</option>
                     {
                         students.map(student => (
-                            <option key={student.id} value={student.id}>{student.name} - {student.grade}</option>
+                            <option key={student.id} value={student.id}>{student.name} - {(student.grade as TGrade).name}</option>
                         ))
                     }
                 </select>

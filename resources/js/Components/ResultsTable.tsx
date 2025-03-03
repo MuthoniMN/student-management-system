@@ -99,15 +99,17 @@ export default function ResultsTable({ results, grades, semesters, students, yea
     const { submit, delete: destroy } = useForm();
     const handleSubmit = (e: FormEvent, result: TResult) => {
         e.preventDefault();
-        submit('delete', route('subjects.exams.results.destroy', [result.subject_id, result.exam?.id, result.id]));
+        submit('delete', route('subjects.exams.results.destroy', [result.exam?.subject, result.exam?.id, result.id]));
     };
 
     const handleRestore = (e: FormEvent, result: TResult) => {
         e.preventDefault();
-        router.put(route('subjects.exams.results.restore',[result.subject_id, result.exam?.id]), {
+        router.put(route('subjects.exams.results.restore',[result.exam?.subject, result.exam?.id, result.id]), {
             id: result.id
         });
     };
+
+    console.log(results[0]);
 
     return (
         <section className="space-y-4">

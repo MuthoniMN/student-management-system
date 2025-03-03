@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\ExamServiceProvider::class,
     App\Providers\GradeServiceProvider::class,
     App\Providers\ParentServiceProvider::class,
     App\Providers\ResultServiceProvider::class,
