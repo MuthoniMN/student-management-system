@@ -29,9 +29,9 @@
 </head>
 <body>
     @if ($semester)
-        <h1 class="title">{{ $year && $year->year }} {{ $grade->name }} - Results</h1>
+        <h1 class="title">{{ $semester && $semester->title || $year && $year->year }} {{ $grade->name }} - Results</h1>
     @else
-    <h1 class="title">{{ $year && $year->year }} {{ $grade->name }} - Results</h1>
+    <h1 class="title">{{ $semester && $semester->title || $year && $year->year }} {{ $grade->name }} - Results</h1>
     @endif
     <table>
         <thead>

@@ -5,6 +5,7 @@ return [
     App\Providers\ArchiveServiceProvider::class,
     App\Providers\ExamServiceProvider::class,
     App\Providers\GradeServiceProvider::class,
+    App\Providers\PDFServiceProvider::class,
     App\Providers\ParentServiceProvider::class,
     App\Providers\ResultServiceProvider::class,
     App\Providers\SemesterServiceProvider::class,
