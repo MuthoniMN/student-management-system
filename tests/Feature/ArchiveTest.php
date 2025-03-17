@@ -2,7 +2,13 @@
 
 use App\Models\User;
 
-test('successfult fetch the archive page', function () {
+test('successfully redirects unauthorized users', function(){
+    $response = $this->get('/archive');
+
+    $response->assertRedirectToRoute('login');
+});
+
+test('successfuly fetch the archive page', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get('/archive');
