@@ -30,7 +30,7 @@ class ExamService {
     }
 
     public function store(Subject $subject, array $attributes, $file=null){
-        $exam = $this->examRepository->create($attributes);
+        $exam = $this->examRepository->create(['subject_id' => $subject->id,  ...$attributes]);
 
         if($file){
             $path = $request->file('file')->storeAs("exams", "{$subject->title} {$exam->title} - {$exam->semester->title} {$exam->exam_date}.{$request->file('file')->getClientOriginalExtension()}", 'public');
@@ -83,7 +83,7 @@ class ExamService {
     }
 
     public function restore(int $id){
-        $exam = $this->examRepository->restore();
+        $exam = $this->examRepository->restore($id);
 
         return $exam;
     }

@@ -84,7 +84,7 @@ class ExamsController extends Controller
      */
     public function destroy(Subject $subject, Exam $exam)
     {
-        $this->examService->delete();
+        $this->examService->delete($exam);
 
         return redirect(route('subjects.show', $subject))->with('delete', 'Exam successfully deleted!');
     }
