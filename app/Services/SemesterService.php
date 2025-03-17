@@ -68,7 +68,7 @@ class SemesterService
         return $semester;
     }
 
-    public function delete(Semester $semester): boolean
+    public function delete(Semester $semester): bool
     {
         return $semester->delete();
     }
