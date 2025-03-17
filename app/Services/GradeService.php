@@ -52,7 +52,7 @@ class GradeService
      * @param Grade $grade
      * @return Grade
      * */
-    public function delete(Grade $grade): boolean
+    public function delete(Grade $grade): bool
     {
         $grade = $this->gradeRepository->delete($grade);
 
