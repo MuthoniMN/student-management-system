@@ -627,7 +627,7 @@ class ResultRepository implements ResultRepositoryInterface
      * @param Result $result
      * @return Result
      * */
-    public function delete(Result $result): Result
+    public function delete(Result $result): bool
     {
         return $result->delete();
     }

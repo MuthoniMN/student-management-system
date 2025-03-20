@@ -84,7 +84,7 @@ class ResultService
         return $result;
     }
 
-    public function delete(Result $result): boolean {
+    public function delete(Result $result): bool {
         return $this->resultRepository->delete($result);
     }
 

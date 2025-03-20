@@ -18,7 +18,7 @@ class ParentDataFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'email' => $this->faker->email().
+            'email' => $this->faker->email(),
             'phone_number' => $this->faker->phoneNumber(),
             'address' => $this->faker->address()
         ];

@@ -70,7 +70,7 @@ class ResultController extends Controller
         $results = $request->input('results');
         $exam = Exam::find($results[0]['exam_id']);
 
-        $this->resultService->create($results);
+        $this->resultService->storeMany($results);
 
         return redirect(route('subjects.exams.show', [$exam->subject->id, $exam->id]));
     }
@@ -110,7 +110,7 @@ class ResultController extends Controller
      */
     public function destroy(Subject $subject, Exam $exam, Result $result)
     {
-        $this->resultRepository->delete($result);
+        $this->resultService->delete($result);
 
         return back()->with('delete', "Results deleted successfully!");
     }
@@ -120,7 +120,7 @@ class ResultController extends Controller
      */
     public function restore(Request $request, Subject $subject, Exam $exam)
     {
-        $result = $this->resultRepository->restore($request->input('id'));
+        $result = $this->resultService->restore($request->input('id'));
 
         return redirect(route('subjects.exams.show', [$subject, $exam]))->with('update', 'Result restored!');
     }
