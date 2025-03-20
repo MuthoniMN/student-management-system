@@ -69,7 +69,7 @@ class YearService
      * @param AcademicYear $academicYear
      * @return boolean
      * */
-    public function delete(AcademicYear $academicYear): boolean
+    public function delete(AcademicYear $academicYear): bool
     {
         return $this->yearRepository->delete($academicYear);
     }

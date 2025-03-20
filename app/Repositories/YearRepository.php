@@ -73,7 +73,7 @@ class YearRepository implements YearRepositoryInterface
      * @param AcademicYear $academicYear
      * @return AcademicYear
      * */
-    public function delete(AcademicYear $academicYear): AcademicYear
+    public function delete(AcademicYear $academicYear): bool
     {
         return $academicYear->delete();
     }
