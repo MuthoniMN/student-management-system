@@ -142,7 +142,7 @@ class StudentService
      * @param Student $student
      * @return Student
      * */
-    public function delete(Student $student): Student
+    public function delete(Student $student): bool
     {
         return $this->studentRepository->delete($student);
     }
@@ -152,7 +152,7 @@ class StudentService
      * @param array $students
      * @return array
      * */
-    public function deleteMany(array $students): array
+    public function deleteMany(array $students)
     {
         return $this->studentRepository->deleteMany();
     }

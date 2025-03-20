@@ -100,7 +100,7 @@ class StudentRepository implements StudentRepositoryInterface
      * @param Student $student
      * @return Student
      * */
-    public function delete(Student $student): Student
+    public function delete(Student $student): bool
     {
         return $student->delete();
     }
@@ -110,7 +110,7 @@ class StudentRepository implements StudentRepositoryInterface
      * @param array $students
      * @return array
      * */
-    public function deleteMany(array $students): array
+    public function deleteMany(array $students)
     {
         return Student::destroy($validated);
     }

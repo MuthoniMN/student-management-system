@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use App\Models\ParentData;
+use App\Models\Grade;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Student>
@@ -19,7 +21,9 @@ class StudentFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'studentId' => strtoupper(Str::random(8))
+            'studentId' => strtoupper(Str::random(8)),
+            'parent_id' => ParentData::factory()->create(),
+            'grade_id' => Grade::factory()->create()
         ];
     }
 }
