@@ -73,7 +73,7 @@ class SemesterRepository implements SemesterRepositoryInterface
      * @param Semester $semester
      * @return Semester
      * */
-    public function delete(Semester $semester): boolean
+    public function delete(Semester $semester): bool
     {
         return $semester->delete();
     }

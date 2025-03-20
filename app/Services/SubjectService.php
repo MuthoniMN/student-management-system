@@ -49,7 +49,7 @@ class SubjectService
         return $subject;
     }
 
-    public function delete(Subject $subject): boolean
+    public function delete(Subject $subject): bool
     {
         return $this->subjectRepository->delete($subject);
     }
