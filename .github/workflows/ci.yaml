@@ -2,9 +2,6 @@ name: CI Workflow
 
 on:
   pull_request_target:
-    types:
-      - opened
-      - closed
     branches:
       - main
 
