@@ -41,16 +41,16 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install dependencies
+        run: |
+          composer install
+          npm install
+
       - name: Setup Environment
         run: |
           cp .env.example .env
           php artisan key:generate
           echo "DB_PASSWORD=postgres" >> .env
-
-      - name: Install dependencies
-        run: |
-          composer install
-          npm install
 
       - name: Wait for PostgreSQL
         run: |
