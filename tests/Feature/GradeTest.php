@@ -7,6 +7,17 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+test('only admins can create grades', function(){
+    $user = User::factory()->create([ 'role' => 'student' ]);
+
+    $response = $this->actingAs($user)->post('/grades', [
+        'name' => 'Grade 10',
+        'description' => 'This is for grade 10 learners'
+    ]);
+
+    $response->assertStatus(403);
+});
+
 test('create grades', function () {
     $user = User::factory()->create();
     $response = $this->actingAs($user)->post('/grades', [
@@ -20,6 +31,14 @@ test('create grades', function () {
     $this->assertDatabaseHas('grades', [
         'name' => 'Grade 10',
     ]);
+});
+
+test('only admins have access', function(){
+    $user = User::factory()->create([ 'role' => 'student' ]);
+
+    $response = $this->actingAs($user)->get('/grades');
+
+    $response->assertStatus(403);
 });
 
 test('list grades', function(){
