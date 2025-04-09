@@ -4,6 +4,9 @@ on:
   pull_request_target:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 jobs:
   test:
@@ -24,15 +27,23 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: |
-          composer install
-          npm install
-
       - name: Setup Environment
         run: |
           cp .env.example .env
           php artisan key:generate
+
+      - name: Setup PostgreSQL
+        uses: ikalnytskyi/action-setup-postgres@v7
+        - run: psql ${{ secrets.POSTGRES_URL }} -c "SELECT 1"
+        - run: psql service=postgres -c "SELECT 1"
+        - run: psql -c "SELECT 1"
+          env:
+            PGSERVICE: postgres
+
+      - name: Install dependencies
+        run: |
+          composer install
+          npm install
 
       - name: Run migrations
         run: php artisan migrate:fresh
