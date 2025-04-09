@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Grade;
 use App\Models\Semester;
 use App\Models\AcademicYear;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 class StudentRepository implements StudentRepositoryInterface
@@ -64,14 +65,18 @@ class StudentRepository implements StudentRepositoryInterface
      * @param Grade $grade
      * @return array
      * */
-    public function upgrade(array $students, Grade $grade): array
+    public function upgrade(array $students): array
     {
         foreach ($students as $key) {
             $student = Student::find($key);
 
-            $student['grade_id'] = $grade->id;
+            if($student['grade_id'] < 8){
+                $student['grade_id'] = $student['grade_id'] + 1;
+                $student->save();
+            }else {
+                $student->delete();
+            }
 
-            $student->save();
         }
 
         return $students;
@@ -85,10 +90,10 @@ class StudentRepository implements StudentRepositoryInterface
     public function create(array $attributes): Student
     {
         $student = new Student;
-        $student['studentId'] = $validated['studentId'];
-        $student['name'] = $validated['name'];
-        $student['parent_id'] = $parent->id;
-        $student['grade_id'] = $grade->id;
+        $student['studentId'] = $attributes['studentId'];
+        $student['name'] = $attributes['name'];
+        $student['parent_id'] = $attributes['parent_id'];
+        $student['grade_id'] = $attributes['grade_id'];
 
         $student->save();
 
@@ -112,7 +117,7 @@ class StudentRepository implements StudentRepositoryInterface
      * */
     public function deleteMany(array $students)
     {
-        return Student::destroy($validated);
+        return Student::destroy($attributes);
     }
 
     /**

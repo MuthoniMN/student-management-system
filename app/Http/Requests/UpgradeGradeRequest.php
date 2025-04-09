@@ -16,7 +16,6 @@ class UpgradeGradeRequest extends FormRequest
         return [
             'data.studentIds' => "required|array|min:1",
             'data.studentIds.*' => "required|integer|distinct|min:3|exists:students,id",
-            'data.grade_id' => "required|integer|exists:grades,id"
         ];
     }
 }

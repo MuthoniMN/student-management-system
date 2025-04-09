@@ -11,7 +11,7 @@ interface StudentRepositoryInterface
     public function get(Student $student);
     public function findById(int $id);
     public function update(Student $student, array $attributes);
-    public function upgrade(array $attribute, Grade $grade);
+    public function upgrade(array $attribute);
     public function create(array $attributes);
     public function delete(Student $student);
     public function deleteMany(array $attributes);
