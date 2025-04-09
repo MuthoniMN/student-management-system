@@ -65,5 +65,8 @@ jobs:
       - name: Run migrations
         run: php artisan migrate:fresh
 
+      - name: Build the Front-End
+        run: npm run build
+
       - name: Run Laravel tests
         run: npx concurrently -c "composer run dev" "php artisan test --testsuite=Feature"
