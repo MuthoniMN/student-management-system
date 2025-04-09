@@ -13,9 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: postgres:latest
         env:
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: laravel
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -36,22 +45,24 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-
-      - name: Setup PostgreSQL
-        uses: ikalnytskyi/action-setup-postgres@v7
-        run: psql ${{ secrets.POSTGRES_URL }} -c "SELECT 1"
-        run: psql service=postgres -c "SELECT 1"
-        run: psql -c "SELECT 1"
-        env:
-          PGSERVICE: postgres
+          echo "DB_PASSWORD=postgres" >> .env
 
       - name: Install dependencies
         run: |
           composer install
           npm install
 
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              break
+            fi
+            sleep 2
+          done
+
       - name: Run migrations
         run: php artisan migrate:fresh
 
       - name: Run Laravel tests
-        run: npx run concurrently \"composer run dev\" \"php artisan test\"
+        run: npx concurrently "composer run dev" "php artisan test"
