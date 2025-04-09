@@ -1,0 +1,41 @@
+name: CI Workflow
+
+on:
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: @actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pgsql, pdo_pgsql, zip, bcmath, apcu
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          composer install
+          npm install
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          'php artisan key:generate'
+
+      - name: Run migrations
+        run: php artisan migrate:fresh
+
+      - name: Run Laravel tests
+        run: npx run concurrently \"composer run dev\" \"php artisan test\"
