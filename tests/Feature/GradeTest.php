@@ -22,6 +22,14 @@ test('create grades', function () {
     ]);
 });
 
+test('only admins have access', function(){
+    $user = User::factory()->create([ 'role' => 'student' ]);
+
+    $response = $this->actingAs($user)->get('/grades');
+
+    $response->assertStatus(403);
+});
+
 test('list grades', function(){
     $user = User::factory()->create();
     $response = $this->actingAs($user)->get('/grades');
