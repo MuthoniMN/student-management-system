@@ -6,6 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\UserRole;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\ParentData;
+use App\Models\Student;
 
 class User extends Authenticatable
 {
@@ -21,6 +25,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'studentId'
     ];
 
     /**
@@ -44,5 +50,38 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+    public function getAuthIdentifierName()
+    {
+        return 'student_id_or_email'; // Custom identifier
+    }
+
+    public function findForPassport($login)
+    {
+        return $this->where('studentId', $login)
+                    ->orWhere('email', $login)
+                    ->first();
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(ParentData::class);
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function isParent(): bool
+    {
+        return $this->type === UserRole::PARENT->value || $this->parent_id !== null;
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->type === UserRole::STUDENT->value || $this->student_id !== null;
     }
 }
