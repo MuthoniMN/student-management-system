@@ -29,12 +29,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Debug before authentication
+        info('Before authenticate - Session ID: ' . session()->getId());
+
         $request->authenticate();
 
-        $request->session()->regenerate();
+        // Debug after authentication
+        info('After authenticate - Auth check: ' . (Auth::check() ? 'true' : 'false'));
+        info('After authenticate - User ID: ' . (Auth::user() ? Auth::user()->id : 'null'));
+        info('After authenticate - Session ID: ' . session()->getId());
+
+        // Force save the session
+        session()->save();
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
+
 
     /**
      * Destroy an authenticated session.
