@@ -159,10 +159,12 @@ class ResultRepository implements ResultRepositoryInterface
               return $result
                   ->groupBy(fn($q) => $q->subject)
                   ->map(function($subj, $key) {
+                      $marks = $subj->pluck('result');
                       return [
                       'id' => $subj->first()->studentId,
                       'name' => $subj->first()->name,
                       'average' => round($subj->avg('result')),
+                      'marks' => $marks->toArray(),
                       'subject' => $key
                   ];});
           })->map(function($res) {
@@ -173,6 +175,7 @@ class ResultRepository implements ResultRepositoryInterface
                       $c[] = [
                           'subject_name' => $val['subject'],
                           'average_marks' => $val['average'],
+                          'marks' => $val['marks'],
                           'grade' => $this->getGrade($val['average']),
                       ];
                       return $c;

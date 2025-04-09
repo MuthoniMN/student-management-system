@@ -21,7 +21,7 @@ class ParentRepository implements ParentRepositoryInterface
                 'phone_number' => $attributes['phone_number']
             ],
             [
-                'name' => $attributes['parent_name'],
+                'name' => $attributes['name'],
                 'address' => $attributes['address']
             ]
         );

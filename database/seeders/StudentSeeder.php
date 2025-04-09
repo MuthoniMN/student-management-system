@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Student;
 
 class StudentSeeder extends Seeder
 {
@@ -29,6 +31,21 @@ class StudentSeeder extends Seeder
         }
 
         DB::table('students')->insert($students);
+        $savedStudents = Student::all();
+
+        $studentUsers = collect($savedStudents)->map(function ($stu) {
+            return [
+                'name' => $stu->name,
+                'studentId' => $stu->studentId,
+                'created_at' => $stu->created_at,
+                'password' => Hash::make($stu->studentId),
+                'updated_at' => $stu->updated_at,
+                'student_id' => $stu->id,
+                'role' => 'student'
+            ];
+        });
+
+        DB::table('users')->insert($studentUsers->toArray());
     }
 }
 
