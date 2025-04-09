@@ -12,6 +12,7 @@ use App\Http\Requests\StudentRequest;
 use App\Http\Requests\StudentUpdateRequest;
 use App\Http\Requests\UpgradeGradeRequest;
 use App\Http\Requests\DeleteStudentsRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StudentController extends Controller
 {
@@ -125,6 +126,8 @@ class StudentController extends Controller
     }
 
     public function resultsAggregate(Student $student, Semester $semester){
+        Gate::authorize('view', $student);
+
         $results = $this->studentService->getSemesterResults($student, $semester);
 
         return Inertia::render('Student/Results', [
@@ -134,8 +137,17 @@ class StudentController extends Controller
     }
 
     public function yearlyResults(Student $student, AcademicYear $academicYear){
+        Gate::authorize('view', $student);
+
         $dependencies = $this->studentService->getYearResults($student, $academicYear);
 
         return Inertia::render('Student/YearlyResults', $dependencies);
+    }
+
+    // dashboard
+    public function dashboard(Request $request){
+        $student = $request->user()->student;
+        $dependencies = $this->studentService->getStudent($student);
+        return Inertia::render('Student/Dashboard', $dependencies);
     }
 }
