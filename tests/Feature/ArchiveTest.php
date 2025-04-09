@@ -8,6 +8,14 @@ test('successfully redirects unauthorized users', function(){
     $response->assertRedirectToRoute('login');
 });
 
+test('only admins have access', function(){
+    $user = User::factory()->create([ 'role' => 'student' ]);
+
+    $response = $this->actingAs($user)->get('/archive');
+
+    $response->assertStatus(403);
+});
+
 test('successfuly fetch the archive page', function () {
     $user = User::factory()->create();
 
