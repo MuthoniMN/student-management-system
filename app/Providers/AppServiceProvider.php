@@ -19,6 +19,11 @@ use App\Interfaces\SubjectRepositoryInterface;
 use App\Repositories\SubjectRepository;
 use App\Interfaces\ExamRepositoryInterface;
 use App\Repositories\ExamRepository;
+use App\Interfaces\UserRepositoryInterface;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Student;
+use App\Policies\StudentPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SemesterRepositoryInterface::class, SemesterRepository::class);
         $this->app->bind(SubjectRepositoryInterface::class, SubjectRepository::class);
         $this->app->bind(ExamRepositoryInterface::class, ExamRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 
     /**
@@ -43,6 +49,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::policy(Student::class, StudentPolicy::class);
     }
 }

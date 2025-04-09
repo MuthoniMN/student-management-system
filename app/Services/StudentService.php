@@ -11,6 +11,8 @@ use App\Interfaces\GradeRepositoryInterface;
 use App\Interfaces\ParentRepositoryInterface;
 use App\Interfaces\SemesterRepositoryInterface;
 use App\Interfaces\YearRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
+use Illuminate\Support\Facades\Password;
 
 class StudentService
 {
@@ -21,6 +23,7 @@ class StudentService
         protected ParentRepositoryInterface $parentRepository,
         protected SemesterRepositoryInterface $semesterRepository,
         protected YearRepositoryInterface $yearRepository,
+        protected UserRepositoryInterface $userRepository,
     ){}
 
     /**
@@ -33,13 +36,21 @@ class StudentService
         $parent = $this->parentRepository->create([
             'email' => $data['email'],
             'phone_number' => $data['phone_number'],
-            'name' => $data['name'],
+            'name' => $data['parent_name'],
             'address' => $data['address']
         ]);
+
+        if($parent->wasRecentlyCreated){
+            $parentUser = $this->userRepository->createParentAccount($parent);
+
+            Password::sendResetLink(['email' => $parentUser->email]);
+        }
+        $data['parent_id'] = $parent->id;
 
         $grade = $this->gradeRepository->findById((int)$data['grade_id']);
 
         $student = $this->studentRepository->create($data);
+        $studentUser = $this->userRepository->createStudentAccount($student);
 
         return $student;
     }
@@ -130,8 +141,6 @@ class StudentService
      * */
     public function upgrade(array $data)
     {
-        $grade = $this->gradeRepository->findById($data['grade_id']);
-
         $students = $this->studentRepository->upgrade($data['studentIds']);
 
         return $students;

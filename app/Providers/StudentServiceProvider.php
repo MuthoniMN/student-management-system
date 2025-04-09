@@ -11,6 +11,7 @@ use App\Repositories\StudentRepository;
 use App\Services\StudentService;
 use App\Interfaces\SemesterRepositoryInterface;
 use App\Interfaces\YearRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
 
 class StudentServiceProvider extends ServiceProvider
 {
@@ -28,7 +29,8 @@ class StudentServiceProvider extends ServiceProvider
                 $app->make(GradeRepositoryInterface::class),
                 $app->make(ParentRepositoryInterface::class),
                 $app->make(SemesterRepositoryInterface::class),
-                $app->make(YearRepositoryInterface::class)
+                $app->make(YearRepositoryInterface::class),
+                $app->make(UserRepositoryInterface::class)
             );
         });
     }
