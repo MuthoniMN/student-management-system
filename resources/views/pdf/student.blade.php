@@ -50,7 +50,10 @@
         <thead>
             <tr>
                 <th>Subject</th>
-                <th>Marks</th>
+                <th>CAT 1</th>
+                <th>CAT 2</th>
+                <th>Final Exam</th>
+                <th>Average</th>
                 <th>Grade</th>
             </tr>
         </thead>
@@ -58,6 +61,9 @@
             @foreach (current($results['results'])['subjects'] as $result)
                 <tr>
                     <td>{{ $result['subject_name'] }}</td>
+                    <td>{{ $result['marks'][0] }}</td>
+                    <td>{{ $result['marks'][1] }}</td>
+                    <td>{{ $result['marks'][2] }}</td>
                     <td>{{ $result['average_marks'] }}</td>
                     <td>{{ $result['grade'] }}</td>
                 </tr>

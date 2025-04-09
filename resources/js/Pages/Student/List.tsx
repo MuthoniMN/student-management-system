@@ -21,7 +21,7 @@ export default function List({ students, parents, grades }: { students: TStudent
     const end = start + perPage;
     const [data, setData] = useState(students);
     const [paginatedData, setPaginatedData] = useState(data.slice(start, end));
-    const [gradeId, setGradeId] = useState('');
+    const [gradeId, setGradeId] = useState(0);
     const flash = usePage().props.flash as TFlash;
 
     const handleUpdate = (e: FormEvent) => {
@@ -29,7 +29,6 @@ export default function List({ students, parents, grades }: { students: TStudent
         router.patch('students/upgrade', {
             data: {
                 'studentIds': selected,
-                'grade_id': +gradeId
             }
         })
     }
@@ -80,6 +79,7 @@ export default function List({ students, parents, grades }: { students: TStudent
         }else{
             setData(students);
         }
+        setSelected([]);
 
     }, [filters]);
 
@@ -90,6 +90,16 @@ export default function List({ students, parents, grades }: { students: TStudent
 
         setData(results);
     }
+
+    useEffect(() => {
+      const selectedStudents = selected.map(student => students.filter(stud => stud.id == student)[0]);
+      const grades = new Set(selectedStudents.map(student => student.grade_id));
+      console.log(grades);
+      console.log(grades.size);
+
+      if(grades.size == 1) setGradeId([...grades][0]);
+    }, [selected])
+
 
     return (
         <AuthenticatedLayout
@@ -170,24 +180,14 @@ export default function List({ students, parents, grades }: { students: TStudent
                 </table>
                 <Pagination length={data.length} perPage={perPage} page={page} setPage={setPage} />
                 { selected.length >= 1 &&
-                <div className="flex gap-6">
-                    <PrimaryButton onClick={() => setUpdate(update => !update)}>Update Grade</PrimaryButton>
+                <div className="flex gap-6 items-center">
+                    <div className="py-4">
+                        <form className="flex gap-4" onSubmit={handleUpdate}>
+                            <PrimaryButton>{gradeId < 8 ? 'Update' : 'Archive'}</PrimaryButton>
+                        </form>
+                    </div>
                     <DangerButton onClick={handleDelete}>Delete</DangerButton>
                 </div> }
-                { update &&
-                <div className="py-4">
-                    <form className="flex gap-4" onSubmit={handleUpdate}>
-                       <select name="grade_id" value={gradeId} onChange={(e) => setGradeId(e.target.value)}>
-                        <option>-- Please Select --</option>
-                    {
-                        grades.map(grade => (
-                            <option key={grade.id} value={grade.id}>{grade.name}</option>
-                        ))
-                        }
-                    </select>
-                    <PrimaryButton>Update</PrimaryButton>
-                </form>
-            </div> }
             { flash && flash.update && (
                 <div className="bg-emerald-300 text-emerald-800 font-bold text-lg w-fit p-4 fixed bottom-4 right-4">
                     <p>{flash.update}</p>

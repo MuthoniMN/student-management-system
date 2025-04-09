@@ -11,6 +11,7 @@ use App\Models\Result;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use App\Services\PDFService;
+use Illuminate\Support\Facades\Gate;
 
 class PDFController extends Controller
 {
@@ -35,6 +36,7 @@ class PDFController extends Controller
     }
 
     public function studentResults(Student $student, Semester $semester){
+        Gate::authorize('view', $student);
         $results = $this->pdfService->studentSemester($student, $semester);
 
         $pdf = Pdf::loadView('pdf.student', [
@@ -45,6 +47,7 @@ class PDFController extends Controller
     }
 
     public function studentYearlyResults(Student $student, AcademicYear $academicYear){
+        Gate::authorize('view', $student);
         $dependencies = $this->pdfService->studentYear($student, $academicYear);
 
         $pdf = Pdf::loadView('pdf.year', $dependencies);
