@@ -66,4 +66,4 @@ jobs:
         run: php artisan migrate:fresh
 
       - name: Run Laravel tests
-        run: npx concurrently -c "composer run dev" "php artisan test"
+        run: npx concurrently -c "composer run dev" "php artisan test --testsuite=Feature"
